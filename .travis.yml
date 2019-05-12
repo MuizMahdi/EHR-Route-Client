@@ -13,12 +13,14 @@ matrix:
       language: generic
       dist: trusty
 
+
 cache:
   npm: true
   directories:
     - node_modules
     - $HOME/.cache/electron
 - $HOME/.cache/electron-builder
+
 
 install:
   - npm install
@@ -27,7 +29,10 @@ install:
       brew install npm;
     fi
 
+
 script:
+  - ng build --prod --aot
+  - ng test
   - |
     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
       docker run --rm \
@@ -45,22 +50,17 @@ script:
       yarn release;
     fi
 
+
 sudo: required
+
 addons:
   chrome: stable
 
-language: node_js
-node_js:
-  - "8"
 
 branches:
   only:
     - master
 
+
 before_script:
   - npm install -g @angular/cli
-
-
-script:
-  - ng build --prod --aot
-  - ng test

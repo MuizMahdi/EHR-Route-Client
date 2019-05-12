@@ -21,6 +21,7 @@ cache:
 - $HOME/.cache/electron-builder
 
 install:
+  - npm install
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       brew install npm;
@@ -59,7 +60,6 @@ branches:
 before_script:
   - npm install -g @angular/cli
 
-install: npm install
 
 script:
   - ng build --prod --aot

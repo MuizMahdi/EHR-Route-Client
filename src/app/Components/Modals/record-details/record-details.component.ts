@@ -75,7 +75,7 @@ export class RecordDetailsComponent implements OnInit
    }
 
 
-   private toggleRecordDetails(): void {
+   toggleRecordDetails(): void {
       this.toggleViewedDetails = !this.toggleViewedDetails;
    }
 

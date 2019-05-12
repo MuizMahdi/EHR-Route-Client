@@ -47,7 +47,7 @@ export class LoginComponent
    }
 
 
-   private onLogin(): void
+   onLogin(): void
    {
       // LoginFormGroup values
       this.loginUsernameOrEmail = this.loginFormGroup.get("usernameOrEmailCtrl").value;

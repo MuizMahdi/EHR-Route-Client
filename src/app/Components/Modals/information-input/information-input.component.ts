@@ -68,7 +68,7 @@ export class InformationInputComponent implements OnInit
    }
 
 
-   private onCountrySelect(country:CountryResponse): void
+   onCountrySelect(country:CountryResponse): void
    {
       // Get the country's cities
       this.locationService.getCities(country.name).subscribe(citiesData => {
@@ -77,7 +77,7 @@ export class InformationInputComponent implements OnInit
    }
   
 
-   private async onUserInfoSubmit() {
+   async onUserInfoSubmit() {
 
       // Start the loading animation on the modal's submit button
       this.isUserInfoModalLoading = true;

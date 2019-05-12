@@ -14,12 +14,15 @@ let appWindow;
 
 
 // Create window on electron initialization
-app.on("ready", createWindow);
+app.on("ready", function() {
+   initializeAppPaths();
+   createWindow();
+});
 
 
 // Initialize window and its properties on startup
 app.on("activate", function() {
-   
+
    if (appWindow === null) {
       createWindow();
    }
@@ -90,4 +93,38 @@ async function createWindow()
       });
       
    });
+}
+
+
+async function initializeAppPaths()
+{
+   let userDataPath = app.getPath('userData');
+   
+   // Check if user data path exists
+   fs.exists(userDataPath, (exists) => {
+
+      // If not then create the directory
+      if (!exists) fs.mkdir(userDataPath, (error) => {
+         console.log(error);
+      });
+
+   });
+   
+   // For windows OS
+   if (process.platform === 'win32') {
+      
+      // Get the app's ProgramData path
+      let appDataPath = path.resolve(process.env.ProgramData || 'C:\\ProgramData', app.getName());
+      
+      // Check if it exists
+      fs.exists(appDataPath, (exists) => {
+
+         // If not then create the directory
+         if (!exists) fs.mkdir(appDataPath, (error) => {
+            console.log(error);
+         });
+
+      });
+
+   }
 }

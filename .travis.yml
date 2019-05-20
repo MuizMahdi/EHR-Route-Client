@@ -1,20 +1,67 @@
-sudo: required
-addons:
-  chrome: stable
-
+matrix:
+  include:
+    - os: osx
+      osx_image: xcode9
+    - os: linux
+      sudo: required
+      dist: xenial
+      
 language: node_js
+
 node_js:
-  - "8"
+  - '8.11.2'
+
+env:
+  global:
+    - ELECTRON_CACHE=$HOME/.cache/electron
+    - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+    - NODE_OPTIONS=--max-old-space-size=4096
+
+addons:
+  apt:
+    update: true
+    sources:
+      - sourceline: 'ppa:ubuntu-toolchain-r/test'
+    packages:
+      - libxkbfile-dev
+      - libx11-dev
+      - rpm
+      - libappindicator1
+      - libopenjp2-tools
+      - snapcraft
+      - gcc-multilib
+      - g++-multilib
+
+cache:
+  directories:
+  - "$HOME/.electron"
+  - "$HOME/.cache"
+
+before_install:
+  - npm i -g npm@latest
+  - npm i -g node-gyp@latest
+  - |
+    if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+      mkdir -p /tmp/git-lfs && curl -L https://github.com/github/git-lfs/releases/download/v2.3.1/git-lfs-$([ "$TRAVIS_OS_NAME" == "linux" ] && echo "linux" || echo "darwin")-amd64-2.3.1.tar.gz | tar -xz -C /tmp/git-lfs --strip-components 1
+      export PATH="/tmp/git-lfs:$PATH"
+    fi
+  - git clone https://$GH_TOKEN@github.com/ramboxapp/desktop.git
+  - cd desktop
+
+install:
+  - npm install
+
+before_script:
+  - git lfs pull
+
+script:
+  - travis_wait 120 npm run build
 
 branches:
   only:
-    - master
+  - master
 
-before_script:
-  - npm install -g @angular/cli
-
-install: npm install
-
-script:
-  - ng build --prod --aot
-  - ng test
+notifications:
+  email:
+    on_success: never
+on_failure: change

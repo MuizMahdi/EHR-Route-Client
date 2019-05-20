@@ -150,6 +150,8 @@ export class NodeClustersService implements OnInit
             let block:BlockResponse = JSON.parse(event.data);
             let blockNetworkUUID = block.blockHeader.networkUUID;
 
+            console.log(block);
+
             // Add the block to the block network's DB
             this.chainService.addBlock(blockNetworkUUID, block);
          });

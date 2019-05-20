@@ -15,9 +15,9 @@ import { NetworkInfo } from 'src/app/Models/Payload/Responses/NetworkInfo';
 
 
 @Component({
-  selector: 'app-user-profile',
-  templateUrl: './user-profile.component.html',
-  styleUrls: ['./user-profile.component.css']
+   selector: 'app-user-profile',
+   templateUrl: './user-profile.component.html',
+   styleUrls: ['./user-profile.component.css']
 })
 
 
@@ -95,7 +95,7 @@ export class UserProfileComponent implements OnInit
    }
 
 
-   private async requestEhrPrivilege()
+   async requestEhrPrivilege()
    {
       let providerUserId = this.authService.getCurrentUser().id;
       let patientUserId = this.searchedUser.id;

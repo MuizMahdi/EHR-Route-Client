@@ -169,35 +169,37 @@ export class NodeClustersService implements OnInit
    }
 
 
-   public async unsubscribeClusters()
+   public async unsubscribeClusters(): Promise<any>
    {
       console.log("[ClusterService] Sending unsubscribe request...");
 
-      let nodeUUID:string = "";
+      return new Promise<any>(async (resolve, reject) => {
 
-      // Get and set node UUID as the current provider UUID
-      await this.getCurrentProviderUUID().then(uuid => {
-         nodeUUID = uuid;
-      });
+         let nodeUUID:string = "";
 
-      // Unsubscribe node from clusters
-      this.http.get(this.clustersUnsubscripeUrl + nodeUUID).pipe(first(),
-         
-         catchError(error => {
-            return throwError(error)
-         })
-         
-      ).subscribe(
-         res => {
-            console.log("[ClusterService] Node has unsubscribed from clusters successfully.");
-            // Close the SSE http connection afterwards
+         // Get and set node UUID as the current provider UUID
+         await this.getCurrentProviderUUID().then(uuid => {
+            nodeUUID = uuid;
+         });
+
+         // Unsubscribe node from clusters on server-side
+         await this.http.get(this.clustersUnsubscripeUrl + nodeUUID).pipe(first()).toPromise()
+         .then(() => {
+
+            console.log("[ClusterService] Unsubscribed on server-side successfully");
+
+            // Close the SSE http connection from client-side
             this.closeSseConnection();
-         },
 
-         err => {
-            console.log(err);
-         }
-      );
+            resolve();
+
+         })
+         .catch(error => {
+            console.log("[ClusterService] " + error);
+            reject("Failed to unsubscribe node on server-side - " + error.message);
+         });
+         
+      });
    }
 
 

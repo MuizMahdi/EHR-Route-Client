@@ -86,6 +86,7 @@ export class NetworkManagerComponent implements OnInit
          (response:BlockResponse) => {
             // Save the received genesis block
             this.saveNetworkGenesisBlock(networkName, response);
+            this.clustersService.resetClustersSubscription();
          },
 
          (error:ErrorResponse) => {

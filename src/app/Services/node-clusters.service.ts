@@ -203,6 +203,14 @@ export class NodeClustersService implements OnInit
    }
 
 
+   resetClustersSubscription()
+   {
+      this.unsubscribeClusters().then(() => {
+         this.subscribeClusters();
+      });
+   }
+
+
    closeSseConnection():void 
    {
       // If event source exists

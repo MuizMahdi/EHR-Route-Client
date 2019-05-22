@@ -41,7 +41,7 @@ export class NetworkManagerComponent implements OnInit
    constructor(
       private networkService:NodeNetworkService, private authService:AuthService, 
       public mainLayout:MainLayoutService, private modalService:NzModalService,
-      private nodeClusterService:NodeClustersService, private databaseService:DatabaseService
+      private clustersService:NodeClustersService, private databaseService:DatabaseService
    ) { }
 
 

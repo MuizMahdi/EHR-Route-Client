@@ -105,18 +105,18 @@ export class AuthService
       // If the user has provider role
       if (this.isUserProvider()) {
          // Unsubscribe user node from clusters
-         await this.clustersService.unsubscribeClusters();
+         this.clustersService.unsubscribeClusters().then(() => {
+            // Remove user token
+            localStorage.removeItem('accessToken');
+
+            // Remove user info
+            localStorage.removeItem('currentUser');
+
+            // Reset currentUser subject
+            this.currentUser.next(null);
+            this.currentUser = new Subject<any>();
+         });
       }
-
-      // Remove user token
-      localStorage.removeItem('accessToken');
-
-      // Remove user info
-      localStorage.removeItem('currentUser');
-
-      // Reset currentUser subject
-      this.currentUser.next(null);
-      this.currentUser = new Subject<any>();
    }
 
 
@@ -124,7 +124,7 @@ export class AuthService
    {
       if (jwtToken && jwtToken.accessToken) {
          // Save jwt to local storage
-         localStorage.setItem('accessToken', jwtToken.accessToken)
+         localStorage.setItem('accessToken', jwtToken.accessToken);
       }
 
       this.saveCurrentUserInfo();

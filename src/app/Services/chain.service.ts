@@ -18,7 +18,7 @@ import { throwError } from 'rxjs';
 
 
 @Injectable({
-  providedIn: 'root'
+   providedIn: 'root'
 })
 
 
@@ -33,14 +33,22 @@ export class ChainService
    ) { }
 
 
-   public async generateNetworkMerkleRoot(networkUUID:string): Promise<string>
+   public async generateNetworkMerkleRoot(networkUUID:string): Promise<string>;
+   public async generateNetworkMerkleRoot(networkUUID:string, additionalBlockHash:string): Promise<string>
+
+
+   public async generateNetworkMerkleRoot(networkUUID:string, additionalBlockHash?:string): Promise<string>
    {
       // Get the network's leaves hashes for the construction of the merkle tree
-      let leavesHexHashes:string[] = await this.getNetworkLeavesHashes(networkUUID); 
-      
+      let leavesHexHashes:string[] = await this.getNetworkLeavesHashes(networkUUID);
+
+      // Add the additional block's hash to the tree leaves
+      if (additionalBlockHash) {
+         leavesHexHashes.push(additionalBlockHash);
+      }     
+
       // If there's only one leaf in the tree, return that leaf hash
-      if (leavesHexHashes.length < 2) 
-      {
+      if (leavesHexHashes.length < 2) {
          return leavesHexHashes[0];
       }
 

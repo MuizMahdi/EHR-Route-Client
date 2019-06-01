@@ -114,6 +114,13 @@ export class NodeClustersService implements OnInit
             this.chainFileService.sendNetworkChain(chainFetchRequest.networkUUID, chainFetchRequest.consumerUUID);
 
          });
+
+         // Server sends a merkle tree leaf hash and expects the merkle tree root calculated with the additional sent hash
+         this.providersEventSource.addEventListener('merkle-root-request', (event:any) => {
+
+            
+
+         });
       }
 
    }

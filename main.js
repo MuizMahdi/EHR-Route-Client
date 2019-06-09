@@ -46,9 +46,12 @@ async function createWindow()
    appWindow = new BrowserWindow({
       width: 800,
       height: 600,
+      frame: false,
       icon: "https://image.flaticon.com/icons/svg/149/149054.svg" 
    });
 
+
+   appWindow.maximize();
 
    // [Dev only] get dynamic version from localhost:4200.
    require('electron-reload')(__dirname, {

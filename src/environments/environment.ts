@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://ehrroute.eu-gb.mybluemix.net'
+  apiUrl: 'http://192.168.43.5:8080'
 };
 
 /*

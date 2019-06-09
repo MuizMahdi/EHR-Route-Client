@@ -1,8 +1,10 @@
+import { environment } from './../../environments/environment';
+import { BlockResponse } from './../Models/Payload/Responses/BlockResponse';
+import { BlockAdditionResponse } from './../Models/Payload/Responses/BlockAdditionResponse';
 import { DatabaseService } from './../DataAccess/database.service';
 import { UserNetworks } from './../Models/Payload/Responses/UserNetworks';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
-import { environment } from 'src/environments/environment';
 import { catchError, first, tap } from 'rxjs/operators';
 import { throwError, Observable } from 'rxjs';
 import { NetworkInvitationRequest } from '../Models/Payload/Requests/NetworkInvitationRequest';
@@ -11,7 +13,7 @@ import { ErrorResponse } from '../Models/Payload/Responses/ErrorResponse';
 
 
 @Injectable({
-  providedIn: 'root'
+   providedIn: 'root'
 })
 
 
@@ -19,7 +21,7 @@ export class NodeNetworkService implements OnInit
 {
    
    private userNetworkUrl:string = environment.apiUrl + '/users/current/networks';
-   private networkRootUrl:string = environment.apiUrl + '/network/get-root';
+   private networkRootUrl:string = environment.apiUrl + '/network/merkle-root';
    private createNetworkUrl:string = environment.apiUrl + '/network/create';
    private networkInviteUrl:string = environment.apiUrl + '/network/invite';
    private networkInvitationAcceptUrl:string = environment.apiUrl + '/network/invitation-accept';
@@ -145,7 +147,6 @@ export class NodeNetworkService implements OnInit
    }
 
 
-
    public getNetworkRoot(networkUUID:string): Observable<any> {
 
       let url:string = this.networkRootUrl + '?networkuuid=' + networkUUID;
@@ -174,7 +175,6 @@ export class NodeNetworkService implements OnInit
       );
 
    }
-
 
 
    public getNetworkUuidByName(networkName:string): Observable<any> {
@@ -242,6 +242,23 @@ export class NodeNetworkService implements OnInit
          })
 
       );
+
+   }
+
+
+   public updateNetworkMerkleRoot(blockAdditionResponse:BlockAdditionResponse, latestMerkleRoot:string) {
+
+      let block:BlockResponse = blockAdditionResponse.block;
+
+      // Construct a root update request object
+      let networkRootUpdateRequest = {
+         merkleRoot: latestMerkleRoot,
+         networkUUID: block.blockHeader.networkUUID,
+         consentRequestUUID: blockAdditionResponse.metadata.consentRequestUUID
+      }
+
+      // Send the request
+      this.http.post(this.networkRootUrl, networkRootUpdateRequest).subscribe();
 
    }
 }

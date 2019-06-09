@@ -1,7 +1,9 @@
+import { NodeNetworkService } from './node-network.service';
+import { BlockAdditionResponse } from './../Models/Payload/Responses/BlockAdditionResponse';
 import { ChainFileService } from './chain-file.service';
 import { ChainFetch } from './../Models/Payload/Responses/ChainFetch';
 import { ChainService } from './chain.service';
-import { BlockResponse } from './../Models/Payload/Responses/BlockResponse';
+import { BlockResponse } from '../Models/Payload/Responses/BlockResponse';
 import { ProviderService } from './provider.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
@@ -38,7 +40,8 @@ export class NodeClustersService implements OnInit
 
    constructor(
       private chainService:ChainService, private providerService:ProviderService,
-      private http:HttpClient, private chainFileService:ChainFileService
+      private http:HttpClient, private chainFileService:ChainFileService,
+      private networkSerivce:NodeNetworkService
    ) { }
 
 
@@ -114,13 +117,6 @@ export class NodeClustersService implements OnInit
             this.chainFileService.sendNetworkChain(chainFetchRequest.networkUUID, chainFetchRequest.consumerUUID);
 
          });
-
-         // Server sends a merkle tree leaf hash and expects the merkle tree root calculated with the additional sent hash
-         this.providersEventSource.addEventListener('merkle-root-request', (event:any) => {
-
-            
-
-         });
       }
 
    }
@@ -152,15 +148,15 @@ export class NodeClustersService implements OnInit
             //console.log(event);
          });
 
-         this.consumersEventSource.addEventListener('block', (event:any) => {
-            // Get block from event data
-            let block:BlockResponse = JSON.parse(event.data);
-            let blockNetworkUUID = block.blockHeader.networkUUID;
+         this.consumersEventSource.addEventListener('block', async (event:any) => {
 
-            console.log(block);
+            let blockResponse:BlockAdditionResponse = JSON.parse(event.data);
 
-            // Add the block to the block network's DB
-            this.chainService.addBlock(blockNetworkUUID, block);
+            console.log(blockResponse);
+
+            // Add the block and finalize the transaction
+            await this.chainService.addBlock(blockResponse);
+            
          });
 
          this.consumersEventSource.addEventListener('chain-response', (event:any) => {

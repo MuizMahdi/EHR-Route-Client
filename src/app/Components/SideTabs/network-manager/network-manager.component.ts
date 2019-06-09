@@ -1,7 +1,7 @@
 import { Block } from './../../../DataAccess/entities/Core/Block';
 import { SimpleStringPayload } from './../../../Models/Payload/Responses/SimpleStringPayload';
 import { ErrorResponse } from './../../../Models/Payload/Responses/ErrorResponse';
-import { BlockResponse } from './../../../Models/Payload/Responses/BlockResponse';
+import { BlockResponse } from '../../../Models/Payload/Responses/BlockResponse';
 import { UserNetworks } from '../../../Models/Payload/Responses/UserNetworks';
 import { NodeNetworkService } from './../../../Services/node-network.service';
 import { UserRole } from '../../../Models/Payload/Responses/UserRole';

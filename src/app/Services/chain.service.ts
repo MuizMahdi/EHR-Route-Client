@@ -1,3 +1,4 @@
+import { BlockAdditionResponse } from './../Models/Payload/Responses/BlockAdditionResponse';
 import { ChainFileService } from './chain-file.service';
 import { first, catchError } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
@@ -7,7 +8,7 @@ import { ProviderService } from './provider.service';
 import { BlockAdditionRequest } from './../Models/Payload/Requests/BlockAdditionRequest';
 import ModelMapper from 'src/app/Helpers/Utils/ModelMapper';
 import { NodeNetworkService } from 'src/app/Services/node-network.service';
-import { BlockResponse } from './../Models/Payload/Responses/BlockResponse';
+import { BlockResponse } from '../Models/Payload/Responses/BlockResponse';
 import { Block } from './../DataAccess/entities/Core/Block';
 import { Connection } from 'typeorm';
 import { DatabaseService } from 'src/app/DataAccess/database.service';
@@ -143,16 +144,29 @@ export class ChainService
    }
 
 
-   public async addBlock(networkUUID:string, blockResponse:BlockResponse)
+   public async addBlock(blockAdditionResponse:BlockAdditionResponse)
    {
-      // Make sure that a connection has been established
-      this.networkService.ensureNetworkDbConnection(networkUUID);
+      let networkUUID:string = blockAdditionResponse.block.blockHeader.networkUUID;
 
-      // Get a Block from the response
-      let block = ModelMapper.mapBlockResponseToBlock(blockResponse);
+      try {
+         // Make sure that a connection has been established
+         await this.networkService.ensureNetworkDbConnection(networkUUID);
 
-      // Get DB connection for the network, then save the block
-      await this.dbService.getNetworkDbConnection(networkUUID).manager.save(block);
+         // Get a Block from the response
+         let block = ModelMapper.mapBlockResponseToBlock(blockAdditionResponse.block);
+
+         // Get DB connection for the network, then save the block
+         await this.dbService.getNetworkDbConnection(networkUUID).manager.save(block);
+      }
+      catch (e) {
+         console.error(e);
+         return;
+      }
+
+      let updatedMerkleRoot:string = await this.generateNetworkMerkleRoot(networkUUID);
+
+      // Complete the transaction by updating the network's merkle root
+      this.networkService.updateNetworkMerkleRoot(blockAdditionResponse, updatedMerkleRoot);
    }
 
 

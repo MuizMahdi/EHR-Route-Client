@@ -1,4 +1,4 @@
-import { BlockResponse } from './../Responses/BlockResponse';
+import { BlockResponse } from '../Responses/BlockResponse';
 
 
 export interface UserConsentResponse 

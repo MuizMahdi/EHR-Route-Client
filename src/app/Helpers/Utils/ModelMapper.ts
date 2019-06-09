@@ -6,7 +6,7 @@ import { EhrAllergyAndReaction } from './../../DataAccess/entities/EHR/EhrAllerg
 import { EhrCondition } from './../../DataAccess/entities/EHR/EhrCondition';
 import { MedicalRecord } from './../../DataAccess/entities/EHR/MedicalRecord';
 import { Block } from './../../DataAccess/entities/Core/Block';
-import { BlockResponse } from './../../Models/Payload/Responses/BlockResponse';
+import { BlockResponse } from '../../Models/Payload/Responses/BlockResponse';
 import { EhrHistory } from 'src/app/DataAccess/entities/EHR/EhrHistory';
 
 

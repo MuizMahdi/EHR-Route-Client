@@ -1,3 +1,4 @@
+import { DbConnectionType } from './../Models/DbConnectionType';
 import { environment } from 'src/environments/environment';
 import { remote } from 'electron';
 import * as path from 'path';
@@ -55,5 +56,37 @@ export class ElectronAppConfig
       let patientInfoDbFileName:string = 'user-info-' + userID + '.info';
 
       return path.join(this.databaseFolderPath, patientInfoDbFileName);
+   }
+
+
+   // returns a DB path for a given DB type and identifier
+   public static getDbPath(identifier: string|number, connectionType:DbConnectionType): string {
+
+      switch(connectionType) {
+
+         case DbConnectionType.NETWORK: {
+            let dbFileName = identifier + '.chain';
+            return path.join(this.databaseFolderPath, dbFileName);
+         }
+
+         case DbConnectionType.ADDRESS: {
+            let dbFileName = 'user-address-' + identifier + '.address';
+            return path.join(this.databaseFolderPath, dbFileName);
+         }
+
+         case DbConnectionType.PATIENT_INFO: {
+            let dbFileName = 'user-info-' + identifier + '.info';
+            return path.join(this.databaseFolderPath, dbFileName);
+         }
+
+         case DbConnectionType.PATIENT_RECORD: {
+            let dbFileName = 'user-record-' + identifier + '.ehr';
+            return path.join(this.databaseFolderPath, dbFileName);
+         }
+
+         default: return null;
+
+      }
+
    }
 }

@@ -1,3 +1,4 @@
+import { DbConnectionType } from './../Models/DbConnectionType';
 import { Injectable } from "@angular/core";
 import { Connection, ConnectionOptions, createConnection, getConnectionManager } from 'typeorm';
 import { ElectronAppConfig } from "../Configuration/ElectronAppConfig";
@@ -24,8 +25,7 @@ import { Address } from "./entities/Core/Address";
 export class DatabaseService 
 {
    
-   constructor() 
-   { 
+   constructor() { 
       ElectronAppConfig.initialize();
    }
 
@@ -34,9 +34,9 @@ export class DatabaseService
    public async createNetworkDbConnection(networkUUID:string)
    {
       let dbOptions:ConnectionOptions = {
-         name: this.getNetConnectionName(networkUUID),
+         name: this.getConnectionName(networkUUID, DbConnectionType.NETWORK),
          type: "sqlite",
-         database: ElectronAppConfig.getNetworkChainDbPath(networkUUID),
+         database: ElectronAppConfig.getDbPath(networkUUID, DbConnectionType.NETWORK),
          entities: [
             Block,
             MedicalRecord,
@@ -56,14 +56,7 @@ export class DatabaseService
    // Returns a connection for the network with networkUUID
    public getNetworkDbConnection(networkUUID:string): Connection
    {
-      return getConnectionManager().get(this.getNetConnectionName(networkUUID));
-   }
-
-
-   // Attaches a "-connection" prefix to networkUUID to form connection name for a network
-   private getNetConnectionName(networkUUID:string): string
-   {
-      return networkUUID + "-connection";
+      return getConnectionManager().get(this.getConnectionName(networkUUID, DbConnectionType.NETWORK));
    }
 
 
@@ -72,9 +65,9 @@ export class DatabaseService
    public async createAddressDbConnection(userID:number)
    {
       let dbOptions:ConnectionOptions = {
-         name: this.getAddressConnectionName(userID),
+         name: this.getConnectionName(userID, DbConnectionType.ADDRESS),
          type: "sqlite",
-         database: ElectronAppConfig.getAddressDbPath(userID),
+         database: ElectronAppConfig.getDbPath(userID, DbConnectionType.ADDRESS),
          entities: [
             Address,
          ],
@@ -89,14 +82,7 @@ export class DatabaseService
    // Returns a connection for address DB of user with an ID
    public getAddressDbConnection(userID:number): Connection
    {
-      return getConnectionManager().get(this.getAddressConnectionName(userID));
-   }
-
-
-   // Attaches a "-address" prefix to a user ID to form connection name for a user address DB
-   private getAddressConnectionName(userID:number): string
-   {
-      return userID + "-address";
+      return getConnectionManager().get(this.getConnectionName(userID, DbConnectionType.ADDRESS));
    }
 
 
@@ -105,9 +91,9 @@ export class DatabaseService
    public async createPatientInfoDbConnection(userID:number)
    {
       let dbOptions:ConnectionOptions = {
-         name: this.getPatientInfoConnectionName(userID),
+         name: this.getConnectionName(userID, DbConnectionType.PATIENT_INFO),
          type: "sqlite",
-         database: ElectronAppConfig.getPatientInfoDbPath(userID),
+         database: ElectronAppConfig.getDbPath(userID, DbConnectionType.PATIENT_INFO),
          entities: [
             EhrPatientInfo,
          ],
@@ -119,17 +105,51 @@ export class DatabaseService
    }
 
 
-   // Returns a connection for pateint info DB of user with an ID
+   // Returns a connection for patient info DB of user with an ID
    public getPatientInfoDbConnection(userID:number): Connection
    {
-      return getConnectionManager().get(this.getPatientInfoConnectionName(userID));
+      return getConnectionManager().get(this.getConnectionName(userID, DbConnectionType.PATIENT_INFO));
    }
 
 
-   // Attaches a "-info" prefix to a user ID to form connection name for a pateint info DB
-   private getPatientInfoConnectionName(userID:number): string
+
+   /** Patient medical record Info DB **/
+   // Creates a connection to the EHR info db with user ID
+   public async createPatientRecordDbConnection(userID:number)
    {
-      return userID + "-info";
+      let dbOptions:ConnectionOptions = {
+         name: this.getConnectionName(userID, DbConnectionType.PATIENT_RECORD),
+         type: "sqlite",
+         database: ElectronAppConfig.getDbPath(userID, DbConnectionType.PATIENT_RECORD),
+         entities: [
+            MedicalRecord,
+            EhrHistory,
+            EhrCondition,
+            EhrAllergyAndReaction,
+            EhrPatientInfo
+         ],
+         synchronize: true,
+         logging: false
+      }
+
+      await createConnection(dbOptions);
    }
 
+
+   // Returns a connection for EHR info DB of user with an ID
+   public getPatientRecordDbConnection(userID:number): Connection {
+      return getConnectionManager().get(this.getConnectionName(userID, DbConnectionType.PATIENT_RECORD));
+   }
+
+
+   // Constructs a connection name for a given database type using the identifier
+   private getConnectionName(identifier: string|number, connectionType:DbConnectionType): string {
+      switch(connectionType) {
+         case DbConnectionType.NETWORK: return identifier + '-connection';
+         case DbConnectionType.ADDRESS: return identifier + '-address';
+         case DbConnectionType.PATIENT_INFO: return identifier + '-info';
+         case DbConnectionType.PATIENT_RECORD: return identifier + '-ehr';
+         default: return null;
+      }
+   }
 }

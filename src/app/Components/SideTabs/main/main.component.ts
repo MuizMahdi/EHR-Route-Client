@@ -1,3 +1,4 @@
+import { PatientRecordService } from './../../../Services/patient-record.service';
 import { ChainFileService } from './../../../Services/chain-file.service';
 import { PatientInfoService } from './../../../Services/patient-info.service';
 import { RoleName } from './../../../Models/RoleName';
@@ -13,9 +14,9 @@ import { NodeClustersService } from 'src/app/Services/node-clusters.service';
 
 
 @Component({
-  selector: 'app-main',
-  templateUrl: './main.component.html',
-  styleUrls: ['./main.component.css']
+   selector: 'app-main',
+   templateUrl: './main.component.html',
+   styleUrls: ['./main.component.css']
 })
 
 
@@ -25,7 +26,8 @@ export class MainComponent implements OnInit
       public mainLayout:MainLayoutService, private clustersService:NodeClustersService,
       private networkService:NodeNetworkService, private addressService:AddressService,
       private patientInfoService:PatientInfoService, private authService:AuthService,
-      private modalService:NzModalService, private chainFileService:ChainFileService
+      private modalService:NzModalService, private chainFileService:ChainFileService,
+      private patientRecordService:PatientRecordService
    ) {
       this.mainLayout.show();
    }
@@ -85,8 +87,11 @@ export class MainComponent implements OnInit
       // Establish connection to user's address DB
       this.addressService.ensureAddressDbConnection(userID);
 
-      // Establish connection to user's EHR Patient Info DB
+      // Establish connection to user's Info DB
       this.patientInfoService.ensurePateintInfoDbConnection(userID);
+
+      // Establish connection to user's medical record DB
+      this.patientRecordService.ensurePatientRecordDbConnection(userID);
    }
 
 
@@ -147,13 +152,14 @@ export class MainComponent implements OnInit
 
       // delay until modal instance created
       window.setTimeout(() => {
-        const instance = userInfoModal.getContentComponent();
+         const instance = userInfoModal.getContentComponent();
       }, 2000);
    }
 
-   public async test()
-   {
 
+   public async test(userID:number)
+   {
+      //this.patientRecordService.getUserPatientRecord(userID);
    }
 
 }

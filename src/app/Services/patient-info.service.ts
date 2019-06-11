@@ -1,55 +1,32 @@
+import { UserRecordService } from './user-record.service';
+import { DbConnectionType } from './../Models/DbConnectionType';
 import { Connection } from 'typeorm';
 import { EhrPatientInfo } from './../DataAccess/entities/EHR/EhrPatientInfo';
-import { AuthService } from 'src/app/Services/auth.service';
 import { DatabaseService } from './../DataAccess/database.service';
 import { Injectable } from '@angular/core';
 
 
 @Injectable({
-  providedIn: 'root'
+   providedIn: 'root'
 })
 
 
 export class PatientInfoService 
 {
-   constructor(private dbService:DatabaseService)
+   constructor(private dbService:DatabaseService, private recordService:UserRecordService)
    { }
 
 
-   public async ensurePateintInfoDbConnection(userID:number)
-   {
-      
-      // Get user info DB connection
-      try
-      {
-         this.dbService.getPatientInfoDbConnection(userID);
-      }
-      catch (error)
-      {
-         // If no connection for user's PatientInfo DB is available
-         if ( (<Error>error).name == 'ConnectionNotFoundError' ) {
-            // Create a connection
-            await this.dbService.createPatientInfoDbConnection(userID);
-         }
-         else {
-            console.log(error);
-         }
-      }
-   }
+   public async getUserPateintInfo(userID:number): Promise<EhrPatientInfo> {
 
-
-   public async getUserPateintInfo(userID:number): Promise<EhrPatientInfo>
-   {
       // Make sure that a connection is available
-      await this.ensurePateintInfoDbConnection(userID);
-      
+      await this.recordService.ensureUserRecordDbConnection(userID);
+
       // Get user's PatientInfo DB connection
-      const dbConnection:Connection = await this.dbService.getPatientInfoDbConnection(userID);
+      const dbConnection:Connection = await this.dbService.getDbConnection(userID, DbConnectionType.RECORD);
 
-      // Get the patient info
-      const patientInfo:EhrPatientInfo = await dbConnection.manager.findOne(EhrPatientInfo, 1);
+      // Return the patient info
+      return await dbConnection.manager.findOne(EhrPatientInfo, 1);;
 
-      return patientInfo;
    }
-
 }

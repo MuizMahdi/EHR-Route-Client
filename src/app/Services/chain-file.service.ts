@@ -3,6 +3,7 @@ import { environment } from 'src/environments/environment';
 import { Injectable } from '@angular/core';
 import { ElectronAppConfig } from '../Configuration/ElectronAppConfig';
 import { ElectronService } from 'ngx-electron';
+import { DbConnectionType } from '../Models/DbConnectionType';
 
 
 // NodeJs FileSystem
@@ -25,7 +26,7 @@ export class ChainFileService
    
    public sendNetworkChain(networkUUID:string, consumerUUID:string): any
    {
-      let filePath:string = ElectronAppConfig.getNetworkChainDbPath(networkUUID);
+      let filePath:string = ElectronAppConfig.getDbPath(networkUUID, DbConnectionType.NETWORK);
 
       let url = this.chainSendUrl + '?consumeruuid=' + consumerUUID + '&networkuuid=' + networkUUID;
 

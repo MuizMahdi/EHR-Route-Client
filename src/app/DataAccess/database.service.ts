@@ -23,11 +23,11 @@ import { Address } from "./entities/Core/Address";
 
 
 export class DatabaseService 
-{
-   
+{ 
    constructor() { 
       ElectronAppConfig.initialize();
    }
+
 
    /** Network DB **/
    // Creates a connection to the network db with networkUUID
@@ -112,15 +112,14 @@ export class DatabaseService
    }
 
 
+   /** User's medical record Info DB **/
+   // Creates a connection to the user's record db with the user's ID
+   public async createUserRecordDbConnection(userID:number) {
 
-   /** Patient medical record Info DB **/
-   // Creates a connection to the EHR info db with user ID
-   public async createPatientRecordDbConnection(userID:number)
-   {
       let dbOptions:ConnectionOptions = {
-         name: this.getConnectionName(userID, DbConnectionType.PATIENT_RECORD),
+         name: this.getConnectionName(userID, DbConnectionType.RECORD),
          type: "sqlite",
-         database: ElectronAppConfig.getDbPath(userID, DbConnectionType.PATIENT_RECORD),
+         database: ElectronAppConfig.getDbPath(userID, DbConnectionType.RECORD),
          entities: [
             MedicalRecord,
             EhrHistory,
@@ -133,12 +132,12 @@ export class DatabaseService
       }
 
       await createConnection(dbOptions);
+
    }
 
 
-   // Returns a connection for EHR info DB of user with an ID
-   public getPatientRecordDbConnection(userID:number): Connection {
-      return getConnectionManager().get(this.getConnectionName(userID, DbConnectionType.PATIENT_RECORD));
+   public getDbConnection(identifier: string|number, connectionType:DbConnectionType): Connection {
+      return getConnectionManager().get(this.getConnectionName(identifier, connectionType));
    }
 
 
@@ -148,7 +147,7 @@ export class DatabaseService
          case DbConnectionType.NETWORK: return identifier + '-connection';
          case DbConnectionType.ADDRESS: return identifier + '-address';
          case DbConnectionType.PATIENT_INFO: return identifier + '-info';
-         case DbConnectionType.PATIENT_RECORD: return identifier + '-ehr';
+         case DbConnectionType.RECORD: return identifier + '-ehr';
          default: return null;
       }
    }

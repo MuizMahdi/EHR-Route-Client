@@ -1,3 +1,6 @@
+import { MedicalRecord } from './../../../DataAccess/entities/EHR/MedicalRecord';
+import { DbConnectionType } from './../../../Models/DbConnectionType';
+import { UserRecordService } from './../../../Services/user-record.service';
 import { PatientInfoService } from './../../../Services/patient-info.service';
 import { UsersService } from './../../../Services/users.service';
 import { NzModalRef } from 'ng-zorro-antd';
@@ -13,9 +16,9 @@ import { EhrPatientInfo } from 'src/app/DataAccess/entities/EHR/EhrPatientInfo';
 
 
 @Component({
-  selector: 'app-information-input',
-  templateUrl: './information-input.component.html',
-  styleUrls: ['./information-input.component.css']
+   selector: 'app-information-input',
+   templateUrl: './information-input.component.html',
+   styleUrls: ['./information-input.component.css']
 })
 
 
@@ -36,7 +39,8 @@ export class InformationInputComponent implements OnInit
    constructor(
       private locationService:LocationService, private authSerice:AuthService,
       private databaseService:DatabaseService, private modal:NzModalRef, 
-      private userService:UsersService, private patientInfoService:PatientInfoService
+      private userService:UsersService, private patientInfoService:PatientInfoService,
+      private recordService:UserRecordService
    ) { }
 
 
@@ -108,16 +112,22 @@ export class InformationInputComponent implements OnInit
       // Get current user email
       let userEmail = this.authSerice.getCurrentUser().email;
       let userID = this.authSerice.getCurrentUser().id;
+      let selectedCountry = this.userInfoForm.get("countryCtrl").value;
+      let selectedCity = this.userInfoForm.get("cityCtrl").value;
+      let userCountry = '';
+      let userCity = '';
 
-      let country:string = this.userInfoForm.get("countryCtrl").value.name;
-      let city:string = this.userInfoForm.get("cityCtrl").value.matching_full_name;
+      if (selectedCountry && selectedCity) {
+         userCountry = selectedCountry.name;
+         userCity = selectedCity.matching_full_name;
+      }
 
       // Construct a PatientInfo object using form data
       let userInfo:PatientInfo = {
          name: this.userInfoForm.get("nameCtrl").value,
          gender: this.userInfoForm.get("genderSelectCtrl").value,
-         country: country,
-         city: city,
+         country: userCountry,
+         city: userCity,
          address: this.userInfoForm.get("addressCtrl").value,
          phone: this.userInfoForm.get("phoneCtrl").value,
          birthDate: this.userInfoForm.get("birthCtrl").value.getTime(),
@@ -136,16 +146,17 @@ export class InformationInputComponent implements OnInit
       // Get current user ID
       let userID = this.authSerice.getCurrentUser().id;
 
-      // Create connection to pateint info DB
-      //await this.databaseService.createPatientInfoDbConnection(userID);
+      this.recordService.ensureUserRecordDbConnection(userID);
 
-      this.patientInfoService.ensurePateintInfoDbConnection(userID);
-
-      // Map to a ehr patient info entity
+      // Map the info into an EhrPatientInfo entity
       let ehrPatientInfo: EhrPatientInfo = ModelMapper.mapPatientInfoToEhrPatientInfo(patientInfo);
 
-      // Save on patient info DB
-      await this.databaseService.getPatientInfoDbConnection(userID).manager.save(ehrPatientInfo).then(
+      // Initialize a record and add the data to it
+      let userRecord: MedicalRecord = new MedicalRecord();
+      userRecord.patientData = ehrPatientInfo;
+
+      // Save the record
+      await this.databaseService.getDbConnection(userID, DbConnectionType.RECORD).manager.save(userRecord).then(
          response => {
             success = true;
          },

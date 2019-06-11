@@ -1,4 +1,4 @@
-import { PatientRecordService } from './../../../Services/patient-record.service';
+import { UserRecordService } from '../../../Services/user-record.service';
 import { ChainFileService } from './../../../Services/chain-file.service';
 import { PatientInfoService } from './../../../Services/patient-info.service';
 import { RoleName } from './../../../Models/RoleName';
@@ -27,7 +27,7 @@ export class MainComponent implements OnInit
       private networkService:NodeNetworkService, private addressService:AddressService,
       private patientInfoService:PatientInfoService, private authService:AuthService,
       private modalService:NzModalService, private chainFileService:ChainFileService,
-      private patientRecordService:PatientRecordService
+      private userRecordService:UserRecordService
    ) {
       this.mainLayout.show();
    }
@@ -37,13 +37,12 @@ export class MainComponent implements OnInit
       // Handles when user reloads page after loggin in, to show a prompt, which 
       // allows for a request to be made, unsubscribing the node from clusters.
       //this.handleReloads();
-      
       this.checkUserRole();
    }
 
 
-   handleReloads(): void
-   {
+   handleReloads(): void {
+
       var showMsgTimer;
       var clusterService = this.clustersService;
 
@@ -69,11 +68,11 @@ export class MainComponent implements OnInit
          // Subscribe to clusters again
          clusterService.subscribeClusters();
       }
+
    }
 
 
-   private initializeProviderLocalDbs(userID:number): void
-   {
+   private initializeProviderLocalDbs(userID:number): void {
       // Establish connection to user's address DB
       this.addressService.ensureAddressDbConnection(userID);
 
@@ -82,21 +81,16 @@ export class MainComponent implements OnInit
    }
 
 
-   private initializeUserLocalDbs(userID:number): void
-   {
+   private initializeUserLocalDbs(userID:number): void {
       // Establish connection to user's address DB
       this.addressService.ensureAddressDbConnection(userID);
 
-      // Establish connection to user's Info DB
-      this.patientInfoService.ensurePateintInfoDbConnection(userID);
-
       // Establish connection to user's medical record DB
-      this.patientRecordService.ensurePatientRecordDbConnection(userID);
+      this.userRecordService.ensureUserRecordDbConnection(userID);
    }
 
 
-   private checkUserRole(): void
-   {
+   private checkUserRole(): void {
       // Get user info once received from server
       this.authService.currentUser.subscribe((userInfo:UserInfo) => {
 
@@ -128,8 +122,7 @@ export class MainComponent implements OnInit
    }
 
 
-   private checkIfHasAddedInfo(userInfo:UserInfo): void
-   {
+   private checkIfHasAddedInfo(userInfo:UserInfo): void {
       // If user hasven't submitted their info
       if (userInfo && !(userInfo.hasAddedInfo)) {
          this.showUserInfoModal();
@@ -137,8 +130,7 @@ export class MainComponent implements OnInit
    }
 
 
-   private showUserInfoModal(): void
-   {
+   private showUserInfoModal(): void {
       // Create modal
       const userInfoModal = this.modalService.create({
          nzTitle: "Add your personal information",
@@ -157,9 +149,7 @@ export class MainComponent implements OnInit
    }
 
 
-   public async test(userID:number)
-   {
-      //this.patientRecordService.getUserPatientRecord(userID);
+   public test() { 
+      
    }
-
 }

@@ -11,17 +11,15 @@ export class ElectronAppConfig
    private static dataFolderPath: string;
 
 
-   public static initialize(): void 
-   {
+   public static initialize(): void {
       this.getPaths();
    }
 
 
-   private static getPaths() 
-   {
+   private static getPaths() {
+
       // Use 'userData' electron path to store db files on production
-      if(environment.production) 
-      {
+      if(environment.production) {
          this.dataFolderPath = '/';
          this.applicationPath = remote.app.getPath('userData');
       } 
@@ -32,30 +30,7 @@ export class ElectronAppConfig
       }
 
       this.databaseFolderPath = path.join(this.applicationPath, this.dataFolderPath); 
-   }
 
-   
-   public static getNetworkChainDbPath(networkUUID:string): string
-   {
-      let networkDbFileName:string = networkUUID + '.chain';
-
-      return path.join(this.databaseFolderPath, networkDbFileName);
-   }
-
-   
-   public static getAddressDbPath(userID:number): string
-   {
-      let addressDbFileName:string = 'user-address-' + userID + '.address';
-
-      return path.join(this.databaseFolderPath, addressDbFileName);
-   }
-
-
-   public static getPatientInfoDbPath(userID:number): string
-   {
-      let patientInfoDbFileName:string = 'user-info-' + userID + '.info';
-
-      return path.join(this.databaseFolderPath, patientInfoDbFileName);
    }
 
 
@@ -79,7 +54,7 @@ export class ElectronAppConfig
             return path.join(this.databaseFolderPath, dbFileName);
          }
 
-         case DbConnectionType.PATIENT_RECORD: {
+         case DbConnectionType.RECORD: {
             let dbFileName = 'user-record-' + identifier + '.ehr';
             return path.join(this.databaseFolderPath, dbFileName);
          }

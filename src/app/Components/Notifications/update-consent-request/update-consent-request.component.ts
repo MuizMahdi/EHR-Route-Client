@@ -20,9 +20,9 @@ import ModelMapper from 'src/app/Helpers/Utils/ModelMapper';
 
 
 @Component({
-  selector: 'app-update-consent-request',
-  templateUrl: './update-consent-request.component.html',
-  styleUrls: ['./update-consent-request.component.css']
+   selector: 'app-update-consent-request',
+   templateUrl: './update-consent-request.component.html',
+   styleUrls: ['./update-consent-request.component.css']
 })
 
 
@@ -97,6 +97,7 @@ export class UpdateConsentRequestComponent implements OnInit
          block: consentRequest.block,
          userPrivateKey: userAddress.privateKey,
          userAddress: userAddress.address,
+         consentRequestUUID: consentRequest.consentRequestUUID,
          providerUUID: consentRequest.providerUUID,
          networkUUID: consentRequest.networkUUID,
          userID: userID
@@ -104,7 +105,7 @@ export class UpdateConsentRequestComponent implements OnInit
 
       // Construct a UserUpdateConsentResponse object
       let updateConsentResponse: UserUpdateConsentResponse = {
-         ehrDetailsId: this.updateConsentRequest.ehrDetailsId,
+         ehrDetailsUuid: this.updateConsentRequest.ehrDetailsUuid,
          consentResponse: userConsentResponse
       }
 
@@ -115,25 +116,29 @@ export class UpdateConsentRequestComponent implements OnInit
    async onConsentRequestAccept()
    {
       // Construct the consent response
-      await this.getUpdateConsentResponse().then(consentResponse => {
+      let updateConsentResponse:UserUpdateConsentResponse = await this.getUpdateConsentResponse();
 
-         // Send the consent response
-         this.transactionService.sendUpdateEhrConsentResponse(consentResponse).subscribe(
+      console.log(updateConsentResponse);
 
-            response => {
-               console.log(response);
-            },
+      // TODO:
+      // Save the updated data on local DB
+      // TODO:
 
-            error => {
-               console.log(error);
-            }
+      // Send the consent response
+      this.transactionService.sendUpdateEhrConsentResponse(updateConsentResponse).subscribe(
 
-         );
+         response => {
+            console.log(response);
+            // Delete notification
+            //this.deleteNotification();
+         },
 
-      });
+         error => {
+            console.log(error);
+         }
 
-      // Delete notification
-      this.deleteNotification();
+      );
+
    }
 
 

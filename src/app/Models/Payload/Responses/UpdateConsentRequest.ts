@@ -4,7 +4,7 @@ import { ConsentRequest } from './ConsentRequest';
 
 export interface UpdateConsentRequest
 {
-   ehrDetailsId: number;
+   ehrDetailsUuid: string;
    userConsentRequest: ConsentRequest;
    updateMedicalRecord: MedicalRecordResponse;
 }

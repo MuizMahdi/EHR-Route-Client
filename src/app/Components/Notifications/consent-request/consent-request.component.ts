@@ -87,6 +87,7 @@ export class ConsentRequestComponent implements OnInit
          block: this.consentRequest.block,
          userPrivateKey: userAddress.privateKey,
          userAddress: userAddress.address,
+         consentRequestUUID: this.consentRequest.consentRequestUUID,
          providerUUID: this.consentRequest.providerUUID,
          networkUUID: this.consentRequest.networkUUID,
          userID: userID
@@ -97,6 +98,8 @@ export class ConsentRequestComponent implements OnInit
 
          response => {
             console.log(response);
+            // Delete notification
+            this.deleteNotification();
          },
 
          error => {
@@ -105,8 +108,6 @@ export class ConsentRequestComponent implements OnInit
 
       );
 
-      // Delete notification
-      this.deleteNotification();
    }
 
 

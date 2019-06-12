@@ -1,3 +1,4 @@
+import { MedicalRecordResponse } from './../../Models/Payload/Responses/MedicalRecordResponse';
 import { EhrPatientInfo } from './../../DataAccess/entities/EHR/EhrPatientInfo';
 import { PatientInfo } from './../../Models/Payload/Requests/PatientInfo';
 import { Address } from './../../DataAccess/entities/Core/Address';
@@ -131,6 +132,20 @@ export default class ModelMapper
       }
 
       return patientInfo;
+   }
+
+
+   public static mapRecordToRecordResponse(medicalRecord:MedicalRecord, patientInfo:PatientInfo): MedicalRecordResponse {
+
+      const recordResponse:MedicalRecordResponse = {
+         patientInfo: patientInfo,
+         problems: medicalRecord.conditions,
+         allergiesAndReactions: medicalRecord.allergies,
+         history: medicalRecord.history
+      }
+
+      return recordResponse;
+
    }
 
 }

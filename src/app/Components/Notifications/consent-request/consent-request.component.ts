@@ -1,3 +1,6 @@
+import { MedicalRecord } from './../../../DataAccess/entities/EHR/MedicalRecord';
+import { UserRecordService } from './../../../Services/user-record.service';
+import { MedicalRecordResponse } from './../../../Models/Payload/Responses/MedicalRecordResponse';
 import { TransactionService } from './../../../Services/transaction.service';
 import { UserConsentResponse } from './../../../Models/Payload/Requests/UserConsentResponse';
 import { PatientInfo } from './../../../Models/Payload/Requests/PatientInfo';
@@ -36,7 +39,8 @@ export class ConsentRequestComponent implements OnInit
       private notificationService:NotificationService, private modal:NzModalRef,
       private networkService:NodeNetworkService, private addressService:AddressService,
       private patientInfoService:PatientInfoService, private authService:AuthService,
-      private transactionService:TransactionService, private modalService: NzModalService
+      private transactionService:TransactionService, private modalService: NzModalService,
+      private recordService:UserRecordService
    ) 
    { }
 
@@ -76,10 +80,14 @@ export class ConsentRequestComponent implements OnInit
       // Get user's info from DB
       let ehrPatientInfo:EhrPatientInfo = await this.patientInfoService.getUserPateintInfo(userID);
 
-      // Add user info into the Block in the ConsentRequest
+      // Get user's medical record from DB
+      let userMedicalRecord:MedicalRecord = await this.recordService.getUserRecord(userID);
+
+      // Add user's medical record and info into the Block in the ConsentRequest
       if (this.consentRequest) {
          let patientInfo:PatientInfo = ModelMapper.mapEhrPatientInfoToPatientInfo(ehrPatientInfo, userID);
-         this.consentRequest.block.transaction.record.patientInfo = patientInfo;
+         let medicalRecord:MedicalRecordResponse = ModelMapper.mapRecordToRecordResponse(userMedicalRecord, patientInfo);
+         this.consentRequest.block.transaction.record = medicalRecord;
       }
 
       // Construct a UserConsentResponse object
@@ -93,13 +101,15 @@ export class ConsentRequestComponent implements OnInit
          userID: userID
       }
 
+      console.log(userConsentResponse);
+
       // Send the consent response
       this.transactionService.sendUserEhrConsentResponse(userConsentResponse).subscribe(
 
          response => {
             console.log(response);
             // Delete notification
-            this.deleteNotification();
+            //this.deleteNotification();
          },
 
          error => {

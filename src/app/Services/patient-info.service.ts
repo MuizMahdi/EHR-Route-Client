@@ -26,7 +26,7 @@ export class PatientInfoService
       const dbConnection:Connection = await this.dbService.getDbConnection(userID, DbConnectionType.RECORD);
 
       // Return the patient info
-      return await dbConnection.manager.findOne(EhrPatientInfo, 1);;
+      return await dbConnection.manager.findOne(EhrPatientInfo, 1);
 
    }
 }

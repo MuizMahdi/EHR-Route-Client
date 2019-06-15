@@ -8,6 +8,8 @@
 
 <div style="margin-top:6vh;">
    <form [formGroup]="userInfoForm" (ngSubmit)="onUserInfoSubmit()">
+
+      <!------ Personal Data Entry Forms ------>
    
       <label for="name" class="form-layout">Full name: </label>
       <nz-form-item>
@@ -64,6 +66,56 @@
          </nz-form-control>
       </nz-form-item>
 
+
+      <!------ Medical Data Entry Froms ------>
+
+      <!-- Allergies and reactions -->
+      <div class="ehr-input">
+         <label for="allergies">Allergies:</label>
+         <nz-input-group nzSearch [nzSuffix]="allergyAdditionButton">
+            <input #allergy type="text" placeholder="Add an allergy..." nz-input>
+         </nz-input-group>
+
+         <ng-template #allergyAdditionButton>
+            <button (click)="addAllergy(allergy.value)" type="button" nzType="default" nz-button nzSearch>
+               <i class="far fa-plus-square fa-lg"></i>
+            </button>
+         </ng-template>
+      </div>
+
+      <div *ngIf="allergies.length > 0" class="ehr-list">
+         <ul class="list-group">
+            <li *ngFor="let allergy of allergies" class="list-group-item d-flex justify-content-between align-items-center">
+               {{allergy}}
+               <a (click)="deleteAllergy(allergy)" href="javascript:void(0)" class="badge"><i class="far fa-minus-square fa-lg" style="float:right;"></i></a>
+            </li>
+         </ul>
+      </div>
+
+      <!-- Medical history -->
+      <div class="ehr-input">
+         <label for="medHistory">Medical History:</label>
+         <nz-input-group nzSearch [nzSuffix]="historyAdditionButton">
+            <input #history type="text" placeholder="Add a medical condition..." nz-input>
+         </nz-input-group>
+
+         <ng-template #historyAdditionButton>
+            <button (click)="addMedicalHistory(history.value)" type="button" nzType="default" nz-button nzSearch>
+               <i class="far fa-plus-square fa-lg"></i>
+            </button>
+         </ng-template>
+      </div>
+
+      <div *ngIf="medicalHistory.length > 0" class="ehr-list">
+         <ul class="list-group">
+            <li *ngFor="let history of medicalHistory" class="list-group-item d-flex justify-content-between align-items-center">
+               {{history.condition}}
+               <a (click)="deleteMedicalHistory(history.condition)" href="javascript:void(0)" class="badge"><i class="far fa-minus-square fa-lg" style="float:right;"></i></a>
+            </li>
+         </ul>
+      </div>
+
+ 
       <nz-form-item nz-row style="margin-bottom:8px;">
          <nz-form-control>
             <button nz-button [nzLoading]="isUserInfoModalLoading" type="submit" nzType="primary">Submit</button>

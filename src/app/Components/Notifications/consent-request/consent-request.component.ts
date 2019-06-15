@@ -69,24 +69,26 @@ export class ConsentRequestComponent implements OnInit
    }
 
 
-   async onConsentRequestAccept()
-   {
+   async onConsentRequestAccept() {
+
       // Get current user ID
       let userID: number = this.authService.getCurrentUser().id
 
       // Get user's address (also private key) from DB
       let userAddress:Address = await this.addressService.getUserAddress(userID);
 
-      // Get user's info from DB
-      let ehrPatientInfo:EhrPatientInfo = await this.patientInfoService.getUserPateintInfo(userID);
-
       // Get user's medical record from DB
       let userMedicalRecord:MedicalRecord = await this.recordService.getUserRecord(userID);
 
-      // Add user's medical record and info into the Block in the ConsentRequest
+      // Add user's medical record into the Block in the ConsentRequest
       if (this.consentRequest) {
-         let patientInfo:PatientInfo = ModelMapper.mapEhrPatientInfoToPatientInfo(ehrPatientInfo, userID);
-         let medicalRecord:MedicalRecordResponse = ModelMapper.mapRecordToRecordResponse(userMedicalRecord, patientInfo);
+         let medicalRecord:MedicalRecordResponse = ModelMapper.mapRecordToRecordResponse(userMedicalRecord);
+
+         // TODO: /////////////////////////////////////////////////////////////////////////////////////////
+         // Eliminate the medical history field of the record until the serialization issue is solved
+            medicalRecord.history = null;
+         // TODO: /////////////////////////////////////////////////////////////////////////////////////////
+
          this.consentRequest.block.transaction.record = medicalRecord;
       }
 
@@ -101,15 +103,13 @@ export class ConsentRequestComponent implements OnInit
          userID: userID
       }
 
-      console.log(userConsentResponse);
-
       // Send the consent response
       this.transactionService.sendUserEhrConsentResponse(userConsentResponse).subscribe(
 
          response => {
             console.log(response);
             // Delete notification
-            //this.deleteNotification();
+            this.deleteNotification();
          },
 
          error => {

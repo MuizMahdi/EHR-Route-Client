@@ -1,3 +1,7 @@
+import { MedicalRecordUpdates } from '../../../Models/Payload/Responses/MedicalRecordUpdates';
+import { MedicalRecordResponse } from './../../../Models/Payload/Responses/MedicalRecordResponse';
+import { UserRecordService } from './../../../Services/user-record.service';
+import { MedicalRecord } from './../../../DataAccess/entities/EHR/MedicalRecord';
 import { TransactionService } from './../../../Services/transaction.service';
 import { UserUpdateConsentResponse } from './../../../Models/Payload/Responses/UserUpdateConsentResponse';
 import { UserConsentResponse } from './../../../Models/Payload/Requests/UserConsentResponse';
@@ -39,7 +43,7 @@ export class UpdateConsentRequestComponent implements OnInit
 
    constructor(
       private notificationService: NotificationService, private modalService: NzModalService,
-      private networkService :NodeNetworkService, private patientInfoService: PatientInfoService,
+      private networkService :NodeNetworkService, private recordService: UserRecordService,
       private authService: AuthService, private addressService: AddressService,
       private transactionService: TransactionService, private modal: NzModalRef,
    ) { }
@@ -80,16 +84,22 @@ export class UpdateConsentRequestComponent implements OnInit
       // Get user's address (also private key) from DB
       let userAddress:Address = await this.addressService.getUserAddress(userID);
 
-      // Get user's info from DB
-      let ehrPatientInfo:EhrPatientInfo = await this.patientInfoService.getUserPateintInfo(userID);
+      // Get user's medical record from DB
+      let userMedicalRecord:MedicalRecord = await this.recordService.getUserRecord(userID);
 
       // Get consent request from UpdateConsentRequest
       let consentRequest:ConsentRequest = this.updateConsentRequest.userConsentRequest;
 
       // Add user info into the Block in the ConsentRequest
       if (consentRequest) {
-         let patientInfo:PatientInfo = ModelMapper.mapEhrPatientInfoToPatientInfo(ehrPatientInfo, userID);
-         consentRequest.block.transaction.record.patientInfo = patientInfo;
+         let medicalRecord:MedicalRecordResponse = ModelMapper.mapRecordToRecordResponse(userMedicalRecord);
+
+         // TODO: /////////////////////////////////////////////////////////////////////////////////////////
+         // Eliminate the medical history field of the record until the serialization issue is solved
+            medicalRecord.history = null;
+         // TODO: /////////////////////////////////////////////////////////////////////////////////////////
+
+         consentRequest.block.transaction.record = medicalRecord;
       }
 
       // Construct a UserConsentResponse object
@@ -113,24 +123,24 @@ export class UpdateConsentRequestComponent implements OnInit
    }
 
 
-   async onConsentRequestAccept()
-   {
+   async onConsentRequestAccept() {
+
+      // Get the proposed updates
+      let updates:MedicalRecordUpdates = this.notification.reference.updateMedicalRecord;
+
+      // Save the updates on the user's local MedicalRecord
+     // await this.recordService.updateUserRecord(updates);
+
       // Construct the consent response
       let updateConsentResponse:UserUpdateConsentResponse = await this.getUpdateConsentResponse();
-
-      console.log(updateConsentResponse);
-
-      // TODO:
-      // Save the updated data on local DB
-      // TODO:
-
+   
       // Send the consent response
       this.transactionService.sendUpdateEhrConsentResponse(updateConsentResponse).subscribe(
 
          response => {
             console.log(response);
             // Delete notification
-            //this.deleteNotification();
+            this.deleteNotification();
          },
 
          error => {
@@ -142,8 +152,7 @@ export class UpdateConsentRequestComponent implements OnInit
    }
 
 
-   onConsentRequestReject() 
-   {
+   onConsentRequestReject() {
       // View a modal asking for confirmation
       this.modalService.confirm({
          nzTitle: 'Are you sure that you want to reject ?',
@@ -153,8 +162,7 @@ export class UpdateConsentRequestComponent implements OnInit
    }
 
 
-   deleteNotification(): void 
-   {
+   deleteNotification(): void {
       this.notificationService.deleteNotification(this.notification.notificationID).subscribe( 
 
          response => {

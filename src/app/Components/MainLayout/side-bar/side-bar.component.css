@@ -7,6 +7,7 @@
    text-align: center;
    vertical-align: middle;
    font-size: 25px;
+   border-right: 2px solid rgba(111, 121, 145, 0.1);
 }
 
 .nav-menu
@@ -80,6 +81,7 @@
    font-family: "QanelasSoft-Regular";
    letter-spacing: 0.2em;
    font-size: 12px;
+   padding-left: 1.5em;
 }
 
 .no-touch .scrollable.hover

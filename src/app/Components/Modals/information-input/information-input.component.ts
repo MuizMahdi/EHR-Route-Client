@@ -1,3 +1,5 @@
+import { EhrHistory } from './../../../DataAccess/entities/EHR/EhrHistory';
+import { EhrAllergyAndReaction } from './../../../DataAccess/entities/EHR/EhrAllergyAndReaction';
 import { MedicalRecord } from './../../../DataAccess/entities/EHR/MedicalRecord';
 import { DbConnectionType } from './../../../Models/DbConnectionType';
 import { UserRecordService } from './../../../Services/user-record.service';
@@ -30,8 +32,10 @@ export class InformationInputComponent implements OnInit
    dateFormat:string = 'yyyy/MM/dd';
    countries:CountryResponse[];
    countryCities:any;
-
    countryInputValue: string;
+
+   allergies: string[] = [];
+   medicalHistory: {condition:string; occurrence:boolean;}[] = [];
 
    isUserInfoModalLoading:boolean = false;
 
@@ -50,8 +54,7 @@ export class InformationInputComponent implements OnInit
    }
 
 
-   private buildForm(): void
-   {
+   private buildForm(): void {
       this.userInfoForm = new FormGroup({
          nameCtrl: new FormControl(null, [Validators.required]),
          birthCtrl: new FormControl(null, [Validators.required]), // Intended
@@ -64,22 +67,52 @@ export class InformationInputComponent implements OnInit
    }
 
 
-   private getCountries(): void
-   {
+   private getCountries(): void {
       this.locationService.getCountries().subscribe(countriesData => {
          this.countries = countriesData['_links']['country:items'];
       });
    }
 
 
-   onCountrySelect(country:CountryResponse): void
-   {
+   onCountrySelect(country:CountryResponse): void {
       // Get the country's cities
       this.locationService.getCities(country.name).subscribe(citiesData => {
          this.countryCities = citiesData['_embedded']['city:search-results'];
       });
    }
-  
+
+
+   addAllergy(allergy:string): void {
+      this.allergies.push(allergy);
+   }
+
+
+   deleteAllergy(allergy:string): void {
+      let allergyIndex = this.allergies.indexOf(allergy);
+
+      if (allergyIndex > -1) {
+         this.allergies.splice(allergyIndex, 1);
+      }
+   }
+
+
+   addMedicalHistory(condition:string): void {
+      this.medicalHistory.push({condition:condition, occurrence:true});
+   }
+
+   // TODO:
+   // TODO: FIX HISTORY DELETION BUG: historyIndex is always "-1", cannot find index by object and its values
+   // TODO:
+
+   deleteMedicalHistory(condition:string): void {
+      let historyVal = {condition:condition, occurrence:true};
+      let historyIndex = this.medicalHistory.indexOf(historyVal);
+      console.log(historyIndex);
+      if (historyIndex > -1) {
+         this.medicalHistory.splice(historyIndex, 1);
+      }
+   }
+
 
    async onUserInfoSubmit() {
 
@@ -107,8 +140,8 @@ export class InformationInputComponent implements OnInit
    }
 
 
-   private getPatientInfo(): PatientInfo
-   {
+   private getPatientInfo(): PatientInfo {
+
       // Get current user email
       let userEmail = this.authSerice.getCurrentUser().email;
       let userID = this.authSerice.getCurrentUser().id;
@@ -139,8 +172,8 @@ export class InformationInputComponent implements OnInit
    }
 
 
-   private async savePatientInfo(patientInfo:PatientInfo): Promise<boolean>
-   {
+   private async savePatientInfo(patientInfo:PatientInfo): Promise<boolean> {
+
       let success:boolean;
 
       // Get current user ID
@@ -153,9 +186,19 @@ export class InformationInputComponent implements OnInit
 
       // Initialize a record and add the data to it
       let userRecord: MedicalRecord = new MedicalRecord();
+
+      // Add allergies data
+      let ehrAllergies:EhrAllergyAndReaction[] = ModelMapper.mapAllergiesToEhrAllergies(this.allergies);
+      userRecord.allergies = ehrAllergies;
+
+      // Add history conditions data
+      let ehrHistory:EhrHistory[] = ModelMapper.mapMedicalHistoryToEhrHistory(this.medicalHistory);
+      userRecord.history = ehrHistory;
+
+      // Add user's personal info
       userRecord.patientData = ehrPatientInfo;
 
-      // Save the record
+      // Save the record on local DB
       await this.databaseService.getDbConnection(userID, DbConnectionType.RECORD).manager.save(userRecord).then(
          response => {
             success = true;
@@ -170,8 +213,7 @@ export class InformationInputComponent implements OnInit
    }
 
 
-   private setUserHasSavedInfo(): void
-   {
+   private setUserHasSavedInfo(): void {
       // Update the user info addition status boolean to true
       this.userService.updateUserInfoAdditionStatus().subscribe(
 

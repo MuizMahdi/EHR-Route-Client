@@ -22,12 +22,14 @@ export default class ModelMapper
       record.conditions = [];
       record.allergies = [];
 
-      
       let conditionsArr:any[] = blockResponse.transaction.record.problems;
       let allergiesArr:any[] = blockResponse.transaction.record.allergiesAndReactions;
       let historyObj:EhrHistory = blockResponse.transaction.record.history;
-      let historyArr = Object.entries(historyObj);
+      let historyArr:any[] = [];
 
+      if (historyObj !== null) {
+         historyArr = Object.entries(historyObj);
+      }
 
       conditionsArr.forEach(condition => {
 
@@ -41,7 +43,6 @@ export default class ModelMapper
 
       });
 
-
       allergiesArr.forEach(allergy => {
 
          let recordAllergy = new EhrAllergyAndReaction();
@@ -53,7 +54,6 @@ export default class ModelMapper
          record.allergies.push(recordAllergy);
 
       });
-
 
       historyArr.forEach(history => {
 
@@ -68,7 +68,6 @@ export default class ModelMapper
 
       });
 
-
       const block = new Block();
       block.hash = blockResponse.blockHeader.hash;
       block.previousHash = blockResponse.blockHeader.previousHash;
@@ -82,7 +81,6 @@ export default class ModelMapper
       block.signature = blockResponse.transaction.signature;
       block.medicalRecord = record;
 
-      
       return block;
    }
 
@@ -117,7 +115,7 @@ export default class ModelMapper
    }
 
 
-   public static mapEhrPatientInfoToPatientInfo(ehrPatientInfo:EhrPatientInfo, userId:number): PatientInfo
+   public static mapEhrPatientInfoToPatientInfo(ehrPatientInfo:EhrPatientInfo): PatientInfo
    {
       const patientInfo:PatientInfo = {
          name: ehrPatientInfo.name,
@@ -128,24 +126,110 @@ export default class ModelMapper
          phone: ehrPatientInfo.phone,
          birthDate: ehrPatientInfo.birthDate,
          email: ehrPatientInfo.email,
-         userID: userId
+         userID: ehrPatientInfo.userID
       }
 
       return patientInfo;
    }
 
 
-   public static mapRecordToRecordResponse(medicalRecord:MedicalRecord, patientInfo:PatientInfo): MedicalRecordResponse {
+   public static mapRecordToRecordResponse(medicalRecord:MedicalRecord): MedicalRecordResponse {
 
       const recordResponse:MedicalRecordResponse = {
-         patientInfo: patientInfo,
-         problems: medicalRecord.conditions,
-         allergiesAndReactions: medicalRecord.allergies,
-         history: medicalRecord.history
+         patientInfo: this.mapEhrPatientInfoToPatientInfo(medicalRecord.patientData),
+         problems: this.mapEhrConditionsToConditions(medicalRecord.conditions),
+         allergiesAndReactions: this.mapEhrAllergiesToAllergies(medicalRecord.allergies),
+         history: this.mapEhrHistoryToHistoryList(medicalRecord.history)
       }
 
       return recordResponse;
 
    }
 
+
+   public static mapAllergiesToEhrAllergies(allergies:string[]): EhrAllergyAndReaction[] {
+
+      let ehrAllergies:EhrAllergyAndReaction[] = [];
+
+      allergies.forEach(allergy => {
+         let ehrAllergy:EhrAllergyAndReaction = new EhrAllergyAndReaction();
+         ehrAllergy.allergy = allergy;
+         ehrAllergies.push(ehrAllergy);
+      });
+
+      return ehrAllergies;
+
+   }
+
+
+   public static mapEhrAllergiesToAllergies(ehrAllergies:EhrAllergyAndReaction[]): string[] {
+
+      let allergies:string[] = [];
+
+      ehrAllergies.forEach(ehrAllergy => {
+         allergies.push(ehrAllergy.allergy);
+      });
+
+      return allergies;
+
+   }
+
+
+   public static mapMedicalHistoryToEhrHistory(medicalHistory:{condition:string, occurrence:boolean}[]): EhrHistory[] {
+
+      let ehrHistoryConditions:EhrHistory[] = [];
+
+      medicalHistory.forEach(history => {
+         let ehrHistory:EhrHistory = new EhrHistory();
+         ehrHistory.condition = history.condition;
+         ehrHistory.occurrence = history.occurrence;
+         ehrHistoryConditions.push(ehrHistory);
+      });
+
+      return ehrHistoryConditions;
+   }
+
+
+   public static mapEhrHistoryToHistoryList(ehrHistory:EhrHistory[]): string[] {
+
+      let medicalHistory:any[] = [];
+
+      ehrHistory.forEach(ehrHistoryEntry => {
+         let historyEntry = {
+            [ehrHistoryEntry.condition]:ehrHistoryEntry.occurrence
+         }
+         medicalHistory.push(historyEntry);
+      });
+
+      return medicalHistory;
+
+   }
+
+
+   public static mapConditionsToEhrConditions(conditions:string[]): EhrCondition[] {
+
+      let ehrCondtions:EhrCondition[] = [];
+
+      conditions.forEach(condition => {
+         let ehrCondition:EhrCondition = new EhrCondition();
+         ehrCondition.condition = condition;
+         ehrCondtions.push(ehrCondition);
+      });
+
+      return ehrCondtions;
+
+   }
+
+
+   public static mapEhrConditionsToConditions(ehrConditions:EhrCondition[]): string[] {
+
+      let medicalConditions:string[] = [];
+
+      ehrConditions.forEach(ehrCondition => {
+         medicalConditions.push(ehrCondition.condition);
+      });
+
+      return medicalConditions;
+
+   }
 }

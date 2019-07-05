@@ -1,6 +1,4 @@
 import { UserRecordService } from '../../../Services/user-record.service';
-import { ChainFileService } from './../../../Services/chain-file.service';
-import { PatientInfoService } from './../../../Services/patient-info.service';
 import { RoleName } from './../../../Models/RoleName';
 import { InformationInputComponent } from './../../Modals/information-input/information-input.component';
 import { NzModalService } from 'ng-zorro-antd';
@@ -25,9 +23,8 @@ export class MainComponent implements OnInit
    constructor(
       public mainLayout:MainLayoutService, private clustersService:NodeClustersService,
       private networkService:NodeNetworkService, private addressService:AddressService,
-      private patientInfoService:PatientInfoService, private authService:AuthService,
-      private modalService:NzModalService, private chainFileService:ChainFileService,
-      private userRecordService:UserRecordService
+      private modalService:NzModalService, private userRecordService:UserRecordService,
+      private authService:AuthService
    ) {
       this.mainLayout.show();
    }
@@ -149,7 +146,7 @@ export class MainComponent implements OnInit
    }
 
 
-   public test() { 
-      
+   public async test() {
+
    }
 }

@@ -1,4 +1,5 @@
 export interface BlockMetadata
 {
-   consentRequestUUID: string;
+   requestUUID: string;
+   blockSource: string;
 }

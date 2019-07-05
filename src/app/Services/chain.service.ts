@@ -1,5 +1,8 @@
+import { BlockSource } from './../Models/RTC/BlockSource';
+import { BlockFetchResponse } from './../Models/RTC/BlockFetchResponse';
+import { toNumber } from 'ng-zorro-antd';
+import { BlockProvideRequest } from './../Models/RTC/BlockProvideRequest';
 import { BlockAdditionResponse } from './../Models/Payload/Responses/BlockAdditionResponse';
-import { ChainFileService } from './chain-file.service';
 import { first, catchError } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
@@ -8,14 +11,13 @@ import { ProviderService } from './provider.service';
 import { BlockAdditionRequest } from './../Models/Payload/Requests/BlockAdditionRequest';
 import ModelMapper from 'src/app/Helpers/Utils/ModelMapper';
 import { NodeNetworkService } from 'src/app/Services/node-network.service';
-import { BlockResponse } from '../Models/Payload/Responses/BlockResponse';
 import { Block } from './../DataAccess/entities/Core/Block';
 import { Connection } from 'typeorm';
 import { DatabaseService } from 'src/app/DataAccess/database.service';
 import { Injectable } from '@angular/core';
 import * as MerkleTree from 'merkletreejs';
 import sha256 from 'crypto-js/sha256';
-import { throwError } from 'rxjs';
+import { throwError, Observable } from 'rxjs';
 
 
 @Injectable({
@@ -26,17 +28,18 @@ import { throwError } from 'rxjs';
 export class ChainService 
 {
    chainGetUrl:string = environment.apiUrl + '/chain/chainget';
+   chainUrl = environment.apiUrl + '/chain';
+
 
    constructor(
       private dbService:DatabaseService, private networkService:NodeNetworkService,
       private providerService:ProviderService, private addressService:AddressService,
-      private http:HttpClient, chainFileService:ChainFileService
+      private http:HttpClient
    ) { }
 
 
    public async generateNetworkMerkleRoot(networkUUID:string): Promise<string>;
    public async generateNetworkMerkleRoot(networkUUID:string, additionalBlockHash:string): Promise<string>
-
 
    public async generateNetworkMerkleRoot(networkUUID:string, additionalBlockHash?:string): Promise<string>
    {
@@ -126,8 +129,41 @@ export class ChainService
    }
 
 
-   public async getNetworkLatestBlock(networkUUID:string): Promise<Block>
-   {
+   /**
+    * Fetches a range of blocks from providers of a network if both range indexes are zero then all of the network's blocks are fetched
+    * @param consumerUUID  UUID of the node that requests the blocks
+    * @param networkUUID   UUID of the network to fetch blocks from
+    * @param rangeBegin    The index of the first block to fetch
+    * @param rangeEnd      The index of the last block to fetch
+    */
+   public getNetworkChain(consumerUUID:string, networkUUID:string, rangeBegin:number, rangeEnd:number): Observable<any> {
+      let url = environment.apiUrl + '/chain' +
+      '?consumer-uuid=' + consumerUUID +
+      '&network-uuid=' + networkUUID +
+      '&range-begin=' + rangeBegin +
+      '&range-end=' + rangeEnd;
+
+      return this.http.get(url).pipe(first(), catchError(error => throwError(error)));
+   }
+
+
+   public async getNetworkBlock(networkUUID:string, blockID:number): Promise<Block> {
+
+      await this.ensureNetworkDbConnection(networkUUID);
+
+      let db:Connection = this.dbService.getNetworkDbConnection(networkUUID);
+
+      const block:Block = await db.getRepository(Block).findOne({
+         where: [{index : blockID}]
+      });
+
+      return block;
+
+   }
+
+
+   public async getNetworkLatestBlock(networkUUID:string): Promise<Block> {
+
       // Make sure that a connection for the network DB exists
       await this.ensureNetworkDbConnection(networkUUID);
 
@@ -141,11 +177,30 @@ export class ChainService
       });
 
       return latestBlock[0];
+
    }
 
 
-   public async addBlock(blockAdditionResponse:BlockAdditionResponse)
-   {
+   public async countAllNetworksBlocks(networksUUIDs:string[]): Promise<number> {
+      let count: number = 0;  
+
+      for (let networkUUID of networksUUIDs) {
+         // Get the connection of the network
+         let networkDb = this.dbService.getNetworkDbConnection(networkUUID);
+
+         // Genesis block is subtracted
+         const networkBlocksCount = await networkDb.getRepository(Block).count()-1;
+
+         // Add the counted blocks of the network
+         count = count + networkBlocksCount;
+      }
+
+      return count;
+   }
+
+
+   public async addBlock(blockAdditionResponse:BlockAdditionResponse) {
+
       let networkUUID:string = blockAdditionResponse.block.blockHeader.networkUUID;
 
       try {
@@ -163,29 +218,45 @@ export class ChainService
          return;
       }
 
-      let updatedMerkleRoot:string = await this.generateNetworkMerkleRoot(networkUUID);
-
-      // Complete the transaction by updating the network's merkle root
-      this.networkService.updateNetworkMerkleRoot(blockAdditionResponse, updatedMerkleRoot);
+      // Update merkle root for broadcasted blocks
+      if (blockAdditionResponse.metadata.blockSource === BlockSource.BROADCAST) {
+         let updatedMerkleRoot:string = await this.generateNetworkMerkleRoot(networkUUID);
+         // Complete the transaction by updating the network's merkle root
+         this.networkService.updateNetworkMerkleRoot(blockAdditionResponse, updatedMerkleRoot);
+      }
    }
 
 
-   public async countAllNetworksBlocks(networksUUIDs:string[]): Promise<number>
-   {
-      let count: number = 0;  
+   public async sendBlock(blockRequest:BlockProvideRequest) {
 
-      for (let networkUUID of networksUUIDs) {
-         // Get the connection of the network
-         let networkDb = this.dbService.getNetworkDbConnection(networkUUID);
+      // Get the network chain's merkle root
+      let networkRoot = await this.generateNetworkMerkleRoot(blockRequest.networkUUID);
 
-         // Genesis block is subtracted
-         const networkBlocksCount = await networkDb.getRepository(Block).count()-1;
+      // Get the block with blockId from network
+      let block = await this.getNetworkBlock(blockRequest.networkUUID, toNumber(blockRequest.blockId, 1));
 
-         // Add the counted blocks of the network
-         count = count + networkBlocksCount;
+      // Construct a block response
+      let blockResponse:BlockAdditionResponse = {
+         block: ModelMapper.mapBlockToBlockResponse(block),
+         metadata: null
       }
 
-      return count;
+      // Construct a BlockFetchResponse
+      let blockFetchResponse:BlockFetchResponse = {
+         blockResponse: blockResponse,
+         consumerUUID: blockRequest.consumerUUID,
+         networkUUID: blockRequest.networkUUID,
+         networkChainRoot: networkRoot
+      }
+
+      console.log(blockFetchResponse);
+
+      // Send the BlockFetchResponse
+      this.http.post(this.chainUrl, blockFetchResponse).subscribe(
+         response => console.log(response),
+         error => console.log(error)
+      );
+
    }
 
 
@@ -253,19 +324,5 @@ export class ChainService
       );
       
       return providerUUID;
-   }
-
-
-   public getNetworkChain(consumerUUID:string, networkUUID:string)
-   {
-      let url = this.chainGetUrl + '?consumeruuid=' + consumerUUID + '&netuuid=' + networkUUID;
-
-      return this.http.get(url).pipe(first(),
-
-         catchError(error => {
-            return throwError(error);
-         })
-
-      );
    }
 }

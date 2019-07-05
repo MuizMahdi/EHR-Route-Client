@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 export class TransactionService 
 {
-   private getUserEhrConsentUrl:string = environment.apiUrl + '/transaction/getConsent';
+   private ehrConsentRequestUrl:string = environment.apiUrl + '/transaction/consent-request';
    private getEhrUpdateConsentUrl:string = environment.apiUrl + '/transaction/get-update-consent';
    private giveUserEhrConsentUrl:string = environment.apiUrl + '/transaction/give-consent';
    private giveEhrUpdateConsentUrl:string = environment.apiUrl + '/transaction/give-update-consent';
@@ -28,12 +28,10 @@ export class TransactionService
 
    public sendUserEhrConsentRequest(blockAdditionRequest:BlockAdditionRequest): Observable<any>
    {
-      return this.http.post(this.getUserEhrConsentUrl, blockAdditionRequest).pipe(first(),
-      
+      return this.http.post(this.ehrConsentRequestUrl, blockAdditionRequest).pipe(first(),
          catchError(error => {
             return throwError(error);
          })
-
       );
    }
 

@@ -12,7 +12,7 @@ import { NodeClustersService } from './node-clusters.service';
 
 
 @Injectable({
-  providedIn: 'root'
+   providedIn: 'root'
 })
 
 

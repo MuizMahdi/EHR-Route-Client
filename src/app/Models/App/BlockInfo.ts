@@ -1,7 +1,7 @@
 export interface BlockInfo
 {
    index:number;
-   timeStamp:string;
+   timeStamp:number;
    networkUUID:string;
    senderAddress:string;
    recipientAddress:string;

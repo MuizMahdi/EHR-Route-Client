@@ -1,3 +1,6 @@
+import { TransactionResponse } from './../../Models/Payload/Responses/TransactionResponse';
+import { BlockHeaderResponse } from './../../Models/Payload/Responses/BlockHeaderResponse';
+import { BlockResponse } from './../../Models/Payload/Responses/BlockResponse';
 import { MedicalRecordResponse } from './../../Models/Payload/Responses/MedicalRecordResponse';
 import { EhrPatientInfo } from './../../DataAccess/entities/EHR/EhrPatientInfo';
 import { PatientInfo } from './../../Models/Payload/Requests/PatientInfo';
@@ -7,7 +10,6 @@ import { EhrAllergyAndReaction } from './../../DataAccess/entities/EHR/EhrAllerg
 import { EhrCondition } from './../../DataAccess/entities/EHR/EhrCondition';
 import { MedicalRecord } from './../../DataAccess/entities/EHR/MedicalRecord';
 import { Block } from './../../DataAccess/entities/Core/Block';
-import { BlockResponse } from '../../Models/Payload/Responses/BlockResponse';
 import { EhrHistory } from 'src/app/DataAccess/entities/EHR/EhrHistory';
 
 
@@ -82,6 +84,44 @@ export default class ModelMapper
       block.medicalRecord = record;
 
       return block;
+   }
+
+
+   public static mapBlockToBlockResponse(block:Block): BlockResponse {
+
+      let header:BlockHeaderResponse = {
+         hash: block.hash,
+         previousHash: block.previousHash,
+         timeStamp: Math.floor(block.timeStamp),
+         index: block.index,
+         merkleLeafHash: block.merkleLeafHash,
+         networkUUID: block.networkUUID
+      }
+
+      let transaction:TransactionResponse = {
+         transactionId: block.transactionId,
+         record: this.mapRecordToRecordResponse(block.medicalRecord),
+         senderPubKey: block.senderPubKey,
+         senderAddress: block.senderAddress,
+         recipientAddress: block.recipientAddress,
+         signature: block.signature
+      }
+
+
+      // TODO: ///////////////////////////////////////////////////////////////////////////////////////////
+         // TODO: FrEaKiNg sErILiZatIoN iSSUe //////////////////////////////////////////////////////////////
+            transaction.record.history = null; ///////////////////////////////////////////////////////////////
+         // TODO: FrEaKiNg sErILiZatIoN iSSUe //////////////////////////////////////////////////////////////
+      // TODO: ///////////////////////////////////////////////////////////////////////////////////////////
+
+      
+      let blockResponse:BlockResponse = {
+         blockHeader: header, 
+         transaction: transaction
+      }
+
+      return blockResponse;
+
    }
 
 

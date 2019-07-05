@@ -11,9 +11,9 @@ import { NodeNetworkService } from 'src/app/Services/node-network.service';
 
 
 @Component({
-  selector: 'app-network-invitation',
-  templateUrl: './network-invitation.component.html',
-  styleUrls: ['./network-invitation.component.css']
+   selector: 'app-network-invitation',
+   templateUrl: './network-invitation.component.html',
+   styleUrls: ['./network-invitation.component.css']
 })
 
 
@@ -39,46 +39,38 @@ export class NetworkInvitationComponent implements OnInit
    }
 
 
-   onInvitationAccept(): void
-   {
-      if (this.notification) 
-      {
+   onInvitationAccept(): void {
+      if (this.notification) {
          this.invitationAccept(this.invitationRequest);
          //this.deleteNotification();
       }
-
       this.modal.destroy();
    }
    
 
    invitationAccept(invitationRequest:NetworkInvitationRequest): void
-   {
-      this.getNetworkChainFile(invitationRequest.networkUUID);
-
-      /*
-      this.networkService.networkInvitationAccept(this.invitationRequest).subscribe(
+   {      
+      this.networkService.networkInvitationAccept(invitationRequest).subscribe(
 
          response => {
-            this.getNetworkChainFile(invitationRequest.networkUUID);
+            this.getNetworkChain(invitationRequest.networkUUID);
+            console.log(response);
          },
-
          error => {
             console.log(error);
          }
 
       );
-      */
+      
    }
 
 
-   private getNetworkChainFile(networkUUID:string)
-   {
+   private getNetworkChain(networkUUID:string) {
       this.getCurrentProviderUUID().then(providerUUID => {
-         this.chainService.getNetworkChain(providerUUID, networkUUID).subscribe(
+         this.chainService.getNetworkChain(providerUUID, networkUUID, 0, 0).subscribe(
             response => {
                console.log(response);
             },
-
             (error:ErrorResponse) => {
                console.log(error);
             }

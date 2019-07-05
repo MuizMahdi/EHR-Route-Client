@@ -129,11 +129,11 @@ export class UpdateConsentRequestComponent implements OnInit
       let updates:MedicalRecordUpdates = this.notification.reference.updateMedicalRecord;
 
       // Save the updates on the user's local MedicalRecord
-     // await this.recordService.updateUserRecord(updates);
+      await this.recordService.updateUserRecord(updates);
 
       // Construct the consent response
       let updateConsentResponse:UserUpdateConsentResponse = await this.getUpdateConsentResponse();
-   
+
       // Send the consent response
       this.transactionService.sendUpdateEhrConsentResponse(updateConsentResponse).subscribe(
 

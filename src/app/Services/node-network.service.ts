@@ -254,7 +254,7 @@ export class NodeNetworkService implements OnInit
       let networkRootUpdateRequest = {
          merkleRoot: latestMerkleRoot,
          networkUUID: block.blockHeader.networkUUID,
-         consentRequestUUID: blockAdditionResponse.metadata.consentRequestUUID
+         consentRequestUUID: blockAdditionResponse.metadata.requestUUID
       }
 
       // Send the request

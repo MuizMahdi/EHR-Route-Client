@@ -1,0 +1,5 @@
+export enum NodeMessageType {
+   BLOCK = "BLOCK",
+   BLOCK_PROVIDE_REQUEST = "BLOCK_PROVIDE_REQUEST",
+   HEART_BEAT = "HEART_BEAT"
+}

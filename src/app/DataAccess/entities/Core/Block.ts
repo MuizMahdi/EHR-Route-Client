@@ -17,7 +17,7 @@ export class Block
    previousHash:string;
 
    @Column()
-   timeStamp:string;
+   timeStamp:number;
 
    @Column()
    merkleLeafHash:string;
@@ -42,7 +42,7 @@ export class Block
    @Column()
    signature:string;
 
-   @OneToOne(type => MedicalRecord, {cascade:true})
+   @OneToOne(type => MedicalRecord, {cascade:true, eager:true})
    @JoinColumn()
    medicalRecord: MedicalRecord;
 }

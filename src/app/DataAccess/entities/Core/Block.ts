@@ -31,9 +31,6 @@ export class Block
    transactionId:string;
 
    @Column()
-   senderPubKey:string;
-
-   @Column()
    senderAddress:string;
 
    @Column()

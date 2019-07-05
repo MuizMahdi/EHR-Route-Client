@@ -77,7 +77,6 @@ export default class ModelMapper
       block.merkleLeafHash = blockResponse.blockHeader.merkleLeafHash;
       block.networkUUID = blockResponse.blockHeader.networkUUID;
       block.transactionId = blockResponse.transaction.transactionId;
-      block.senderPubKey = blockResponse.transaction.senderPubKey;
       block.senderAddress = blockResponse.transaction.senderAddress;
       block.recipientAddress = blockResponse.transaction.recipientAddress;
       block.signature = blockResponse.transaction.signature;
@@ -101,7 +100,6 @@ export default class ModelMapper
       let transaction:TransactionResponse = {
          transactionId: block.transactionId,
          record: this.mapRecordToRecordResponse(block.medicalRecord),
-         senderPubKey: block.senderPubKey,
          senderAddress: block.senderAddress,
          recipientAddress: block.recipientAddress,
          signature: block.signature

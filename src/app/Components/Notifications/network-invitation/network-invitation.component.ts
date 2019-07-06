@@ -1,7 +1,7 @@
+import { NodeClustersService } from './../../../Services/node-clusters.service';
 import { ErrorResponse } from './../../../Models/Payload/Responses/ErrorResponse';
 import { ProviderService } from './../../../Services/provider.service';
 import { ChainService } from './../../../Services/chain.service';
-import { AuthService } from './../../../Services/auth.service';
 import { Component, OnInit, Input } from '@angular/core';
 import { Notification } from 'src/app/Models/Payload/Responses/Notification';
 import { NzModalRef } from 'ng-zorro-antd';
@@ -19,14 +19,13 @@ import { NodeNetworkService } from 'src/app/Services/node-network.service';
 
 export class NetworkInvitationComponent implements OnInit 
 {
-   
    @Input() notification: Notification;
    invitationRequest:NetworkInvitationRequest;
 
 
    constructor(
       private modal:NzModalRef, private notificationService:NotificationService, 
-      private authService:AuthService, private networkService:NodeNetworkService,
+      private clusterService:NodeClustersService, private networkService:NodeNetworkService,
       private chainService:ChainService, private providerService:ProviderService
    ) 
    { }
@@ -42,18 +41,18 @@ export class NetworkInvitationComponent implements OnInit
    onInvitationAccept(): void {
       if (this.notification) {
          this.invitationAccept(this.invitationRequest);
-         //this.deleteNotification();
       }
       this.modal.destroy();
    }
    
 
-   invitationAccept(invitationRequest:NetworkInvitationRequest): void
-   {      
+   invitationAccept(invitationRequest:NetworkInvitationRequest): void {      
       this.networkService.networkInvitationAccept(invitationRequest).subscribe(
 
          response => {
             this.getNetworkChain(invitationRequest.networkUUID);
+            this.deleteNotification();
+            this.clusterService.resetClustersSubscription();
             console.log(response);
          },
          error => {
@@ -68,49 +67,30 @@ export class NetworkInvitationComponent implements OnInit
    private getNetworkChain(networkUUID:string) {
       this.getCurrentProviderUUID().then(providerUUID => {
          this.chainService.getNetworkChain(providerUUID, networkUUID, 0, 0).subscribe(
-            response => {
-               console.log(response);
-            },
-            (error:ErrorResponse) => {
-               console.log(error);
-            }
+            response => { console.log(response) },
+            (error:ErrorResponse) => { console.log(error) }
          )
       })
    }
 
 
-   private async getCurrentProviderUUID(): Promise<string>
-   {
+   private async getCurrentProviderUUID(): Promise<string> {
       let providerUUID:string;
       
       await this.providerService.getCurrentProviderUUID().then(
-         
-         response => {
-            providerUUID = response.payload;
-         })
-
-         .catch(error => {
-            console.log(error);
-         }
-
-      );
+         response => { providerUUID = response.payload }
+      ).catch(error => { 
+         console.log(error) 
+      });
       
       return providerUUID;
    }
 
 
-   deleteNotification(): void
-   {
+   private deleteNotification(): void {
       this.notificationService.deleteNotification(this.notification.notificationID).subscribe( 
-
-         response => {
-            console.log(response);
-         },
-
-         error => {
-            console.log(error);
-         }
-
+         response => { console.log(response) },
+         error => { console.log(error) }
       );
    }
 

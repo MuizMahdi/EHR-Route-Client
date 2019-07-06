@@ -139,16 +139,9 @@ export class RecordDetailsComponent implements OnInit
          recordUpdateData
       }
 
-      this.transactionService.sendEhrUpdateConsentResponse(updatedBlockRequest).subscribe(
-
-         response => {
-            console.log(response);
-         },
-
-         error => {
-            console.log(error);
-         }
-
+      this.transactionService.sendEhrUpdateConsentRequest(updatedBlockRequest).subscribe(
+         response => { console.log(response) },
+         error => { console.log(error) }
       );
 
       console.log(updatedBlockRequest);

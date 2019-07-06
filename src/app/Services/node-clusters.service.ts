@@ -92,17 +92,17 @@ export class NodeClustersService implements OnInit
 
       if (!this.consumersEventSource) {
          this.consumersEventSource = new EventSourcePolyfill(url, {headers: {Authorization: "Bearer " + Jwt}});
-
-         this.consumersEventSource.addEventListener(NodeMessageType.HEART_BEAT.toString(), async (event:any) => {
-            console.log('Consumer HeartBeat: ' + event.data);
-         });
-   
-         this.consumersEventSource.addEventListener(NodeMessageType.BLOCK.toString(), (event:any) => {
-            let blockResponse:BlockAdditionResponse = JSON.parse(event.data);
-            console.log(blockResponse);
-            this.chainService.addBlock(blockResponse);
-         });
       }
+
+      this.consumersEventSource.addEventListener(NodeMessageType.HEART_BEAT.toString(), async (event:any) => {
+         console.log('Consumer HeartBeat: ' + event.data);
+      });
+
+      this.consumersEventSource.addEventListener(NodeMessageType.BLOCK.toString(), (event:any) => {
+         let blockResponse:BlockAdditionResponse = JSON.parse(event.data);
+         console.log(blockResponse);
+         this.chainService.addBlock(blockResponse);
+      });
    }
 
 
@@ -121,14 +121,10 @@ export class NodeClustersService implements OnInit
          // Unsubscribe node from clusters on server-side
          await this.http.get(this.clustersUnsubscripeUrl + nodeUUID).pipe(first()).toPromise()
          .then(() => {
-
             console.log("[ClusterService] Unsubscribed on server-side successfully");
-
             // Close the SSE http connection from client-side
             this.closeSseConnection();
-
             resolve();
-
          })
          .catch(error => {
             console.log("[ClusterService] " + error);

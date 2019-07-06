@@ -10,7 +10,7 @@ import { Injectable } from '@angular/core';
 
 
 @Injectable({
-  providedIn: 'root'
+   providedIn: 'root'
 })
 
 
@@ -18,56 +18,46 @@ export class TransactionService
 {
    private ehrConsentRequestUrl:string = environment.apiUrl + '/transaction/record-consent-request';
    private ehrConsentResponseUrl:string = environment.apiUrl + '/transaction/record-consent-response';
-   private getEhrUpdateConsentUrl:string = environment.apiUrl + '/transaction/get-update-consent';
-   private giveEhrUpdateConsentUrl:string = environment.apiUrl + '/transaction/give-update-consent';
+   private ehrUpdateConsentRequestUrl:string = environment.apiUrl + '/transaction/record-update-consent-request';
+   private ehrUpdateConsentResponseUrl:string = environment.apiUrl + '/transaction/record-update-consent-response';
 
 
    constructor(private http:HttpClient) 
    { }
 
 
-   public sendUserEhrConsentRequest(blockAdditionRequest:BlockAdditionRequest): Observable<any>
-   {
+   public sendUserEhrConsentRequest(blockAdditionRequest:BlockAdditionRequest): Observable<any> {
+
       return this.http.post(this.ehrConsentRequestUrl, blockAdditionRequest).pipe(first(),
-         catchError(error => {
-            return throwError(error);
-         })
+         catchError(error => { return throwError(error) })
       );
+
    }
 
 
-   public sendUserEhrConsentResponse(userConsentResponse:UserConsentResponse): Observable<any>
-   {
+   public sendUserEhrConsentResponse(userConsentResponse:UserConsentResponse): Observable<any> {
+
       return this.http.post(this.ehrConsentResponseUrl, userConsentResponse).pipe(first(),
-      
-         catchError(error => {
-            return throwError(error);
-         })
-      
+         catchError(error => { return throwError(error) })
       );
+
    }
 
 
-   public sendEhrUpdateConsentResponse(updatedBlockRequest:UpdatedBlockAdditionRequest): Observable<any>
-   {
-      return this.http.post(this.getEhrUpdateConsentUrl, updatedBlockRequest).pipe(first(),
-      
-         catchError(error => {
-            return throwError(error);
-         })
-   
+   public sendEhrUpdateConsentRequest(updatedBlockRequest:UpdatedBlockAdditionRequest): Observable<any> {
+
+      return this.http.post(this.ehrUpdateConsentRequestUrl, updatedBlockRequest).pipe(first(),
+         catchError(error => { return throwError(error) })
       );
+
    }
 
 
-   public sendUpdateEhrConsentResponse(updateConsentResponse:UserUpdateConsentResponse): Observable<any>
-   {
-      return this.http.post(this.giveEhrUpdateConsentUrl, updateConsentResponse).pipe(first(),
-      
-         catchError(error => {
-            return throwError(error);
-         })
-   
+   public sendUpdateEhrConsentResponse(updateConsentResponse:UserUpdateConsentResponse): Observable<any> {
+
+      return this.http.post(this.ehrUpdateConsentResponseUrl, updateConsentResponse).pipe(first(),
+         catchError(error => { return throwError(error) })
       );
+
    }
 }

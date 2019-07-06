@@ -106,17 +106,14 @@ export class ConsentRequestComponent implements OnInit
 
       // Send the consent response
       this.transactionService.sendUserEhrConsentResponse(userConsentResponse).subscribe(
-
          response => {
             console.log(response);
             // Delete notification
             this.deleteNotification();
          },
-
          error => {
             console.log(error);
          }
-
       );
 
    }

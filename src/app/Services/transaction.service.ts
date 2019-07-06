@@ -16,9 +16,9 @@ import { Injectable } from '@angular/core';
 
 export class TransactionService 
 {
-   private ehrConsentRequestUrl:string = environment.apiUrl + '/transaction/consent-request';
+   private ehrConsentRequestUrl:string = environment.apiUrl + '/transaction/record-consent-request';
+   private ehrConsentResponseUrl:string = environment.apiUrl + '/transaction/record-consent-response';
    private getEhrUpdateConsentUrl:string = environment.apiUrl + '/transaction/get-update-consent';
-   private giveUserEhrConsentUrl:string = environment.apiUrl + '/transaction/give-consent';
    private giveEhrUpdateConsentUrl:string = environment.apiUrl + '/transaction/give-update-consent';
 
 
@@ -38,7 +38,7 @@ export class TransactionService
 
    public sendUserEhrConsentResponse(userConsentResponse:UserConsentResponse): Observable<any>
    {
-      return this.http.post(this.giveUserEhrConsentUrl, userConsentResponse).pipe(first(),
+      return this.http.post(this.ehrConsentResponseUrl, userConsentResponse).pipe(first(),
       
          catchError(error => {
             return throwError(error);

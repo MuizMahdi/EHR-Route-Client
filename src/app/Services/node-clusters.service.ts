@@ -5,7 +5,7 @@ import { ChainService } from './chain.service';
 import { ProviderService } from './provider.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
-import { EventSourcePolyfill } from 'ng-event-source';
+import { EventSourcePolyfill, OnMessageEvent } from 'ng-event-source';
 import { environment } from 'src/environments/environment';
 import { catchError, first } from 'rxjs/operators';
 
@@ -99,6 +99,7 @@ export class NodeClustersService implements OnInit
    
          this.consumersEventSource.addEventListener(NodeMessageType.BLOCK.toString(), (event:any) => {
             let blockResponse:BlockAdditionResponse = JSON.parse(event.data);
+            console.log(blockResponse);
             this.chainService.addBlock(blockResponse);
          });
       }

@@ -92,17 +92,17 @@ export class NodeClustersService implements OnInit
 
       if (!this.consumersEventSource) {
          this.consumersEventSource = new EventSourcePolyfill(url, {headers: {Authorization: "Bearer " + Jwt}});
+
+         this.consumersEventSource.addEventListener(NodeMessageType.HEART_BEAT.toString(), async (event:any) => {
+            console.log('Consumer HeartBeat: ' + event.data);
+         });
+   
+         this.consumersEventSource.addEventListener(NodeMessageType.BLOCK.toString(), (event:any) => {
+            let blockResponse:BlockAdditionResponse = JSON.parse(event.data);
+            console.log(blockResponse);
+            this.chainService.addBlock(blockResponse);
+         });
       }
-
-      this.consumersEventSource.addEventListener(NodeMessageType.HEART_BEAT.toString(), async (event:any) => {
-         console.log('Consumer HeartBeat: ' + event.data);
-      });
-
-      this.consumersEventSource.addEventListener(NodeMessageType.BLOCK.toString(), (event:any) => {
-         let blockResponse:BlockAdditionResponse = JSON.parse(event.data);
-         console.log(blockResponse);
-         this.chainService.addBlock(blockResponse);
-      });
    }
 
 

@@ -4,12 +4,13 @@ import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ErrorResponse } from 'src/app/Models/Payload/Responses/ErrorResponse';
+import { Router } from '@angular/router';
 
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor
 {
-   constructor(private authService:AuthService)
+   constructor(private authService:AuthService, private router:Router)
    { }
 
    
@@ -23,7 +24,8 @@ export class ErrorInterceptor implements HttpInterceptor
             // Logout if http status code 401 response is returned
             if(error.status === 401) {
                this.authService.logout();
-               location.reload(true);
+               this.router.navigate(['login']);
+               //location.reload(true);
             }
 
             const errorResponse:ErrorResponse = {

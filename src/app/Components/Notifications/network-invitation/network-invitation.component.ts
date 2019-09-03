@@ -93,5 +93,4 @@ export class NetworkInvitationComponent implements OnInit
          error => { console.log(error) }
       );
    }
-
 }

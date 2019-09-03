@@ -21,9 +21,9 @@ import ModelMapper from 'src/app/Helpers/Utils/ModelMapper';
 
 
 @Component({
-  selector: 'app-consent-request',
-  templateUrl: './consent-request.component.html',
-  styleUrls: ['./consent-request.component.css']
+   selector: 'app-consent-request',
+   templateUrl: './consent-request.component.html',
+   styleUrls: ['./consent-request.component.css']
 })
 
 
@@ -38,9 +38,8 @@ export class ConsentRequestComponent implements OnInit
    constructor(
       private notificationService:NotificationService, private modal:NzModalRef,
       private networkService:NodeNetworkService, private addressService:AddressService,
-      private patientInfoService:PatientInfoService, private authService:AuthService,
-      private transactionService:TransactionService, private modalService: NzModalService,
-      private recordService:UserRecordService
+      private authService:AuthService, private transactionService:TransactionService, 
+      private modalService: NzModalService, private recordService:UserRecordService
    ) 
    { }
 

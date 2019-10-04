@@ -5,7 +5,8 @@ import { ChainService } from './chain.service';
 import { ProviderService } from './provider.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
-import { EventSourcePolyfill, OnMessageEvent } from 'ng-event-source';
+//import { EventSourcePolyfill, OnMessageEvent } from 'ng-event-source';
+import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
 import { environment } from 'src/environments/environment';
 import { catchError, first } from 'rxjs/operators';
 
@@ -19,7 +20,6 @@ import { catchError, first } from 'rxjs/operators';
 @Injectable({
    providedIn: 'root'
 })
-
 
 export class NodeClustersService implements OnInit
 {
@@ -58,10 +58,10 @@ export class NodeClustersService implements OnInit
 
 
    public async subscribeClusters() {
-      // Subscribe node as a provider
-      await this.subscribeProvider();
       // Subscribe node as a consumer
       await this.subscribeConsumer();
+      // Subscribe node as a provider
+      await this.subscribeProvider();
    }
 
 
@@ -71,13 +71,20 @@ export class NodeClustersService implements OnInit
       let Jwt = localStorage.getItem('accessToken');
 
       if (!this.providersEventSource) {
-         this.providersEventSource = new EventSourcePolyfill(uri, {headers: {Authorization: "Bearer " + Jwt}});
 
-         this.providersEventSource.addEventListener(NodeMessageType.HEART_BEAT.toString(), async (event:any) => {
+         //this.providersEventSource = await new EventSourcePolyfill(uri, {headers: {Authorization: "Bearer " + Jwt}});
+
+         this.providersEventSource = await new EventSourcePolyfill(uri, {
+            headers: { Authorization: "Bearer " + Jwt, Accept:'text/event-stream' },
+            connectionTimeout: 10,
+            errorOnTimeout: false
+         });
+
+         await this.providersEventSource.addEventListener(NodeMessageType.HEART_BEAT.toString(), async (event:any) => {
             console.log('Provider HeartBeat: ' + event.data);
          });
    
-         this.providersEventSource.addEventListener(NodeMessageType.BLOCK_PROVIDE_REQUEST.toString(), async (event:any) => {
+         await this.providersEventSource.addEventListener(NodeMessageType.BLOCK_PROVIDE_REQUEST.toString(), async (event:any) => {
             let blockRequest:BlockProvideRequest = JSON.parse(event.data);
             this.chainService.sendBlock(blockRequest);
          });
@@ -87,17 +94,24 @@ export class NodeClustersService implements OnInit
 
    public async subscribeConsumer() {
       let nodeUUID:string = await this.getCurrentNodeUUID();
-      let url:string = this.consumerSubscriptionUrl + nodeUUID;
+      let uri:string = this.consumerSubscriptionUrl + nodeUUID;
       let Jwt = localStorage.getItem('accessToken');
 
       if (!this.consumersEventSource) {
-         this.consumersEventSource = new EventSourcePolyfill(url, {headers: {Authorization: "Bearer " + Jwt}});
 
-         this.consumersEventSource.addEventListener(NodeMessageType.HEART_BEAT.toString(), async (event:any) => {
+         //this.consumersEventSource = await new EventSourcePolyfill(uri, {headers: {Authorization: "Bearer " + Jwt}});
+
+         this.consumersEventSource = await new EventSourcePolyfill(uri, {
+            headers: { Authorization: "Bearer " + Jwt, Accept:'text/event-stream' },
+            connectionTimeout: 10,
+            errorOnTimeout: false
+         });
+
+         await this.consumersEventSource.addEventListener(NodeMessageType.HEART_BEAT.toString(), async (event:any) => {
             console.log('Consumer HeartBeat: ' + event.data);
          });
    
-         this.consumersEventSource.addEventListener(NodeMessageType.BLOCK.toString(), (event:any) => {
+         await this.consumersEventSource.addEventListener(NodeMessageType.BLOCK.toString(), (event:any) => {
             let blockResponse:BlockAdditionResponse = JSON.parse(event.data);
             console.log(blockResponse);
             this.chainService.addBlock(blockResponse);

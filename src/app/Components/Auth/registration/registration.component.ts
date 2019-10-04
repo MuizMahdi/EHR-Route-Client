@@ -18,7 +18,6 @@ export class RegistrationComponent
 {
    registrationFormGroup:FormGroup;
 
-   registrationName:string;
    registrationEmail:string;
    registrationUsername:string;
    registrationPassword:string;
@@ -30,7 +29,6 @@ export class RegistrationComponent
    buildForm(): void
    {
       this.registrationFormGroup = new FormGroup({
-         nameCtrl: new FormControl(null, [Validators.required]),
          usernameCtrl: new FormControl(null, [Validators.required]),
          emailCtrl: new FormControl(null, [Validators.required]),
          passwordCtrl: new FormControl(null, [Validators.required])
@@ -40,13 +38,11 @@ export class RegistrationComponent
    onRegistration() 
    {
       // Form values
-      this.registrationName = this.registrationFormGroup.get("nameCtrl").value;
       this.registrationUsername = this.registrationFormGroup.get("usernameCtrl").value;
       this.registrationEmail = this.registrationFormGroup.get("emailCtrl").value;
       this.registrationPassword = this.registrationFormGroup.get("passwordCtrl").value;
 
       let userRegistrationRequest:UserRegistrationRequest = {
-         name: this.registrationName,
          username: this.registrationUsername,
          email: this.registrationEmail,
          password: this.registrationPassword

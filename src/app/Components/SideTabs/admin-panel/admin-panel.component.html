@@ -4,13 +4,13 @@
    <hr class="box-title-bottom-line"><br>
 
    <div>
-      <label>Username: </label>
-      <nz-input-group [nzSuffix]="suffixTemplate" [nzPrefix]="prefixTemplate" id="role-username">
-         <input type="text" nz-input placeholder="User's username" [(ngModel)]="roleChangeUsername">
+      <label>Address: </label>
+      <nz-input-group [nzSuffix]="suffixTemplate" [nzPrefix]="prefixTemplate">
+         <input type="text" nz-input placeholder="User's address" [(ngModel)]="roleChangeAddress">
       </nz-input-group>
 
       <ng-template #prefixTemplate><i nz-icon type="user"></i></ng-template>
-      <ng-template #suffixTemplate><i nz-icon type="close-circle" (click)="roleChangeUsername=null" *ngIf="roleChangeUsername"></i></ng-template>      
+      <ng-template #suffixTemplate><i nz-icon type="close-circle" (click)="roleChangeAddress=null" *ngIf="roleChangeAddress"></i></ng-template>      
    </div>
 
    <br>
@@ -25,7 +25,7 @@
 
    <br>
 
-   <button (click)="changeUserRole(roleChangeUsername, selectedRoleChangeValue)" nz-button nzType="primary">Change Role</button>
+   <button (click)="changeUserRole(roleChangeAddress, selectedRoleChangeValue)" nz-button nzType="primary">Change Role</button>
 
 </div>
 
@@ -37,20 +37,20 @@
    <hr class="box-title-bottom-line"><br>
 
    <div>
-      <label>Username: </label>
-      <nz-input-group [nzSuffix]="suffixTemplate" [nzPrefix]="prefixTemplate" id="role-username">
-         <input type="text" nz-input placeholder="User's username" [(ngModel)]="institutionProviderUsername">
+      <label>Address: </label>
+      <nz-input-group [nzSuffix]="suffixTemplate" [nzPrefix]="prefixTemplate">
+         <input type="text" nz-input placeholder="User's address" [(ngModel)]="institutionProviderAddress">
       </nz-input-group>
 
       <ng-template #prefixTemplate><i nz-icon type="user"></i></ng-template>
-      <ng-template #suffixTemplate><i nz-icon type="close-circle" (click)="institutionProviderUsername=null" *ngIf="institutionProviderUsername"></i></ng-template>
+      <ng-template #suffixTemplate><i nz-icon type="close-circle" (click)="institutionProviderAddress=null" *ngIf="institutionProviderAddress"></i></ng-template>
    </div>
 
    <br>
 
    <div>
       <label>Institution name: </label><br>
-      <nz-input-group [nzSuffix]="suffixTemplate" [nzPrefix]="prefixTemplate" id="role-username">
+      <nz-input-group [nzSuffix]="suffixTemplate" [nzPrefix]="prefixTemplate">
          <input type="text" nz-input placeholder="Institution's name" [(ngModel)]="institutionName">
       </nz-input-group>
 
@@ -60,6 +60,6 @@
 
    <br>
 
-   <button (click)="registerInstitutionProvider(institutionProviderUsername, institutionName)" nz-button nzType="primary">Submit</button>
+   <button (click)="registerInstitutionProvider(institutionProviderAddress, institutionName)" nz-button nzType="primary">Submit</button>
 
 </div>

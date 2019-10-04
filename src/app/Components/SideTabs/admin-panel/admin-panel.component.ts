@@ -8,18 +8,17 @@ import { Component } from '@angular/core';
 
 
 @Component({
-  selector: 'app-admin-panel',
-  templateUrl: './admin-panel.component.html',
-  styleUrls: ['./admin-panel.component.css']
+   selector: 'app-admin-panel',
+   templateUrl: './admin-panel.component.html',
+   styleUrls: ['./admin-panel.component.css']
 })
 
 
 export class AdminPanelComponent
 {
-   roleChangeUsername:string;
+   roleChangeAddress:string;
    selectedRoleChangeValue:string = "ROLE_PROVIDER"
-
-   institutionProviderUsername:string;
+   institutionProviderAddress:string;
    institutionName:string;
 
 
@@ -31,10 +30,10 @@ export class AdminPanelComponent
    }
 
 
-   changeUserRole(username:string, role:string) {
+   changeUserRole(address:string, role:string) {
 
-      let roleChangeReq:RoleChangeRequest = {
-         username,
+      let roleChangeReq: RoleChangeRequest = {
+         address,
          role
       }
 
@@ -53,10 +52,10 @@ export class AdminPanelComponent
    }
 
 
-   registerInstitutionProvider(providerUsername:string, institutionName:string) {
+   registerInstitutionProvider(providerAddress:string, institutionName:string) {
 
       let request:ProviderAdditionRequest = {
-         username: providerUsername,
+         address: providerAddress,
          institutionName: institutionName
       }
 

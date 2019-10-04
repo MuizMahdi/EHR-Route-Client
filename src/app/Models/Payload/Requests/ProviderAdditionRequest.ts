@@ -1,5 +1,5 @@
 export interface ProviderAdditionRequest 
 {
-   username:string;
+   address:string;
    institutionName:string;
 }

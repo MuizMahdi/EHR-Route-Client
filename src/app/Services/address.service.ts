@@ -14,7 +14,7 @@ import ModelMapper from '../Helpers/Utils/ModelMapper';
 
 
 @Injectable({
-  providedIn: 'root'
+   providedIn: 'root'
 })
 
 

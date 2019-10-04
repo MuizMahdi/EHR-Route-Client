@@ -1,5 +1,5 @@
 export interface RoleChangeRequest
 {
-   username:string;
-   role:string;
+   address: string;
+   role: string;
 }

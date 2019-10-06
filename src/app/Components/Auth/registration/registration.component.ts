@@ -8,9 +8,9 @@ import { throwError } from 'rxjs';
 
 
 @Component({
-  selector: 'app-registration',
-  templateUrl: './registration.component.html',
-  styleUrls: ['./registration.component.css']
+   selector: 'app-registration',
+   templateUrl: './registration.component.html',
+   styleUrls: ['./registration.component.css']
 })
 
 
@@ -19,7 +19,6 @@ export class RegistrationComponent
    registrationFormGroup:FormGroup;
 
    registrationEmail:string;
-   registrationUsername:string;
    registrationPassword:string;
 
    constructor(private router:Router, private authService:AuthService) {
@@ -29,7 +28,6 @@ export class RegistrationComponent
    buildForm(): void
    {
       this.registrationFormGroup = new FormGroup({
-         usernameCtrl: new FormControl(null, [Validators.required]),
          emailCtrl: new FormControl(null, [Validators.required]),
          passwordCtrl: new FormControl(null, [Validators.required])
       });
@@ -38,12 +36,10 @@ export class RegistrationComponent
    onRegistration() 
    {
       // Form values
-      this.registrationUsername = this.registrationFormGroup.get("usernameCtrl").value;
       this.registrationEmail = this.registrationFormGroup.get("emailCtrl").value;
       this.registrationPassword = this.registrationFormGroup.get("passwordCtrl").value;
 
       let userRegistrationRequest:UserRegistrationRequest = {
-         username: this.registrationUsername,
          email: this.registrationEmail,
          password: this.registrationPassword
       }

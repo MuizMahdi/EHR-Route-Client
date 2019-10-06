@@ -33,15 +33,15 @@
    <h2 class="box-title">Invite a user to the network</h2>
    <hr class="box-title-bottom-line"><br>
 
-   <label>Username: </label>
+   <label>Address: </label>
    <nz-input-group [nzSuffix]="suffixTemplate" [nzPrefix]="prefixTemplate">
-      <input type="text" nz-input placeholder="User's username" [(ngModel)]="invitedUserUsername">
+      <input type="text" nz-input placeholder="User's address" [(ngModel)]="invitedUserAddress">
    </nz-input-group>
    
    <ng-template #prefixTemplate><i nz-icon type="user"></i></ng-template>
-   <ng-template #suffixTemplate><i nz-icon type="close-circle" (click)="invitedUserUsername=null" *ngIf="invitedUserUsername"></i></ng-template>      
+   <ng-template #suffixTemplate><i nz-icon type="close-circle" (click)="invitedUserAddress=null" *ngIf="invitedUserAddress"></i></ng-template>      
 
-   <button (click)="inviteUser(invitedUserUsername)" nz-button nzType="primary" id="network-invite-button">Send Invitation</button>
+   <button (click)="inviteUser(invitedUserAddress)" nz-button nzType="primary" id="network-invite-button">Send Invitation</button>
 
 </div>
 

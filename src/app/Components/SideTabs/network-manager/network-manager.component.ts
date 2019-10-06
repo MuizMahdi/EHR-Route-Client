@@ -35,7 +35,7 @@ export class NetworkManagerComponent implements OnInit
    newNetworkName:string;
    isNetworkCreationModalVisible:boolean = false;
 
-   invitedUserUsername:string;
+   invitedUserAddress:string;
 
 
    constructor(
@@ -177,13 +177,13 @@ export class NetworkManagerComponent implements OnInit
    }
 
 
-   inviteUser(username:string): void 
+   inviteUser(address:string): void 
    {
-      let currentUserUsername = this.authService.getCurrentUser().username;
+      let currentUserAddress = this.authService.getCurrentUser().address;
 
       let invitationRequest:NetworkInvitationRequest = {
-         recipientUsername: username,
-         senderUsername: currentUserUsername,
+         recipientAddress: address,
+         senderAddress: currentUserAddress,
          networkName: this.selectedNetwork.name,
          networkUUID: this.selectedNetwork.networkUUID,
          invitationToken: null // Invitation token is created on server-side

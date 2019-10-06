@@ -2,10 +2,10 @@
 
    <form [formGroup]="loginFormGroup" (submit)="onLogin()" style="margin-top:20%" novalidate>
 
-      <!-- Username or Email Input -->
+      <!-- Address or Email Input -->
       <div class="form-group">
-         <label for="usernameOrEmail">Username or Email</label>
-         <input formControlName="usernameOrEmailCtrl" type="text" class="form-control" placeholder="Username or Email..." required>
+         <label for="addressOrEmailCtrl">User Address or Email</label>
+         <input formControlName="addressOrEmailCtrl" type="text" class="form-control" placeholder="User Address or Email..." required>
       </div>
 
       <!-- Password Input -->

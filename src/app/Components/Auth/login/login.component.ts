@@ -15,9 +15,9 @@ import { throwError } from 'rxjs';
 
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+   selector: 'app-login',
+   templateUrl: './login.component.html',
+   styleUrls: ['./login.component.css']
 })
 
 
@@ -25,7 +25,7 @@ export class LoginComponent
 {
    loginFormGroup: FormGroup;
 
-   loginUsernameOrEmail: string;
+   loginAddressOrEmail: string;
    loginPassword: string;
 
 
@@ -49,12 +49,13 @@ export class LoginComponent
 
    onLogin(): void
    {
+      // TODO: CHANGE LOGIN BY USERNAME_OR_EMAIL TO ADDRESS_OR_EMAIL ON CLIENT SIDE
       // LoginFormGroup values
-      this.loginUsernameOrEmail = this.loginFormGroup.get("usernameOrEmailCtrl").value;
+      this.loginAddressOrEmail = this.loginFormGroup.get("addressOrEmailCtrl").value;
       this.loginPassword = this.loginFormGroup.get("passwordCtrl").value;
 
       const userInfo: UserLoginRequest = {
-         usernameOrEmail: this.loginUsernameOrEmail,
+         addressOrEmail: this.loginAddressOrEmail,
          password: this.loginPassword
       };
 
@@ -68,6 +69,8 @@ export class LoginComponent
       ).subscribe(
 
          response => {
+            console.log(response);
+
             this.router.navigate(['main']);
             this.checkIfFirstLogin();
             this.checkIfIsProvider();

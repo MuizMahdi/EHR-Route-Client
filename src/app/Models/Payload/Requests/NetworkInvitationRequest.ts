@@ -1,7 +1,7 @@
 export interface NetworkInvitationRequest 
 {
-   recipientUsername:string;
-   senderUsername:string;
+   recipientAddres:string;
+   senderAddress:string;
    networkName:string;
    networkUUID:string;
    invitationToken:string;

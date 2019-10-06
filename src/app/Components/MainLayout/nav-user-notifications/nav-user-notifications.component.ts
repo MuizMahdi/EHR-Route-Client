@@ -13,9 +13,9 @@ import { NzModalService } from 'ng-zorro-antd';
 
 
 @Component({
-  selector: 'app-nav-user-notifications',
-  templateUrl: './nav-user-notifications.component.html',
-  styleUrls: ['./nav-user-notifications.component.css']
+   selector: 'app-nav-user-notifications',
+   templateUrl: './nav-user-notifications.component.html',
+   styleUrls: ['./nav-user-notifications.component.css']
 })
 
 
@@ -129,7 +129,7 @@ export class NavUserNotificationsComponent implements OnInit
             let invitationRequest:NetworkInvitationRequest = notification.reference;
 
             let message:string =
-            invitationRequest.senderUsername + " has invited you to join their network, " +
+            "A health care provider has invited you to join their network, " +
             invitationRequest.networkName;
    
             return message;
@@ -139,8 +139,7 @@ export class NavUserNotificationsComponent implements OnInit
             let ehrExchangeConsentRequest: ConsentRequest = notification.reference;
          
             let message:string =
-            notification.senderName + 
-            " is asking for consent to use and share your medical record";
+            "A provider is asking for consent to use and share your medical record";
    
             return message;
          }
@@ -148,9 +147,8 @@ export class NavUserNotificationsComponent implements OnInit
          case NotificationType.UPDATE_CONSENT_REQUEST: {
             let ehrExchangeConsentRequest: UpdateConsentRequest = notification.reference;
          
-            let message:string =
-            notification.senderName + 
-            " is asking for consent to update your medical record";
+            let message:string = 
+            "A provider is asking for consent to update your medical record";
 
             return message;
          }

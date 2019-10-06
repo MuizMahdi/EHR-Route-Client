@@ -2,7 +2,7 @@ export interface Notification
 {
    notificationID:number;
    notificationType:string;
-   recipientName:string;
+   recipientAddress:string;
    reference:any;
-   senderName:string;
+   senderAddress:string;
 }

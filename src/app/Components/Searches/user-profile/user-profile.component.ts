@@ -99,7 +99,7 @@ export class UserProfileComponent implements OnInit
    }
 
 
-   private createNetworkSelectionModal(templateContent: TemplateRef<{}>): void {
+   createNetworkSelectionModal(templateContent: TemplateRef<{}>): void {
       this.networkSelectionModal = this.modalService.create({
          nzTitle: "Network Selection",
          nzContent: templateContent,
@@ -109,7 +109,7 @@ export class UserProfileComponent implements OnInit
    }
 
 
-   private destroyNetworkSelectionModal(): void {
+   destroyNetworkSelectionModal(): void {
       this.networkSelectionModal.destroy();
    }
 }

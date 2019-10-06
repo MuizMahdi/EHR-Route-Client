@@ -1,7 +1,7 @@
 export interface UserInfo 
 {
    id: number;
-   username: string;
+   address: string;
    name: string;
    email: string;
    roles: string[];

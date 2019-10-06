@@ -13,12 +13,12 @@ import { Observable, throwError } from 'rxjs';
 
 export class UsersService 
 {
-   
+   private userUrl:string = environment.apiUrl + '/users/';   
+   private userSearchUrl:string = this.userUrl + 'search-by-address';
+   private userFirstLoginStatusUrl:string = this.userUrl + 'current/first-login-status';
+   private userInfoAdditionStatusUrl:string = this.userUrl + 'current/info-addition-status';
+   //TODO: Move to user controller instead of auth
    private userRoleChangeUrl:string = environment.apiUrl + '/auth/user-role-change';
-   private userSearchUrl:string = environment.apiUrl + '/users/search-by-username';
-   private getUserInfoUrl:string = environment.apiUrl + '/users/get-by-username/';
-   private userFirstLoginStatusUrl:string = environment.apiUrl + '/users/current/first-login-status';
-   private userInfoAdditionStatusUrl:string = environment.apiUrl + '/users/current/info-addition-status';
 
 
    constructor(private http:HttpClient) {
@@ -38,9 +38,9 @@ export class UsersService
    }
 
 
-   public searchUsername(username:string): Observable<any> {
+   public searchAddress(address:string): Observable<any> {
       
-      let searchUrl = this.userSearchUrl + "?keyword=" + username;
+      let searchUrl = this.userSearchUrl + "?keyword=" + address;
 
       return this.http.get(searchUrl).pipe(first(),
       
@@ -52,16 +52,14 @@ export class UsersService
    }
 
 
-   public getUserInfo(username:string): Observable<any> {
+   public getUserInfo(address:string): Observable<any> {
 
-      let userGetUrl = this.getUserInfoUrl + username;
+      let userGetUrl = this.userUrl + address;
 
       return this.http.get(userGetUrl).pipe(first(),
-      
          catchError(error => {
             return throwError(error);
          })
-
       );
 
    }

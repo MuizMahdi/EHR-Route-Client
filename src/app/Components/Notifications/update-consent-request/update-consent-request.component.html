@@ -3,8 +3,9 @@
       <h4 class="info-header">Consent Request</h4>
 
       <p>
+         Provider with address: 
          <a href="javascript:void(0)">
-            {{notification.senderName}}
+            {{notification.senderAddress}}
          </a> 
 
          is asking for permission to change, and update your medical record.
@@ -17,9 +18,10 @@
       <h4 class="info-header">Request Information</h4>
 
       <p>
-         <b>{{notification.senderName}}</b> from the <b>{{requesterNetworkDetails?.networkName}}</b> 
-         healthcare institutions network is asking for your consent and permission to 
-         update your electronic health record.
+         A health care provider with an address of <b>{{notification.senderAddress}}</b> 
+         from the <b>{{requesterNetworkDetails?.networkName}}</b> healthcare institutions 
+         network is asking for your consent and permission to update your electronic health 
+         record.
          <br><br>
          If you choose to accept, then all of the institutions of the network will be able 
          to access your record's both old and updated data. However, they will not be able 

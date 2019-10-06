@@ -8,14 +8,13 @@ import { Injectable } from '@angular/core';
 
 
 @Injectable({
-  providedIn: 'root'
+   providedIn: 'root'
 })
 
 
 export class ProviderService 
 {
-
-   private providerSearchUrl:string = environment.apiUrl + '/providers/search-providers-by-username';
+   private providerSearchUrl:string = environment.apiUrl + '/providers/search-providers-by-address';
    private currentProviderUuidUrl:string = environment.apiUrl + '/providers/current/uuid';
    private checkProviderAddressExistenceUrl:string = environment.apiUrl + '/providers/current/address/exists';
    private providerAddressUrl:string = environment.apiUrl + '/providers/current/address';
@@ -26,9 +25,9 @@ export class ProviderService
    { }
 
 
-   public searchProviderUsername(username:string): Observable<any> {
+   public searchProviderAddress(address:string): Observable<any> {
       
-      let searchUrl = this.providerSearchUrl + "?keyword=" + username;
+      let searchUrl = this.providerSearchUrl + "?keyword=" + address;
 
       return this.http.get(searchUrl).pipe(first(),
       

@@ -37,7 +37,7 @@ export class NavSearchComponent
          // In case 'User' is selected
          case "User": {
             // Search for users names
-            this.searchUsernames(value);
+            this.searchAddresses(value);
             break;
          }
 
@@ -48,7 +48,7 @@ export class NavSearchComponent
          }
 
          case "Provider": {
-            this.searchProvidersUsernames(value);
+            this.searchProvidersAddresses(value);
             break;
          }
 
@@ -60,9 +60,9 @@ export class NavSearchComponent
    }
 
 
-   private searchUsernames(username:string): void
+   private searchAddresses(address:string): void
    {
-      this.userService.searchUsername(username).subscribe(
+      this.userService.searchAddress(address).subscribe(
 
          (response:string[]) => {
 
@@ -110,9 +110,9 @@ export class NavSearchComponent
    }
 
 
-   private searchProvidersUsernames(providerUsername:string): void 
+   private searchProvidersAddresses(providerAddress:string): void 
    {
-      this.providerService.searchProviderUsername(providerUsername).subscribe(
+      this.providerService.searchProviderAddress(providerAddress).subscribe(
 
          (response:string[]) => {
 
@@ -135,14 +135,14 @@ export class NavSearchComponent
    }
 
 
-   private onSelectedSearchOptionChange(): void {
+   onSelectedSearchOptionChange(): void {
       // Reset the found values from previous option
       this.isSearchOptionsEmpty = true;
       this.searchOptions = null;
    }
 
 
-   private onSearch(): void
+   onSearch(): void
    {
       // Search for the selected search bar option with the input value
       switch(this.selectedSearchOption)
@@ -219,7 +219,7 @@ export class NavSearchComponent
 
       // delay until modal instance created
       window.setTimeout(() => {
-        const instance = searchResultModal.getContentComponent();
+         const instance = searchResultModal.getContentComponent();
       }, 2000);
    }
 }

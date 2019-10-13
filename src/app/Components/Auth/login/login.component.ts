@@ -41,7 +41,7 @@ export class LoginComponent
    private buildForm(): void
    {
       this.loginFormGroup = new FormGroup({
-         usernameOrEmailCtrl: new FormControl(null, [Validators.required]),
+         addressOrEmailCtrl: new FormControl(null, [Validators.required]),
          passwordCtrl: new FormControl(null, Validators.required)
       });
    }
@@ -58,6 +58,7 @@ export class LoginComponent
          addressOrEmail: this.loginAddressOrEmail,
          password: this.loginPassword
       };
+
 
       this.authService.login(userInfo).pipe(first(), 
 

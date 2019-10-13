@@ -2,21 +2,61 @@
    
    <form [formGroup]="registrationFormGroup" (submit)="onRegistration()" style="margin-top:20%" novalidate>
 
-      <!-- Email Input -->
       <div class="form-group">
          <label for="email">Email</label>
          <input formControlName="emailCtrl" type="text" class="form-control" placeholder="Email..." required>
       </div>
-
-      <!-- Password Input -->
+  
       <div class="form-group">
          <label for="password">Password</label>
          <input formControlName="passwordCtrl" type="password" class="form-control" placeholder="Password..." required>
       </div>
 
-      <!-- Form Submit -->
       <input type="submit" value="Register" class="btn btn-primary">
 
    </form>
 
 </div>
+
+<!--
+<form nz-form [formGroup]="registrationFormGroup" class="login-form" (ngSubmit)="onRegistration()">
+
+   <nz-form-item>
+      <nz-form-control nzErrorTip="Please input your email">
+         <nz-input-group nzPrefixIcon="user">
+            <input type="text" nz-input formControlName="emailCtrl" placeholder="Email" />
+         </nz-input-group>
+      </nz-form-control>
+   </nz-form-item>
+
+   <nz-form-item>
+      <nz-form-control nzErrorTip="Please input your Password">
+         <nz-input-group nzPrefixIcon="lock">
+            <input type="password" nz-input formControlName="passwordCtrl" placeholder="Password" />
+         </nz-input-group>
+      </nz-form-control>
+   </nz-form-item>
+
+   <nz-form-item>
+      <label>Account Type:</label><br>
+      <nz-radio-group formControlName="accountTypeCtrl" (ngModelChange)="onAccountTypeChange($event)">
+         <label nz-radio-button nzValue="user">User</label>
+         <label nz-radio-button nzValue="provider">Healthcare Provider</label>
+      </nz-radio-group>
+   </nz-form-item>
+
+   <nz-form-item>
+      <nz-form-control nzErrorTip="Please input your token">
+         <nz-input-group nzPrefixIcon="user">
+            <input type="text" nz-input formControlName="providerTokenCtrl" placeholder="Invitation Token..." [disabled]="!isProviderTokenInputVisible"/>
+         </nz-input-group>
+      </nz-form-control>
+   </nz-form-item>
+
+   <nz-form-item>
+      <nz-form-control>
+         <button nz-button class="login-form-button" [nzType]="'primary'" type="submit">Register</button>
+      </nz-form-control>
+   </nz-form-item>
+</form>
+-->

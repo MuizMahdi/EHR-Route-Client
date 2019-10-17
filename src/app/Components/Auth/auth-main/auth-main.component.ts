@@ -1,3 +1,4 @@
+import { AuthService } from './../../../Services/auth.service';
 import { MainLayoutService } from './../../../Services/main-layout.service';
 import { Component, OnInit } from '@angular/core';
 
@@ -13,7 +14,7 @@ export class AuthMainComponent implements OnInit
 {
    isOnRegister:boolean;
 
-   constructor(public mainLayout:MainLayoutService) 
+   constructor(public mainLayout:MainLayoutService, private authService:AuthService) 
    { }
 
    ngOnInit() 
@@ -24,6 +25,7 @@ export class AuthMainComponent implements OnInit
 
       this.mainLayout.hide();
       this.isOnRegister = false;
+      this.clearJwt();
    }
 
 
@@ -37,4 +39,7 @@ export class AuthMainComponent implements OnInit
       window.onunload = function () { }
    }
 
+   private clearJwt(): void {
+      this.authService.clearAccessToken();
+   }
 }

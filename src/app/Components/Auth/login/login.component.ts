@@ -70,8 +70,6 @@ export class LoginComponent
       ).subscribe(
 
          response => {
-            console.log(response);
-
             this.router.navigate(['main']);
             this.checkIfFirstLogin();
             this.checkIfIsProvider();

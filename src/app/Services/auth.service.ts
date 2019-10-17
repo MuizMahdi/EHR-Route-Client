@@ -78,6 +78,11 @@ export class AuthService
    }
 
 
+   public clearAccessToken(): void {
+      localStorage.removeItem('accessToken');
+   }
+
+
    public getCurrentUserRoles(): Observable<any>
    {
       return this.http.get(this.userRolesUrl).pipe(first(),

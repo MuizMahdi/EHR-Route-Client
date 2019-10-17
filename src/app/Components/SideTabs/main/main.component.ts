@@ -130,7 +130,7 @@ export class MainComponent implements OnInit
    private showUserInfoModal(): void {
       // Create modal
       const userInfoModal = this.modalService.create({
-         nzTitle: "Add your personal information",
+         nzTitle: "Add your personal and medical information",
          nzContent: InformationInputComponent,
          nzWidth: "70%",
          nzFooter: null,

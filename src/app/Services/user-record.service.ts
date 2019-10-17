@@ -43,6 +43,12 @@ export class UserRecordService
    }
 
 
+   public async getCurrentUserRecord(): Promise<any> {
+      let currentUserId = this.authService.getCurrentUser().id;
+      return this.getUserRecord(currentUserId);
+   }
+
+
    public async getUserRecord(userID:number): Promise<any> {
       
       // Make sure that a connection is available

@@ -130,7 +130,7 @@ export class MainComponent implements OnInit
    private showUserInfoModal(): void {
       // Create modal
       const userInfoModal = this.modalService.create({
-         nzTitle: "Add your personal and medical information",
+         nzTitle: "Would you like to create a personal health record?",
          nzContent: InformationInputComponent,
          nzWidth: "70%",
          nzFooter: null,
@@ -142,10 +142,5 @@ export class MainComponent implements OnInit
       window.setTimeout(() => {
          const instance = userInfoModal.getContentComponent();
       }, 2000);
-   }
-
-
-   public async test() {
-
    }
 }

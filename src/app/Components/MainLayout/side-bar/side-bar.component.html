@@ -12,11 +12,20 @@
             </a>
          </li>
 
+         <li *ngIf="!isUserProviderOrAdmin">
+            <a href="javascript:void(0)" routerLink='/record' routerLinkActive='active'>
+               <i class="fa fa-id-badge fa-2x"></i>
+               <span class="nav-text">
+                  Personal Record
+               </span>
+            </a>
+         </li>
+
          <li *ngIf="isUserProviderOrAdmin">
             <a href="javascript:void(0)" routerLink='/ehrs' routerLinkActive='active'>
                <i class="fa fa-notes-medical fa-2x"></i>
                <span class="nav-text">
-                  EHRs
+                  Electronic Health Records
                </span>
             </a>
          </li>

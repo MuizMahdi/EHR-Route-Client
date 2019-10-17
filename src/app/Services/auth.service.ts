@@ -72,6 +72,11 @@ export class AuthService
    }
 
 
+   public setCurrentUserInfo(userInfo:UserInfo) {
+      localStorage.setItem('currentUser', JSON.stringify(userInfo));
+   }
+
+
    public getAccessToken():any
    {
       return localStorage.getItem('accessToken');
@@ -96,11 +101,9 @@ export class AuthService
    public getCurrentUserInfo(): Observable<any>
    {
       return this.http.get(this.getCurrentUserUrl).pipe(first(),
- 
          catchError(error => {
             return throwError(error);
          })
-
       );
    }
 

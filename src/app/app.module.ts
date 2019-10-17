@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, Injector } from '@angular/core';
 import en from '@angular/common/locales/en';
 import { registerLocaleData } from '@angular/common';
 import { AppRoutingModule } from './app-routing.module';
@@ -38,6 +38,7 @@ import { NgxElectronModule } from 'ngx-electron';
 import { ClickOutsideModule } from 'ng-click-outside';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgZorroAntdModule, NZ_I18N, en_US } from 'ng-zorro-antd';
+import { PersonalRecordComponent } from './Components/SideTabs/personal-record/personal-record.component';
 
 
 registerLocaleData(en);
@@ -73,7 +74,8 @@ registerLocaleData(en);
       ConsentRequestComponent,
       InformationInputComponent,
       RecordDetailsComponent,
-      UpdateConsentRequestComponent
+      UpdateConsentRequestComponent,
+      PersonalRecordComponent
    ],
 
    imports: [
@@ -99,4 +101,10 @@ registerLocaleData(en);
 })
 
 
-export class AppModule { }
+export let InjectorInstance: Injector;
+
+export class AppModule { 
+   constructor(private injector: Injector) {
+      InjectorInstance = this.injector;
+   }
+}

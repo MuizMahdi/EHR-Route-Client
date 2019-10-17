@@ -1,0 +1,11 @@
+<div *ngIf="!userHasEhr" class="no-ehr-content">
+   <div class="boxed-content">
+      You have not created a personal health record. As a result, you cannot grant medical data access to health care providers.
+   </div>
+
+   <button nz-button (click)="showEhrCreationModal()" type="button" nzType="primary">Create a health record</button>
+</div>
+
+<div *ngIf="userHasEhr" class="ehr-content">
+   <h1>USER HAS EHR</h1>
+</div>

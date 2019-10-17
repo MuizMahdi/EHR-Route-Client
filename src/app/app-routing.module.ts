@@ -6,6 +6,7 @@ import { AuthMainComponent } from './Components/Auth/auth-main/auth-main.compone
 import { AdminPanelComponent } from './Components/SideTabs/admin-panel/admin-panel.component';
 import { NetworkManagerComponent } from './Components/SideTabs/network-manager/network-manager.component';
 import { HealthRecordsManagerComponent } from './Components/SideTabs/health-records-manager/health-records-manager.component';
+import { PersonalRecordComponent } from './Components/SideTabs/personal-record/personal-record.component';
 
 
 const routes: Routes = [
@@ -14,7 +15,8 @@ const routes: Routes = [
    {path:'login', component:AuthMainComponent},
    {path:'network', component:NetworkManagerComponent, canActivate:[AuthGuard]},
    {path:'panel', component:AdminPanelComponent, canActivate:[AuthGuard]},
-   {path:'ehrs', component:HealthRecordsManagerComponent, canActivate:[AuthGuard]}
+   {path:'ehrs', component:HealthRecordsManagerComponent, canActivate:[AuthGuard]},
+   {path:'record', component:PersonalRecordComponent, canActivate:[AuthGuard]}
 ];
 
 

@@ -1,3 +1,5 @@
+import { ErrorResponse } from 'src/app/Models/Payload/Responses/ErrorResponse';
+import { UserInfo } from './../../../Models/Payload/Responses/UserInfo';
 import { EhrHistory } from './../../../DataAccess/entities/EHR/EhrHistory';
 import { EhrAllergyAndReaction } from './../../../DataAccess/entities/EHR/EhrAllergyAndReaction';
 import { MedicalRecord } from './../../../DataAccess/entities/EHR/MedicalRecord';
@@ -15,6 +17,7 @@ import { PatientInfo } from './../../../Models/Payload/Requests/PatientInfo';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { EhrPatientInfo } from 'src/app/DataAccess/entities/EHR/EhrPatientInfo';
+import AppUtil from 'src/app/Helpers/Utils/AppUtil';
 
 
 @Component({
@@ -216,18 +219,22 @@ export class InformationInputComponent implements OnInit
    private setUserHasSavedInfo(): void {
       // Update the user info addition status boolean to true
       this.userService.updateUserInfoAdditionStatus().subscribe(
-
          response => {
-            // Once successfully updated, close the modal
+            // Close Modal
             this.isUserInfoModalLoading = false;
             this.modal.destroy();
+            // Update info addition status of the UserInfo stored in LocalStoraged
+            this.updateLocalStorageUserInfo();
          },
-
-         error => {
-            console.log(error);
-         }
-
+         (error:ErrorResponse) => AppUtil.createMessage("error", error.message)
       );
+   }
+
+   private updateLocalStorageUserInfo(): void {
+      // Change the info addition status
+      let localUserInfo:UserInfo = this.authSerice.getCurrentUser();
+      localUserInfo.hasAddedInfo = true;
+      this.authSerice.setCurrentUserInfo(localUserInfo);
    }
 
 }

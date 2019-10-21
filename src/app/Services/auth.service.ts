@@ -65,8 +65,7 @@ export class AuthService
    }
 
 
-   public getCurrentUser(): UserInfo
-   {
+   public getCurrentUser(): UserInfo {
       // Get user info from local storage
       return JSON.parse(localStorage.getItem('currentUser')) as UserInfo;
    }
@@ -108,28 +107,29 @@ export class AuthService
    }
 
 
-   public async logout()
-   {
+   public async logout() {
       // If the user has provider role
       if (this.isUserProvider()) {
          // Unsubscribe user node from clusters
-         this.clustersService.unsubscribeClusters().then(() => {
-            // Remove user token
-            localStorage.removeItem('accessToken');
-
-            // Remove user info
-            localStorage.removeItem('currentUser');
-
-            // Reset currentUser subject
-            this.currentUser.next(null);
-            this.currentUser = new Subject<any>();
-         });
+         await this.clustersService.unsubscribeClusters();
       }
+
+      this.clearSession();
    }
 
 
-   private saveSession(jwtToken): void
-   {
+   private clearSession() {
+      // Remove user token
+      localStorage.removeItem('accessToken');
+      // Remove user info
+      localStorage.removeItem('currentUser');
+      // Reset currentUser subject
+      this.currentUser.next(null);
+      this.currentUser = new Subject<any>();
+   }
+
+
+   private saveSession(jwtToken): void {
       if (jwtToken && jwtToken.accessToken) {
          // Save jwt to local storage
          localStorage.setItem('accessToken', jwtToken.accessToken);
@@ -168,8 +168,7 @@ export class AuthService
    }
 
 
-   public isUserProvider(): Boolean
-   {
+   public isUserProvider(): Boolean {
       let userInfo = this.getCurrentUser();
       let isProvider:boolean = false;
 

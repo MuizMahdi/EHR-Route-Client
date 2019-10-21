@@ -17,6 +17,7 @@ export class PersonalRecordComponent implements OnInit
 {
    userHasEhr:boolean = false;
    userMedicalRecord:any;
+   userAddress:string = "";
 
    constructor(
       private authService:AuthService, private modalService:NzModalService,
@@ -26,6 +27,8 @@ export class PersonalRecordComponent implements OnInit
    ngOnInit() { 
       // Check if user has an EHR and has completed info entry
       this.checkUserEhrCreation();
+      this.getUserAddress();
+      this.getUserRecord();
    }
 
    private checkUserEhrCreation() {
@@ -37,7 +40,7 @@ export class PersonalRecordComponent implements OnInit
    }
 
 
-   showUserInfoModal(): void {
+   showEhrCreationModal(): void {
       // Create modal
       const userInfoModal = this.modalService.create({
          nzTitle: "Add your personal and medical information",
@@ -62,5 +65,9 @@ export class PersonalRecordComponent implements OnInit
 
          console.log(this.userMedicalRecord);
       }
+   }
+
+   getUserAddress() {
+      this.userAddress = this.authService.getCurrentUser().address;
    }
 }

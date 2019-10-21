@@ -133,11 +133,10 @@ export class InformationInputComponent implements OnInit
 
       // Save patient info on local DB
       await this.savePatientInfo(pateintInfo).then(success => {
-
          if (success) {
+            console.log("SUCESSFULY SAVED EHR INFO!");
             this.setUserHasSavedInfo();
          }
-
       });
 
    }
@@ -205,10 +204,11 @@ export class InformationInputComponent implements OnInit
       await this.databaseService.getDbConnection(userID, DbConnectionType.RECORD).manager.save(userRecord).then(
          response => {
             success = true;
+            console.log("4");
          },
-
          error => {
             success = false;
+            console.log("FUCK");
          }
       );
 
@@ -223,8 +223,8 @@ export class InformationInputComponent implements OnInit
             // Close Modal
             this.isUserInfoModalLoading = false;
             this.modal.destroy();
-            // Update info addition status of the UserInfo stored in LocalStoraged
-            this.updateLocalStorageUserInfo();
+            this.updateLocalStorageUserInfo(); // Update info addition status of the UserInfo stored in LocalStoraged
+            AppUtil.createMessage("success", "Your electronic health record has been created!");
          },
          (error:ErrorResponse) => AppUtil.createMessage("error", error.message)
       );

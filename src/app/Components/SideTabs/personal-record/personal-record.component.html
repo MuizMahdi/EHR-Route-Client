@@ -1,9 +1,12 @@
+<div *ngIf="userAddress" class="boxed-content">
+   <h5>Your address: {{userAddress}}</h5>
+</div>
+
 <div *ngIf="!userHasEhr" class="no-ehr-content">
    <div class="boxed-content">
-      You have not created a personal health record. As a result, you cannot grant medical data access to health care providers.
+      <p>You have not created a personal health record. As a result, you cannot grant medical data access to health care providers</p>
+      <button nz-button (click)="showEhrCreationModal()" id="create-ehr-btn" type="button" nzType="primary">Create a health record</button>
    </div>
-
-   <button nz-button (click)="showEhrCreationModal()" type="button" nzType="primary">Create a health record</button>
 </div>
 
 <div *ngIf="userHasEhr" class="ehr-content">

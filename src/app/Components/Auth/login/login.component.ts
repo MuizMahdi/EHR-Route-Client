@@ -104,6 +104,11 @@ export class LoginComponent
             // Persist address locally
             await this.addressService.saveUserAddress(addressResponse, userID);
 
+            // Update the UserInfo on localstorage
+            let userInfo = this.authService.getCurrentUser();
+            userInfo.address = addressResponse.address;
+            this.authService.setCurrentUserInfo(userInfo);
+
             // If user is a provider, then add the generated address to their provider details
             userInfo.roles.forEach(role => {
                if (role === RoleName.PROVIDER) {

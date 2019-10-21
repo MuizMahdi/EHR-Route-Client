@@ -40,8 +40,9 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgZorroAntdModule, NZ_I18N, en_US } from 'ng-zorro-antd';
 import { PersonalRecordComponent } from './Components/SideTabs/personal-record/personal-record.component';
 
-
 registerLocaleData(en);
+
+export let InjectorInstance: Injector;
 
 
 @NgModule({
@@ -100,8 +101,6 @@ registerLocaleData(en);
    bootstrap: [AppComponent]
 })
 
-
-export let InjectorInstance: Injector;
 
 export class AppModule { 
    constructor(private injector: Injector) {

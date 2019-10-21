@@ -48,14 +48,9 @@ export class AddressService
    }
 
 
-   public generateUserAddress(): Observable<any>
-   {
-      return this.http.get(this.addressGenerationUrl).pipe(first(),
-
-         catchError(error => {
-            return throwError(error);
-         })
-
+   public generateUserAddress(): Observable<any> {
+      return this.http.get(this.addressGenerationUrl).pipe(
+         catchError(error => { return throwError(error) })
       );
    }
 

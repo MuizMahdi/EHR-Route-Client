@@ -1,5 +1,27 @@
 <div class="boxed-content">
 
+   <h2 class="box-title">Register a provider to your institution</h2>
+   <hr class="box-title-bottom-line"><br>
+
+   <div>
+      <label>User's Address:</label>
+      <nz-input-group [nzSuffix]="suffixTemplate" [nzPrefix]="prefixTemplate">
+         <input [(ngModel)]="institutionProviderAddress" nz-input placeholder="User's address" type="text">
+      </nz-input-group>
+
+      <ng-template #prefixTemplate><i nz-icon type="user"></i></ng-template>
+      <ng-template #suffixTemplate><i nz-icon type="close-circle" (click)="institutionProviderAddress=null" *ngIf="institutionProviderAddress"></i></ng-template>
+   </div>
+
+   <br>
+
+   <button (click)="registerProvider(institutionProviderAddress)" nz-button nzType="primary">Add Provider</button>
+</div>
+
+
+
+<div class="boxed-content">
+
    <h2 class="box-title">Change a user's role</h2>
    <hr class="box-title-bottom-line"><br>
 

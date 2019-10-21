@@ -1,5 +1,4 @@
-export interface ErrorResponse 
-{
+export interface ErrorResponse {
    httpStatus:number;
    success:boolean;
    message:string;

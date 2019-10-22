@@ -1,9 +1,11 @@
+import { MedicalRecordResponse } from './../../../Models/Payload/Responses/MedicalRecordResponse';
 import { Component, OnInit } from '@angular/core';
 import { NzModalService } from 'ng-zorro-antd';
 import { AuthService } from 'src/app/Services/auth.service';
 import { UserRecordService } from './../../../Services/user-record.service';
 import { InformationInputComponent } from './../../Modals/information-input/information-input.component';
 import AppUtil from 'src/app/Helpers/Utils/AppUtil';
+import ModelMapper from 'src/app/Helpers/Utils/ModelMapper';
 
 
 @Component({
@@ -16,7 +18,7 @@ import AppUtil from 'src/app/Helpers/Utils/AppUtil';
 export class PersonalRecordComponent implements OnInit
 {
    userHasEhr:boolean = false;
-   userMedicalRecord:any;
+   userMedicalRecord:MedicalRecordResponse;
    userAddress:string = "";
 
    constructor(
@@ -32,6 +34,12 @@ export class PersonalRecordComponent implements OnInit
    }
 
    private checkUserEhrCreation() {
+      // Check for EHR creation updates while logged in
+      this.userRecordService.getUserHasEhr().subscribe(userHasEhr => this.userHasEhr = userHasEhr);
+      this.userRecordService.getUserEhr().subscribe(userEhr => {
+         this.userMedicalRecord = ModelMapper.mapRecordToSerializableMedicalRecord(userEhr);
+         this.calculateAge();
+      });
       // Check if user has already created their EHR
       if (this.authService.getCurrentUser().hasAddedInfo) { 
          this.userHasEhr = true;
@@ -55,16 +63,23 @@ export class PersonalRecordComponent implements OnInit
       }, 2000);
    }
 
-
    getUserRecord() {
       if (this.userHasEhr) {
          this.userRecordService.getCurrentUserRecord().then(
-            record => this.userMedicalRecord = record, 
+            record => { 
+               this.userMedicalRecord = ModelMapper.mapRecordToSerializableMedicalRecord(record);
+               console.log(this.userMedicalRecord.history);
+               this.calculateAge();
+            }, 
             () => AppUtil.createMessage("error", "Error while retrieving your record")
          );
-
-         console.log(this.userMedicalRecord);
       }
+   }
+
+   private calculateAge(): void {
+      let birthDateInMs = this.userMedicalRecord.patientInfo.birthDate;
+      let currentTimeInMs = new Date().getTime();
+      this.userMedicalRecord.patientInfo.birthDate = Math.floor((currentTimeInMs - birthDateInMs) / (1000*60*60*24*30*12));
    }
 
    getUserAddress() {

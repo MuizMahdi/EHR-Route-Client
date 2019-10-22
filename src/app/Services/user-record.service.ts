@@ -11,6 +11,7 @@ import { DatabaseService } from '../DataAccess/database.service';
 import { Injectable } from '@angular/core';
 import { Connection } from 'typeorm';
 import ModelMapper from '../Helpers/Utils/ModelMapper';
+import { Subject, BehaviorSubject } from 'rxjs';
 
 
 @Injectable({
@@ -20,8 +21,36 @@ import ModelMapper from '../Helpers/Utils/ModelMapper';
 
 export class UserRecordService 
 {
+   userHasEHR: Subject<boolean> = new Subject<boolean>();
+   userEhr: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+
    constructor(private dbService:DatabaseService, private authService:AuthService)
    { }
+
+
+   public getUserHasEhr() {
+      return this.userHasEHR;
+   }
+
+   public setUserHasEhr(userHasEhr:boolean) {
+      this.userHasEHR.next(userHasEhr);
+   }
+
+   public getUserEhr() {
+      return this.userEhr;
+   }
+
+   public setUserEhr(ehr:any) {
+      this.userEhr.next(ehr);
+   }
+
+   
+   public checkUserEhr(userId:number) {
+      let userRecord = this.getUserRecord(userId);
+      if (userRecord) {
+         this.setUserEhr(userRecord);
+      }
+   }
 
 
    public async ensureUserRecordDbConnection(userID:number) {

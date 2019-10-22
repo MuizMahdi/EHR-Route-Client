@@ -42,7 +42,6 @@ export class AppComponent implements OnInit
       // When app is about to be closed
       this.ipc.addListener('app-close', async () => {
          await this.authService.logout();
-         //this.mainLayout.hide();
          await this.router.navigate(['login']);         
          this.delay(3000).then(() => {
             // Send a message to the main renderer to close the window
@@ -53,12 +52,5 @@ export class AppComponent implements OnInit
 
    async delay(ms: number) {
       await new Promise(resolve => setTimeout(() => resolve(), ms));
-
-      /*
-      setTimeout(() => {
-         // Send a message to the main renderer to close the window
-         this.ipc.send('closed');
-      }, 3000);
-      */
    }
 }

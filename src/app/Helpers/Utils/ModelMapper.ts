@@ -185,6 +185,20 @@ export default class ModelMapper
    }
 
 
+   public static mapRecordToSerializableMedicalRecord(medicalRecord:MedicalRecord): MedicalRecordResponse {
+
+      const recordResponse:MedicalRecordResponse = {
+         patientInfo: this.mapEhrPatientInfoToPatientInfo(medicalRecord.patientData),
+         problems: this.mapEhrConditionsToConditions(medicalRecord.conditions),
+         allergiesAndReactions: this.mapEhrAllergiesToAllergies(medicalRecord.allergies),
+         history: medicalRecord.history
+      }
+
+      return recordResponse;
+
+   }
+
+
    public static mapAllergiesToEhrAllergies(allergies:string[]): EhrAllergyAndReaction[] {
 
       let ehrAllergies:EhrAllergyAndReaction[] = [];

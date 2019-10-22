@@ -202,14 +202,7 @@ export class InformationInputComponent implements OnInit
 
       // Save the record on local DB
       await this.databaseService.getDbConnection(userID, DbConnectionType.RECORD).manager.save(userRecord).then(
-         response => {
-            success = true;
-            console.log("4");
-         },
-         error => {
-            success = false;
-            console.log("FUCK");
-         }
+         response => success = true, error => success = false
       );
 
       return success;
@@ -225,6 +218,10 @@ export class InformationInputComponent implements OnInit
             this.modal.destroy();
             this.updateLocalStorageUserInfo(); // Update info addition status of the UserInfo stored in LocalStoraged
             AppUtil.createMessage("success", "Your electronic health record has been created!");
+            // Update user has EHR status
+            this.recordService.setUserHasEhr(true);
+            // Update current user EHR
+            this.recordService.checkUserEhr(this.authSerice.getCurrentUser().id);
          },
          (error:ErrorResponse) => AppUtil.createMessage("error", error.message)
       );

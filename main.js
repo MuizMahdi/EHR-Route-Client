@@ -22,21 +22,17 @@ app.on("ready", function() {
 
 // Initialize window and its properties on startup
 app.on("activate", function() {
-
    if (appWindow === null) {
       createWindow();
    }
-
 });
 
 
 // Quit when all windows are closed
 app.on("window-all-closed", function () {
-
    if (process.platform !== 'darwin') {
       app.quit()
    }
-
 });
 
 
@@ -81,8 +77,29 @@ async function createWindow()
 
 
    // On window closing set appWindow to null
+   /*
    appWindow.on("closed", function() {
       appWindow = null
+   });
+   */
+
+
+   // Send a message to the renderer when app is about to be closed to clean up
+   appWindow.on('close', (e) => {
+      if (appWindow) {
+         e.preventDefault();
+         appWindow.hide();
+         appWindow.webContents.send('app-close');
+      }
+   });
+
+
+   // Closes the window after cleaning up
+   ipcMain.on('closed', () => {
+      appWindow = null;
+      if (process.platform !== 'darwin') {
+         app.quit();
+      }
    });
 
 

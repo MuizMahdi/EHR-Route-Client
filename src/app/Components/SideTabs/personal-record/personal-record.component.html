@@ -1,5 +1,6 @@
 <div *ngIf="userAddress" class="boxed-content">
-   <h5>Your address: {{userAddress}}</h5>
+   <h4>Your address</h4><hr>
+   <h5>{{userAddress}}</h5>
 </div>
 
 <div *ngIf="!userHasEhr" class="no-ehr-content">
@@ -10,5 +11,118 @@
 </div>
 
 <div *ngIf="userHasEhr" class="ehr-content">
-   <h1>USER HAS EHR</h1>
+   <div class="boxed-content">
+
+      <h4>Your Personal Health Record</h4><hr>
+
+      <div class="personal-info">
+
+         <p class="info-category info-category-basic">Basic Information</p>
+         <hr>
+         <table style="width:100%">
+            <tr>
+               <th>Name:</th>
+               <span class="info-text">{{userMedicalRecord.patientInfo.name}}</span>
+            </tr>
+            <tr class="info-text">
+               <th>Gender:</th>
+               <span>{{userMedicalRecord.patientInfo.gender}}</span>
+            </tr>
+            <tr class="info-text">
+               <th>BirthDate: </th>
+               <span>{{userMedicalRecord.patientInfo.birthDate}}</span>
+            </tr>
+            <tr class="info-text">
+               <th>Country:</th>
+               <span>{{userMedicalRecord.patientInfo.country}}</span>
+            </tr>
+            <tr class="info-text">
+               <th>City:</th>
+               <span>{{userMedicalRecord.patientInfo.city}}</span>
+            </tr>
+         </table> 
+      
+         
+         <p class="info-category">Contact Information</p>
+         <hr>
+         <table style="width:100%; margin-bottom:4vh;">
+            <tr class="info-text">
+               <th>Phone:</th>
+               <span>{{userMedicalRecord.patientInfo.phone}}</span>
+            </tr>
+            <tr class="info-text">
+               <th>Email:</th>
+               <span>{{userMedicalRecord.patientInfo.email}}</span>
+            </tr>
+            <tr class="info-text">
+               <th>Address:</th>
+               <span>{{userMedicalRecord.patientInfo.address}}</span>
+            </tr>
+         </table> 
+
+      </div>
+
+
+      <div class="medical-info">
+
+         <p class="info-category info-category-basic">Medical Conditions</p>
+         <hr>
+         <div class="patient-conditions">
+            <div class="ehr-prompt">
+               <span *ngIf="userMedicalRecord && userMedicalRecord.problems.length <= 0">
+                  You have no conditions.
+               </span>
+            </div>
+            
+            <div class="ehr-list">
+               <ul class="list-group">
+                  <li *ngFor="let condition of userMedicalRecord.problems" class="list-group-item d-flex justify-content-between align-items-center">
+                     {{condition}}
+                  </li>
+               </ul>
+            </div>
+         </div>
+         
+         
+         <p class="info-category info-category-basic">Allergies and Drug Reactions</p>
+         <hr>
+         <div class="patient-allergies">
+            <div class="ehr-prompt">
+               <span *ngIf="userMedicalRecord.allergiesAndReactions.length <= 0">
+                  You have no allergies or drug reactions.
+               </span>
+            </div>
+            
+            <div class="ehr-list">
+               <ul class="list-group">
+                  <li *ngFor="let allergy of userMedicalRecord.allergiesAndReactions" class="list-group-item d-flex justify-content-between align-items-center">
+                     {{allergy}}
+                  </li>
+               </ul>
+            </div>
+         </div>
+
+
+         <p class="info-category info-category-basic">Medical History</p>
+         <hr>
+         <div class="patient-history"> 
+            <div class="ehr-prompt">
+               <span *ngIf="userMedicalRecord.history.length <= 0">
+                  You have no medical history.
+               </span>
+            </div>
+            
+            <div class="ehr-list">
+               <ul class="list-group">
+                  <li *ngFor="let history of userMedicalRecord.history" class="list-group-item d-flex justify-content-between align-items-center">
+                     <b>Condition:</b> {{history.condition}} <br>
+                     <b>Persistence State:</b> {{history.occurrence}}
+                  </li>
+               </ul>
+            </div>
+         </div>
+
+      </div>
+      
+   </div>   
 </div>

@@ -14,12 +14,13 @@ import { NodeClustersService } from 'src/app/Services/node-clusters.service';
 import { NetworkInvitationRequest } from 'src/app/Models/Payload/Requests/NetworkInvitationRequest';
 import { DatabaseService } from 'src/app/DataAccess/database.service';
 import ModelMapper from 'src/app/Helpers/Utils/ModelMapper';
+import AppUtil from 'src/app/Helpers/Utils/AppUtil';
 
 
 @Component({
-  selector: 'app-network-manager',
-  templateUrl: './network-manager.component.html',
-  styleUrls: ['./network-manager.component.css']
+   selector: 'app-network-manager',
+   templateUrl: './network-manager.component.html',
+   styleUrls: ['./network-manager.component.css']
 })
 
 
@@ -41,38 +42,27 @@ export class NetworkManagerComponent implements OnInit
       private clustersService:NodeClustersService, private databaseService:DatabaseService
    ) { }
 
-
-   async ngOnInit() 
-   {
+   async ngOnInit() {
       this.mainLayout.show();
       this.updateNetworks();
    }
 
 
-   generateNetwork(networkName:string):void
-   {
-
+   generateNetwork(networkName:string):void {
       this.networkService.generateNetwork(networkName).subscribe(
-
-         (response:BlockResponse) => {
+         async (response:BlockResponse) => {
             // Save the received genesis block
-            this.saveNetworkGenesisBlock(networkName, response);
+            await this.saveNetworkGenesisBlock(networkName, response);
             this.clustersService.resetClustersSubscription();
          },
-
-         (error:ErrorResponse) => {
-            console.log(error);
-         }
-
+         (error:ErrorResponse) => AppUtil.createMessage("error", error.message)
       );
-
    }
 
 
-   private saveNetworkGenesisBlock(networkName:string, genesisBlock:BlockResponse): void
-   {
+   private async saveNetworkGenesisBlock(networkName:string, genesisBlock:BlockResponse) {
       // Get network UUID of network with network name of the recently created network
-      this.networkService.getNetworkUuidByName(networkName).subscribe(
+      await this.networkService.getNetworkUuidByName(networkName).subscribe(
 
          async (response:SimpleStringPayload) => {
             // UUID response
@@ -90,66 +80,48 @@ export class NetworkManagerComponent implements OnInit
             // Update networks with the newly added network
             this.updateNetworks();
          },
-
-         (error:ErrorResponse) => {
-            console.log(error);
-         }
-
+         (error:ErrorResponse) => AppUtil.createMessage("error", error.message)
       );
 
    }
 
 
-   private updateNetworks(): void
-   {
+   private updateNetworks(): void {
       this.networkService.getUserNetworks().subscribe(
-
          (response:UserNetworks) => {
             this.userHasNetwork = true;
             this.userNetworks = response.userNetworks;
             this.selectedNetwork = this.userNetworks[0];
          },
-
          (error:ErrorResponse) => {
             if (error.httpStatus === 404) {
                this.userHasNetwork = false;
+               AppUtil.createMessage("error", "You are not a memeber of any network");
             }
          }
-
       );
    }
 
 
-   log(value:any): void 
-   {
-      console.log(value);
-   }
-
-
-   showNetworkCreationModal(): void 
-   {
+   showNetworkCreationModal(): void {
       this.isNetworkCreationModalVisible = true;
    }
 
 
-   onNetworkCreationSubmit(): void 
-   {
+   onNetworkCreationSubmit(): void {
       // Generate network using the network name input value
       this.generateNetwork(this.newNetworkName);
-
       // Close modal
       this.isNetworkCreationModalVisible = false;
    }
 
   
-   onNetworkCreationCancel(): void 
-   {
+   onNetworkCreationCancel(): void {
       this.isNetworkCreationModalVisible = false;
    }
 
 
-   inviteUser(address:string): void 
-   {
+   inviteUser(address:string): void {
       let currentUserAddress = this.authService.getCurrentUser().address;
 
       let invitationRequest:NetworkInvitationRequest = {
@@ -161,16 +133,8 @@ export class NetworkManagerComponent implements OnInit
       }
 
       this.networkService.sendNetworkInvitationRequest(invitationRequest).subscribe(
-
-         response => {
-            console.log(response);
-         },
-
-         error => {
-            console.log(error);
-         }
-
+         () => AppUtil.createMessage("success", "Network Invitation Request Sent Successfully"),
+         (error:ErrorResponse) => AppUtil.createMessage("error", error.message)
       );
-
    }
 }

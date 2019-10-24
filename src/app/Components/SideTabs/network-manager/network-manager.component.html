@@ -10,7 +10,7 @@
       <h1 class="box-title">{{selectedNetwork.name}}</h1>
    </div>
 
-   <nz-select nzShowSearch nzPlaceHolder="Select a network" [(ngModel)]="selectedNetwork" (ngModelChange)="log($event)" class="boxed-content" id="network-selector">
+   <nz-select nzShowSearch nzPlaceHolder="Select a network" [(ngModel)]="selectedNetwork" class="boxed-content" id="network-selector">
       <nz-option *ngFor="let n of userNetworks" [nzValue]="n" [nzLabel]="n.name"></nz-option>
    </nz-select>
 

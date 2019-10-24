@@ -31,36 +31,21 @@ export class AuthService
    { }
 
 
-   public register(userRegistrationInfo: UserRegistrationRequest): Observable<any>
-   {
+   public register(userRegistrationInfo: UserRegistrationRequest): Observable<any> {
       return this.http.post(this.registrationUrl, userRegistrationInfo).pipe(
-
-         catchError(error => { // Catch error
-            return throwError(error); // Rethrow the error
-         })
-         
+         catchError(error => { return throwError(error) })
       );
    }
 
 
-   public login(userLoginInfo: UserLoginRequest): Observable<any>
-   {
-
+   public login(userLoginInfo: UserLoginRequest): Observable<any> {
       return this.http.post(this.loginUrl, userLoginInfo).pipe(
-
          tap(tokenResponse => {
-
             this.saveSession(tokenResponse);
             this.isLoggedIn = true;
-  
             shareReplay()
-
          }),
-         
-         catchError(error => { // Catch error
-            return throwError(error); // Rethrow the error
-         })
-
+         catchError(error => { return throwError(error) })
       );
    }
 
@@ -76,8 +61,7 @@ export class AuthService
    }
 
 
-   public getAccessToken():any
-   {
+   public getAccessToken():any {
       return localStorage.getItem('accessToken');
    }
 
@@ -87,22 +71,16 @@ export class AuthService
    }
 
 
-   public getCurrentUserRoles(): Observable<any>
-   {
+   public getCurrentUserRoles(): Observable<any> {
       return this.http.get(this.userRolesUrl).pipe(first(),
-         catchError(error => {
-            return throwError(error);
-         })
+         catchError(error => { return throwError(error) })
       );
    }
 
 
-   public getCurrentUserInfo(): Observable<any>
-   {
+   public getCurrentUserInfo(): Observable<any> {
       return this.http.get(this.getCurrentUserUrl).pipe(first(),
-         catchError(error => {
-            return throwError(error);
-         })
+         catchError(error => { return throwError(error) })
       );
    }
 
@@ -139,10 +117,8 @@ export class AuthService
    }
 
 
-   private saveCurrentUserInfo(): void
-   {
+   private saveCurrentUserInfo(): void {
       this.getCurrentUserInfo().subscribe(
-
          (userInfo:UserInfo) => {
             // Save the user info in local storage
             localStorage.setItem('currentUser', JSON.stringify(userInfo));
@@ -159,11 +135,7 @@ export class AuthService
             // Set the user in the user subject, so subscribers will know when user info is received
             this.currentUser.next(userInfo);
          },
-
-         (error:ErrorResponse) => {
-            console.log(error);
-         }
-
+         (error:ErrorResponse) => console.log(error)
       );
    }
 

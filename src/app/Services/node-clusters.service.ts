@@ -58,6 +58,7 @@ export class NodeClustersService implements OnInit
 
 
    public async subscribeClusters() {
+      console.log("[Node Clusters] Sending Clusters Subscribe Requests...");
       // Subscribe node as a consumer
       await this.subscribeConsumer();
       // Subscribe node as a provider
@@ -121,7 +122,7 @@ export class NodeClustersService implements OnInit
 
 
    public async unsubscribeClusters(): Promise<any> {
-      console.log("[ClusterService] Sending unsubscribe request...");
+      console.log("[Node Clusters] Sending Unsubscribe Request...");
 
       return new Promise<any>(async (resolve, reject) => {
 

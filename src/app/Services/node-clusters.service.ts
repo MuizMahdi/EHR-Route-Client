@@ -5,8 +5,8 @@ import { ChainService } from './chain.service';
 import { ProviderService } from './provider.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
-//import { EventSourcePolyfill, OnMessageEvent } from 'ng-event-source';
-import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
+import { EventSourcePolyfill, OnMessageEvent } from 'ng-event-source';
+//import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
 import { environment } from 'src/environments/environment';
 import { catchError, first } from 'rxjs/operators';
 
@@ -73,13 +73,15 @@ export class NodeClustersService implements OnInit
 
       if (!this.providersEventSource) {
 
-         //this.providersEventSource = await new EventSourcePolyfill(uri, {headers: {Authorization: "Bearer " + Jwt}});
+         this.providersEventSource = await new EventSourcePolyfill(uri, {headers: {Authorization: "Bearer " + Jwt}});
 
+         /*
          this.providersEventSource = await new EventSourcePolyfill(uri, {
             headers: { Authorization: "Bearer " + Jwt, Accept:'text/event-stream' },
             connectionTimeout: 10,
             errorOnTimeout: false
          });
+         */
 
          await this.providersEventSource.addEventListener(NodeMessageType.HEART_BEAT.toString(), async (event:any) => {
             console.log('Provider HeartBeat: ' + event.data);
@@ -100,13 +102,15 @@ export class NodeClustersService implements OnInit
 
       if (!this.consumersEventSource) {
 
-         //this.consumersEventSource = await new EventSourcePolyfill(uri, {headers: {Authorization: "Bearer " + Jwt}});
+         this.consumersEventSource = await new EventSourcePolyfill(uri, {headers: {Authorization: "Bearer " + Jwt}});
 
+         /*
          this.consumersEventSource = await new EventSourcePolyfill(uri, {
             headers: { Authorization: "Bearer " + Jwt, Accept:'text/event-stream' },
             connectionTimeout: 10,
             errorOnTimeout: false
          });
+         */
 
          await this.consumersEventSource.addEventListener(NodeMessageType.HEART_BEAT.toString(), async (event:any) => {
             console.log('Consumer HeartBeat: ' + event.data);

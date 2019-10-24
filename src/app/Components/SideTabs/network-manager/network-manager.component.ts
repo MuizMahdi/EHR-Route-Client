@@ -25,9 +25,6 @@ import ModelMapper from 'src/app/Helpers/Utils/ModelMapper';
 
 export class NetworkManagerComponent implements OnInit 
 {
-   isAdmin:boolean = false;
-   isProvider:boolean = false;
-
    selectedNetwork:any = {};
    userNetworks:NetworkInfo[];
    userHasNetwork:boolean = true;
@@ -49,32 +46,6 @@ export class NetworkManagerComponent implements OnInit
    {
       this.mainLayout.show();
       this.updateNetworks();
-      this.initUserRole();
-   }
-
-
-   initUserRole():void 
-   {
-      // Get user roles
-      this.authService.getCurrentUserRoles().subscribe(
-
-         (roles:UserRole[]) => {
-
-            // Iterate through the roles array and set role flags
-            roles.forEach(role => {
-               if (role.roleName.trim() === 'ROLE_ADMIN') this.isAdmin = true; 
-               if (role.roleName.trim() === 'ROLE_PROVIDER') this.isProvider = true;
-            });
-
-            console.log('ADMIN: ' + this.isAdmin);
-
-         },
-
-         errorResponse => {
-            console.log(errorResponse);
-         }
-
-      );
    }
 
 

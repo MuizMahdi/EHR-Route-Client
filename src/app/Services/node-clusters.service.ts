@@ -139,7 +139,7 @@ export class NodeClustersService implements OnInit
          let nodeUUID:string = await this.getCurrentNodeUUID();
 
          // Unsubscribe node from clusters on server-side
-         await this.http.get(this.clustersUnsubscripeUrl + nodeUUID).pipe(first()).toPromise()
+         await this.http.get(this.clustersUnsubscripeUrl + nodeUUID).toPromise()
          .then(() => {
             console.log("[ClusterService] Unsubscribed on server-side successfully");
             // Close the SSE http connection from client-side

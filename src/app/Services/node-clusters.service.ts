@@ -121,17 +121,18 @@ export class NodeClustersService implements OnInit
    }
 
 
+   public async unsubscribeClustersB() {
+      // Get and set node UUID as the current provider UUID
+      let nodeUUID = await this.getCurrentNodeUUID();
+      return this.http.get(this.clustersUnsubscripeUrl + nodeUUID);
+   }
+
+
    public async unsubscribeClusters(): Promise<any> {
-      console.log("[Node Clusters] Sending Unsubscribe Request...");
+      return await new Promise<any>(async (resolve, reject) => {
 
-      return new Promise<any>(async (resolve, reject) => {
-
-         let nodeUUID:string = "";
-
-         // Get and set node UUID as the current provider UUID
-         await this.getCurrentNodeUUID().then(uuid => {
-            nodeUUID = uuid;
-         });
+         // Get current provider UUID
+         let nodeUUID:string = await this.getCurrentNodeUUID();
 
          // Unsubscribe node from clusters on server-side
          await this.http.get(this.clustersUnsubscripeUrl + nodeUUID).pipe(first()).toPromise()
@@ -151,9 +152,8 @@ export class NodeClustersService implements OnInit
 
 
    public resetClustersSubscription(): void {
-      this.unsubscribeClusters().then(() => {
-         this.subscribeClusters();
-      });
+      /* this.unsubscribeClusters().then(() => this.subscribeClusters()); */
+      this.unsubscribeClustersB().then((res) => res.subscribe(() => this.subscribeClusters()));
    }
 
 
@@ -169,7 +169,7 @@ export class NodeClustersService implements OnInit
             // Set event source as undefined so we could subscribe again
             this.providersEventSource = undefined;
 
-            console.log("[ClusterService] Providers SSE connection has been closed successfully.");
+            console.log("[ClusterService] Providers SSE connection has been closed successfully");
          }
       }
 

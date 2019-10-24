@@ -86,10 +86,15 @@ export class AuthService
 
 
    public async logout() {
-      // If the user has provider role
       if (this.isUserProvider()) {
-         // Unsubscribe user node from clusters
-         await this.clustersService.unsubscribeClusters();
+         this.clustersService.unsubscribeClustersB().then(
+            () => {
+               console.log("[AuthService] Nodes Cluster Unsubscription Complete");
+               this.clustersService.closeSseConnection();
+               this.clearSession();
+               return;
+            }
+         );
       }
 
       this.clearSession();
@@ -104,6 +109,7 @@ export class AuthService
       // Reset currentUser subject
       this.currentUser.next(null);
       this.currentUser = new Subject<any>();
+      console.log("[AuthService] Session Cleared");
    }
 
 

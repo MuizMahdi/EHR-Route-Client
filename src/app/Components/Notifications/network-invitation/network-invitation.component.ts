@@ -8,6 +8,7 @@ import { NzModalRef } from 'ng-zorro-antd';
 import { NetworkInvitationRequest } from 'src/app/Models/Payload/Requests/NetworkInvitationRequest';
 import { NotificationService } from 'src/app/Services/notification.service';
 import { NodeNetworkService } from 'src/app/Services/node-network.service';
+import AppUtil from 'src/app/Helpers/Utils/AppUtil';
 
 
 @Component({
@@ -48,17 +49,13 @@ export class NetworkInvitationComponent implements OnInit
 
    invitationAccept(invitationRequest:NetworkInvitationRequest): void {      
       this.networkService.networkInvitationAccept(invitationRequest).subscribe(
-
          response => {
             this.getNetworkChain(invitationRequest.networkUUID);
             this.deleteNotification();
             this.clusterService.resetClustersSubscription();
             console.log(response);
          },
-         error => {
-            console.log(error);
-         }
-
+         (error:ErrorResponse) => { AppUtil.createMessage("error", error.message) }
       );
       
    }
@@ -66,6 +63,7 @@ export class NetworkInvitationComponent implements OnInit
 
    private getNetworkChain(networkUUID:string) {
       this.getCurrentProviderUUID().then(providerUUID => {
+         console.log("Fetching network chain");
          this.chainService.getNetworkChain(providerUUID, networkUUID, 0, 0).subscribe(
             response => { console.log(response) },
             (error:ErrorResponse) => { console.log(error) }
@@ -88,6 +86,7 @@ export class NetworkInvitationComponent implements OnInit
 
 
    private deleteNotification(): void {
+      console.log("Deleting notification");
       this.notificationService.deleteNotification(this.notification.notificationID).subscribe( 
          response => { console.log(response) },
          error => { console.log(error) }

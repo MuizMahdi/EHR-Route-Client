@@ -43,6 +43,7 @@ export class NetworkManagerComponent implements OnInit
    ) { }
 
    async ngOnInit() {
+      console.log("{NetworkManager} OnInit: Inside network manager component");
       this.mainLayout.show();
       this.updateNetworks();
    }
@@ -87,17 +88,21 @@ export class NetworkManagerComponent implements OnInit
 
 
    private updateNetworks(): void {
+      console.log("{NetworkManager} Getting user networks");
       this.networkService.getUserNetworks().subscribe(
          (response:UserNetworks) => {
+            console.log("{NetworkManager} User networks retreived");
             this.userHasNetwork = true;
             this.userNetworks = response.userNetworks;
             this.selectedNetwork = this.userNetworks[0];
          },
          (error:ErrorResponse) => {
             if (error.httpStatus === 404) {
+               console.log("{NetworkManager} User has no networks");
                this.userHasNetwork = false;
                AppUtil.createMessage("error", "You are not a memeber of any network");
             }
+            console.log(error);
          }
       );
    }

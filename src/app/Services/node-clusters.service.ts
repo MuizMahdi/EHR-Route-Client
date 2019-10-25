@@ -5,10 +5,11 @@ import { ChainService } from './chain.service';
 import { ProviderService } from './provider.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
-import { EventSourcePolyfill, OnMessageEvent } from 'ng-event-source';
-//import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
+//import { EventSourcePolyfill, OnMessageEvent, ReadyState } from 'ng-event-source';
+import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
 import { environment } from 'src/environments/environment';
 import { catchError, first } from 'rxjs/operators';
+
 
 /**
  * Manages all node clusters' server sent events' connections and messages handlers.
@@ -16,7 +17,6 @@ import { catchError, first } from 'rxjs/operators';
  * @class NodeClustersService
  * @implements {OnInit}
 */
-
 @Injectable({
    providedIn: 'root'
 })
@@ -26,6 +26,7 @@ export class NodeClustersService implements OnInit
    providerSubscriptionUrl:string = environment.apiUrl + "/cluster/providers?nodeuuid=";
    consumerSubscriptionUrl:string = environment.apiUrl + "/cluster/consumers?nodeuuid=";
    clustersUnsubscripeUrl:string = environment.apiUrl + "/cluster/close?nodeuuid=";
+
    providersEventSource:EventSourcePolyfill;
    consumersEventSource:EventSourcePolyfill;
 
@@ -37,28 +38,13 @@ export class NodeClustersService implements OnInit
 
 
    ngOnInit() {
+      console.log("[NodeClusterService] OnInit: Unsubscribing Clusters");
       this.unsubscribeClusters();
    }
 
 
-   private async getCurrentNodeUUID(): Promise<string> {
-      let nodeUUID:string;
-      
-      await this.providerService.getCurrentProviderUUID().then(
-         response => {
-            nodeUUID = response.payload;
-         })
-         .catch(error => {
-            console.log(error);
-         }
-      );
-      
-      return nodeUUID;
-   }
-
-
    public async subscribeClusters() {
-      console.log("[Node Clusters] Sending Clusters Subscribe Requests...");
+      console.log("[NodeClusterService] Sending Clusters Subscribe Requests...");
       // Subscribe node as a consumer
       await this.subscribeConsumer();
       // Subscribe node as a provider
@@ -67,27 +53,31 @@ export class NodeClustersService implements OnInit
 
 
    public async subscribeProvider() {
-      let nodeUUID:string = await this.getCurrentNodeUUID();
+      let nodeUUID:string = localStorage.getItem('providerUUID');
       let uri:string = this.providerSubscriptionUrl + nodeUUID;
       let Jwt = localStorage.getItem('accessToken');
 
+      this.closeSseConnection();
+
       if (!this.providersEventSource) {
 
-         this.providersEventSource = await new EventSourcePolyfill(uri, {headers: {Authorization: "Bearer " + Jwt}});
+         this.providersEventSource = new EventSourcePolyfill(uri, {headers: {Authorization: "Bearer " + Jwt}});
 
          /*
          this.providersEventSource = await new EventSourcePolyfill(uri, {
             headers: { Authorization: "Bearer " + Jwt, Accept:'text/event-stream' },
             connectionTimeout: 10,
-            errorOnTimeout: false
+            errorOnTimeout: false,
+            checkActivity: true
          });
          */
+         
 
-         await this.providersEventSource.addEventListener(NodeMessageType.HEART_BEAT.toString(), async (event:any) => {
+         this.providersEventSource.addEventListener(NodeMessageType.HEART_BEAT.toString(), (event:any) => {
             console.log('Provider HeartBeat: ' + event.data);
          });
    
-         await this.providersEventSource.addEventListener(NodeMessageType.BLOCK_PROVIDE_REQUEST.toString(), async (event:any) => {
+         this.providersEventSource.addEventListener(NodeMessageType.BLOCK_PROVIDE_REQUEST.toString(), (event:any) => {
             let blockRequest:BlockProvideRequest = JSON.parse(event.data);
             this.chainService.sendBlock(blockRequest);
          });
@@ -96,27 +86,31 @@ export class NodeClustersService implements OnInit
 
 
    public async subscribeConsumer() {
-      let nodeUUID:string = await this.getCurrentNodeUUID();
+      let nodeUUID:string = localStorage.getItem('providerUUID');
       let uri:string = this.consumerSubscriptionUrl + nodeUUID;
       let Jwt = localStorage.getItem('accessToken');
 
+      this.closeSseConnection();
+
       if (!this.consumersEventSource) {
 
-         this.consumersEventSource = await new EventSourcePolyfill(uri, {headers: {Authorization: "Bearer " + Jwt}});
-
+         this.consumersEventSource = new EventSourcePolyfill(uri, {headers: {Authorization: "Bearer " + Jwt}});
+         
          /*
-         this.consumersEventSource = await new EventSourcePolyfill(uri, {
+         this.consumersEventSource = new EventSourcePolyfill(uri, {
             headers: { Authorization: "Bearer " + Jwt, Accept:'text/event-stream' },
             connectionTimeout: 10,
-            errorOnTimeout: false
+            errorOnTimeout: false,
+            checkActivity: true
          });
          */
+         
 
-         await this.consumersEventSource.addEventListener(NodeMessageType.HEART_BEAT.toString(), async (event:any) => {
+         this.consumersEventSource.addEventListener(NodeMessageType.HEART_BEAT.toString(), (event:any) => {
             console.log('Consumer HeartBeat: ' + event.data);
          });
    
-         await this.consumersEventSource.addEventListener(NodeMessageType.BLOCK.toString(), (event:any) => {
+         this.consumersEventSource.addEventListener(NodeMessageType.BLOCK.toString(), (event:any) => {
             let blockResponse:BlockAdditionResponse = JSON.parse(event.data);
             console.log(blockResponse);
             this.chainService.addBlock(blockResponse);
@@ -126,38 +120,35 @@ export class NodeClustersService implements OnInit
 
 
    public async unsubscribeClustersB() {
-      // Get and set node UUID as the current provider UUID
-      let nodeUUID = await this.getCurrentNodeUUID();
+      let nodeUUID:string = localStorage.getItem('providerUUID');
       return this.http.get(this.clustersUnsubscripeUrl + nodeUUID);
    }
 
 
    public async unsubscribeClusters(): Promise<any> {
       return await new Promise<any>(async (resolve, reject) => {
-
          // Get current provider UUID
-         let nodeUUID:string = await this.getCurrentNodeUUID();
+         let nodeUUID:string = localStorage.getItem('providerUUID');
 
          // Unsubscribe node from clusters on server-side
          await this.http.get(this.clustersUnsubscripeUrl + nodeUUID).toPromise()
          .then(() => {
-            console.log("[ClusterService] Unsubscribed on server-side successfully");
+            console.log("[NodeClusterService] Unsubscribed on server-side successfully");
             // Close the SSE http connection from client-side
             this.closeSseConnection();
             resolve();
          })
          .catch(error => {
-            console.log("[ClusterService] " + error);
+            console.log("[NodeClusterService] " + error);
             reject("Failed to unsubscribe node on server-side - " + error.message);
          });
-         
       });
    }
 
 
    public resetClustersSubscription(): void {
-      /* this.unsubscribeClusters().then(() => this.subscribeClusters()); */
-      this.unsubscribeClustersB().then((res) => res.subscribe(() => this.subscribeClusters()));
+      this.unsubscribeClusters().then(() => this.subscribeClusters());
+      /* this.unsubscribeClustersB().then((res) => res.subscribe(() => this.subscribeClusters())); */
    }
 
 
@@ -173,7 +164,7 @@ export class NodeClustersService implements OnInit
             // Set event source as undefined so we could subscribe again
             this.providersEventSource = undefined;
 
-            console.log("[ClusterService] Providers SSE connection has been closed successfully");
+            console.log("[NodeClusterService] Providers SSE connection has been closed successfully");
          }
       }
 
@@ -184,7 +175,7 @@ export class NodeClustersService implements OnInit
 
             this.consumersEventSource = undefined;
             
-            console.log("[ClusterService] Consumers SSE connection has been closed successfully.");
+            console.log("[NodeClusterService] Consumers SSE connection has been closed successfully.");
          }
       } 
    }

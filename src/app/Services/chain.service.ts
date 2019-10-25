@@ -232,8 +232,12 @@ export class ChainService
       // Get the network chain's merkle root
       let networkRoot = await this.generateNetworkMerkleRoot(blockRequest.networkUUID);
 
+      console.log(blockRequest);
+
       // Get the block with blockId from network
       let block = await this.getNetworkBlock(blockRequest.networkUUID, toNumber(blockRequest.blockId, 1));
+
+      console.log(block);
 
       // Construct a block response
       let blockResponse:BlockAdditionResponse = {
@@ -251,11 +255,13 @@ export class ChainService
 
       console.log(blockFetchResponse);
 
+      /*
       // Send the BlockFetchResponse
       this.http.post(this.chainUrl, blockFetchResponse).subscribe(
          response => console.log(response),
          error => console.log(error)
       );
+      */
 
    }
 

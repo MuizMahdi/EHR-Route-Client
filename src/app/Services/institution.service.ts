@@ -13,7 +13,7 @@ import { ProviderAdditionRequest } from './../Models/Payload/Requests/ProviderAd
 
 export class InstitutionService
 {
-   private registerProviderUrl:string = environment.apiUrl + '/institution/current/provider'
+   private registerProviderUrl:string = environment.apiUrl + '/institution/current/provider';
 
    constructor(private http:HttpClient) { }
 

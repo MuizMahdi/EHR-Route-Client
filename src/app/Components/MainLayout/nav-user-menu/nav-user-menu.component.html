@@ -4,6 +4,7 @@
    </a>
 
    <div *ngIf="navUserMenu" class="nav-user-menu">
+      <a (click)="showUserAddress()" href="javascript:void(0)" class="nav-user-menu-item">My Address</a>
       <a (click)="logout()" href="javascript:void(0)" class="nav-user-menu-item">Logout</a>
    </div>
 </div>

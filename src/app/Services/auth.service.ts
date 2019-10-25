@@ -1,3 +1,4 @@
+import { ProviderService } from './provider.service';
 import { RoleName } from './../Models/RoleName';
 import { ErrorResponse } from 'src/app/Models/Payload/Responses/ErrorResponse';
 import { UserInfo } from '../Models/Payload/Responses/UserInfo';
@@ -27,7 +28,10 @@ export class AuthService
    isLoggedIn:boolean = false;
 
 
-   constructor(private http:HttpClient, private clustersService:NodeClustersService) 
+   constructor(
+      private http:HttpClient, private clustersService:NodeClustersService,
+      private providerService: ProviderService
+   )
    { }
 
 
@@ -43,7 +47,7 @@ export class AuthService
          tap(tokenResponse => {
             this.saveSession(tokenResponse);
             this.isLoggedIn = true;
-            shareReplay()
+            //shareReplay()
          }),
          catchError(error => { return throwError(error) })
       );
@@ -132,9 +136,16 @@ export class AuthService
             // Check if user has a provider role
             userInfo.roles.forEach(role => {
                if (role == RoleName.PROVIDER) {
-                  // Subscribe user node to providers and consumers cluster
-                  this.clustersService.subscribeProvider();
-                  this.clustersService.subscribeConsumer();
+                  console.log("[AuthService] Getting provider UUID");
+                  // Save provider UUID on local storage
+                  this.providerService.getCurrentProviderUUID()
+                  .then(res => {
+                     localStorage.setItem('providerUUID', res.payload);
+                     // Subscribe client nodes to providers and consumers clusters
+                     this.clustersService.subscribeProvider();
+                     this.clustersService.subscribeConsumer();
+                  })
+                  .catch(err => console.log(err)); 
                }
             });
 

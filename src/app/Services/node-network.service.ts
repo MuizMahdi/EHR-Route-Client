@@ -234,15 +234,9 @@ export class NodeNetworkService implements OnInit
 
 
    public networkInvitationAccept(invitationResponse:NetworkInvitationRequest): Observable<any> {
-
-      return this.http.post(this.networkInvitationAcceptUrl, invitationResponse).pipe(first(),
-
-         catchError(error => {
-            return throwError(error);
-         })
-
+      return this.http.post(this.networkInvitationAcceptUrl, invitationResponse).pipe(
+         catchError(error => { return throwError(error) })
       );
-
    }
 
 

@@ -1,10 +1,11 @@
-import { NgModule, Injector } from '@angular/core';
 import en from '@angular/common/locales/en';
+import { NgModule, Injector } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // Interceptors
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -15,7 +16,6 @@ import { ErrorInterceptor } from './Helpers/Interceptors/ErrorInterceptor';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './Components/Auth/login/login.component';
 import { MainComponent } from './Components/SideTabs/main/main.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AuthMainComponent } from './Components/Auth/auth-main/auth-main.component';
 import { NavBarComponent } from './Components/MainLayout/nav-bar/nav-bar.component';
 import { SideBarComponent } from './Components/MainLayout/side-bar/side-bar.component';
@@ -32,13 +32,13 @@ import { ConsentRequestComponent } from './Components/Notifications/consent-requ
 import { InformationInputComponent } from './Components/Modals/information-input/information-input.component';
 import { RecordDetailsComponent } from './Components/Modals/record-details/record-details.component';
 import { UpdateConsentRequestComponent } from './Components/Notifications/update-consent-request/update-consent-request.component';
+import { PersonalRecordComponent } from './Components/SideTabs/personal-record/personal-record.component';
 
 // External Modules
 import { NgxElectronModule } from 'ngx-electron';
 import { ClickOutsideModule } from 'ng-click-outside';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgZorroAntdModule, NZ_I18N, en_US } from 'ng-zorro-antd';
-import { PersonalRecordComponent } from './Components/SideTabs/personal-record/personal-record.component';
 
 registerLocaleData(en);
 
@@ -47,7 +47,7 @@ export let InjectorInstance: Injector;
 
 @NgModule({
 
-   entryComponents: [ 
+   entryComponents: [
       NetworkInvitationComponent,
       UserProfileComponent,
       ConsentRequestComponent,

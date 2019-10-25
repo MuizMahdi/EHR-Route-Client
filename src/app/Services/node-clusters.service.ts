@@ -44,6 +44,8 @@ export class NodeClustersService implements OnInit
 
 
    public async subscribeClusters() {
+      // Close open connections
+      this.closeSseConnection();
       console.log("[NodeClusterService] Sending Clusters Subscribe Requests...");
       // Subscribe node as a consumer
       await this.subscribeConsumer();
@@ -57,7 +59,6 @@ export class NodeClustersService implements OnInit
       let uri:string = this.providerSubscriptionUrl + nodeUUID;
       let Jwt = localStorage.getItem('accessToken');
 
-      this.closeSseConnection();
 
       if (!this.providersEventSource) {
 
@@ -71,7 +72,6 @@ export class NodeClustersService implements OnInit
             checkActivity: true
          });
          */
-         
 
          this.providersEventSource.addEventListener(NodeMessageType.HEART_BEAT.toString(), (event:any) => {
             console.log('Provider HeartBeat: ' + event.data);
@@ -90,8 +90,6 @@ export class NodeClustersService implements OnInit
       let uri:string = this.consumerSubscriptionUrl + nodeUUID;
       let Jwt = localStorage.getItem('accessToken');
 
-      this.closeSseConnection();
-
       if (!this.consumersEventSource) {
 
          this.consumersEventSource = new EventSourcePolyfill(uri, {headers: {Authorization: "Bearer " + Jwt}});
@@ -105,7 +103,6 @@ export class NodeClustersService implements OnInit
          });
          */
          
-
          this.consumersEventSource.addEventListener(NodeMessageType.HEART_BEAT.toString(), (event:any) => {
             console.log('Consumer HeartBeat: ' + event.data);
          });

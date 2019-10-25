@@ -11,6 +11,7 @@ import { UserInfo } from './../../../Models/Payload/Responses/UserInfo';
 import { UsersService } from './../../../Services/users.service';
 import { Component, OnInit, Input, TemplateRef } from '@angular/core';
 import { NetworkInfo } from 'src/app/Models/Payload/Responses/NetworkInfo';
+import AppUtil from 'src/app/Helpers/Utils/AppUtil';
 
 
 @Component({
@@ -93,7 +94,7 @@ export class UserProfileComponent implements OnInit
       let blockAdditionRequest = await this.chainService.generateBlockAdditionRequest(providerUserId, patientUserId, providerNetworkUUID);
    
       this.transactionService.sendUserEhrConsentRequest(blockAdditionRequest).subscribe(
-         response => { console.log(response) },
+         response => { AppUtil.createMessage("success", "EHR Acquisition Consent Request Was Sent") },
          (error:ErrorResponse) => { console.log(error) }
       );
    }

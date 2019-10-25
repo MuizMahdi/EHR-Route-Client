@@ -47,41 +47,29 @@ export class NetworkInvitationComponent implements OnInit
    }
    
 
-   invitationAccept(invitationRequest:NetworkInvitationRequest): void {      
+   invitationAccept(invitationRequest:NetworkInvitationRequest): void {
       this.networkService.networkInvitationAccept(invitationRequest).subscribe(
          response => {
             this.getNetworkChain(invitationRequest.networkUUID);
             this.deleteNotification();
             this.clusterService.resetClustersSubscription();
+            AppUtil.createMessage("success", "You have joined a new network");
             console.log(response);
          },
          (error:ErrorResponse) => { AppUtil.createMessage("error", error.message) }
-      );
-      
+      );   
    }
 
 
    private getNetworkChain(networkUUID:string) {
-      this.getCurrentProviderUUID().then(providerUUID => {
-         console.log("Fetching network chain");
-         this.chainService.getNetworkChain(providerUUID, networkUUID, 0, 0).subscribe(
-            response => { console.log(response) },
-            (error:ErrorResponse) => { console.log(error) }
-         )
-      })
-   }
+      let nodeUUID:string = localStorage.getItem('providerUUID');
 
+      console.log("Fetching network chain");
 
-   private async getCurrentProviderUUID(): Promise<string> {
-      let providerUUID:string;
-      
-      await this.providerService.getCurrentProviderUUID().then(
-         response => { providerUUID = response.payload }
-      ).catch(error => { 
-         console.log(error) 
-      });
-      
-      return providerUUID;
+      this.chainService.getNetworkChain(nodeUUID, networkUUID, 1, 0).subscribe(
+         response => { console.log(response) },
+         (error:ErrorResponse) => { console.log(error) }
+      )
    }
 
 

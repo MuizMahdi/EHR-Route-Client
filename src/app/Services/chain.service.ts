@@ -181,6 +181,13 @@ export class ChainService
    }
 
 
+   public async getNetworkLatestBlockIndex(networkUUID:string): Promise<number> {
+      await this.ensureNetworkDbConnection(networkUUID);
+      let dbConnection:Connection = this.dbService.getNetworkDbConnection(networkUUID);
+      return await dbConnection.manager.count(Block);
+   }
+
+
    public async countAllNetworksBlocks(networksUUIDs:string[]): Promise<number> {
       let count: number = 0;  
 
@@ -232,12 +239,12 @@ export class ChainService
       // Get the network chain's merkle root
       let networkRoot = await this.generateNetworkMerkleRoot(blockRequest.networkUUID);
 
-      console.log(blockRequest);
-
       // Get the block with blockId from network
       let block = await this.getNetworkBlock(blockRequest.networkUUID, toNumber(blockRequest.blockId, 1));
 
-      console.log(block);
+      // Get latest block ID
+      let latestBlockIndex = await this.getNetworkLatestBlockIndex(blockRequest.networkUUID);
+
 
       // Construct a block response
       let blockResponse:BlockAdditionResponse = {
@@ -250,19 +257,17 @@ export class ChainService
          blockResponse: blockResponse,
          consumerUUID: blockRequest.consumerUUID,
          networkUUID: blockRequest.networkUUID,
-         networkChainRoot: networkRoot
+         networkChainRoot: networkRoot,
+         networkLatestBlockIndex: latestBlockIndex
       }
 
       console.log(blockFetchResponse);
 
-      /*
       // Send the BlockFetchResponse
       this.http.post(this.chainUrl, blockFetchResponse).subscribe(
          response => console.log(response),
          error => console.log(error)
       );
-      */
-
    }
 
 

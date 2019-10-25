@@ -6,4 +6,5 @@ export interface BlockFetchResponse {
    consumerUUID: string;
    networkUUID: string;
    networkChainRoot: string;
+   networkLatestBlockIndex: number;
 }

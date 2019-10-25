@@ -245,7 +245,6 @@ export class ChainService
       // Get latest block ID
       let latestBlockIndex = await this.getNetworkLatestBlockIndex(blockRequest.networkUUID);
 
-
       // Construct a block response
       let blockResponse:BlockAdditionResponse = {
          block: ModelMapper.mapBlockToBlockResponse(block),
@@ -263,7 +262,6 @@ export class ChainService
 
       console.log(blockFetchResponse);
 
-      // Send the BlockFetchResponse
       this.http.post(this.chainUrl, blockFetchResponse).subscribe(
          response => console.log(response),
          error => console.log(error)

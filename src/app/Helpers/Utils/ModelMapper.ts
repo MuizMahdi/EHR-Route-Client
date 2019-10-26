@@ -242,7 +242,24 @@ export default class ModelMapper
    }
 
 
-   public static mapEhrHistoryToHistoryList(ehrHistory:EhrHistory[]): string[] {
+   public static mapEhrHistoryToHistoryListB(ehrHistory:EhrHistory[]): any[] {
+
+      let medicalHistory:any[] = [];
+
+      ehrHistory.forEach(ehrHistoryEntry => {
+         let historyEntry = {
+            condition: ehrHistoryEntry.condition,
+            occurrence: ehrHistoryEntry.occurrence
+         }
+         medicalHistory.push(historyEntry);
+      });
+
+      return medicalHistory;
+
+   }
+
+
+   public static mapEhrHistoryToHistoryList(ehrHistory:EhrHistory[]): any[] {
 
       let medicalHistory:any[] = [];
 

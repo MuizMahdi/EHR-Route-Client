@@ -18,6 +18,7 @@ import { NzModalRef, NzModalService } from 'ng-zorro-antd';
 import { ConsentRequest } from './../../../Models/Payload/Responses/ConsentRequest';
 import { Component, OnInit, Input } from '@angular/core';
 import ModelMapper from 'src/app/Helpers/Utils/ModelMapper';
+import AppUtil from 'src/app/Helpers/Utils/AppUtil';
 
 
 @Component({
@@ -95,6 +96,7 @@ export class ConsentRequestComponent implements OnInit
       // Construct a UserConsentResponse object
       let userConsentResponse:UserConsentResponse = {
          block: this.consentRequest.block,
+         medicalHistory: ModelMapper.mapEhrHistoryToHistoryListB(userMedicalRecord.history), //TODO: Stupid hack, FIX THIS!
          userPrivateKey: userAddress.privateKey,
          userAddress: userAddress.address,
          consentRequestUUID: this.consentRequest.consentRequestUUID,
@@ -103,10 +105,14 @@ export class ConsentRequestComponent implements OnInit
          userID: userID
       }
 
+      console.log(userConsentResponse.medicalHistory);
+
+      
       // Send the consent response
       this.transactionService.sendUserEhrConsentResponse(userConsentResponse).subscribe(
          response => {
             console.log(response);
+            AppUtil.createMessage("success", "Medical record usage consent was given");
             // Delete notification
             this.deleteNotification();
          },
@@ -114,7 +120,7 @@ export class ConsentRequestComponent implements OnInit
             console.log(error);
          }
       );
-
+      
    }
 
 

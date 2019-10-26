@@ -21,6 +21,7 @@ import { NotificationService } from './../../../Services/notification.service';
 import { UpdateConsentRequest } from './../../../Models/Payload/Responses/UpdateConsentRequest';
 import { Component, OnInit, Input } from '@angular/core';
 import ModelMapper from 'src/app/Helpers/Utils/ModelMapper';
+import AppUtil from 'src/app/Helpers/Utils/AppUtil';
 
 
 @Component({
@@ -105,6 +106,7 @@ export class UpdateConsentRequestComponent implements OnInit
       // Construct a UserConsentResponse object
       let userConsentResponse: UserConsentResponse = {
          block: consentRequest.block,
+         medicalHistory: ModelMapper.mapEhrHistoryToHistoryListB(userMedicalRecord.history), //TODO: Stupid hack, FIX THIS! TODO:
          userPrivateKey: userAddress.privateKey,
          userAddress: userAddress.address,
          consentRequestUUID: consentRequest.consentRequestUUID,
@@ -124,7 +126,6 @@ export class UpdateConsentRequestComponent implements OnInit
 
 
    async onConsentRequestAccept() {
-
       // Get the proposed updates
       let updates:MedicalRecordUpdates = this.notification.reference.updateMedicalRecord;
 
@@ -136,17 +137,13 @@ export class UpdateConsentRequestComponent implements OnInit
 
       // Send the consent response
       this.transactionService.sendUpdateEhrConsentResponse(updateConsentResponse).subscribe(
-
          response => {
-            console.log(response);
+            AppUtil.createMessage("success", "Medical record update consent was given");
+            this.modal.close();
             // Delete notification
             this.deleteNotification();
          },
-
-         error => {
-            console.log(error);
-         }
-
+         error => console.log(error)
       );
 
    }
@@ -157,22 +154,15 @@ export class UpdateConsentRequestComponent implements OnInit
       this.modalService.confirm({
          nzTitle: 'Are you sure that you want to reject ?',
          nzContent: 'The institution will not be notified if you reject the request',
-         nzOnOk: () => { this.deleteNotification(); this.modal.close(); }
+         nzOnOk: () => { this.deleteNotification(); this.modal.close(); AppUtil.createMessage("success", "Medical record update request was rejected"); }
       });
    }
 
 
    deleteNotification(): void {
       this.notificationService.deleteNotification(this.notification.notificationID).subscribe( 
-
-         response => {
-            console.log(response);
-         },
-
-         error => {
-            console.log(error);
-         }
-
+         response => {console.log(response)},
+         error => {console.log(error)}
       );
    }
 }

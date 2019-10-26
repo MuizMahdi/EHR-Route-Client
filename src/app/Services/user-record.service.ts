@@ -145,6 +145,7 @@ export class UserRecordService
    public async updateUserRecord(updates:MedicalRecordUpdates) {
 
       let currentUserId = this.authService.getCurrentUser().id;
+      let currentUserRecord = await this.getCurrentUserRecord();
 
       await this.ensureUserRecordDbConnection(currentUserId);
 
@@ -158,6 +159,9 @@ export class UserRecordService
       //updatedRecord.patientData = await this.getUserEhrInfo();
       updatedRecord.allergies = ModelMapper.mapAllergiesToEhrAllergies(updates.allergiesAndReactions);
       updatedRecord.conditions = ModelMapper.mapConditionsToEhrConditions(updates.problems);
+      updatedRecord.history = currentUserRecord.history;
+
+      console.log(updatedRecord);
 
       // Save the updated record
       dbConnection.getRepository(MedicalRecord).save(updatedRecord);

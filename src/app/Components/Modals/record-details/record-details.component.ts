@@ -1,3 +1,4 @@
+import { EhrHistory } from './../../../DataAccess/entities/EHR/EhrHistory';
 import { EhrAllergyAndReaction } from './../../../DataAccess/entities/EHR/EhrAllergyAndReaction';
 import { EhrCondition } from './../../../DataAccess/entities/EHR/EhrCondition';
 import { TransactionService } from './../../../Services/transaction.service';
@@ -11,6 +12,7 @@ import { HealthRecordData } from './../../../Models/App/HealthRecordData';
 import { ElectronicHealthRecord } from './../../../Models/App/ElectronicHealthRecord';
 import { NzModalService } from 'ng-zorro-antd';
 import { Component, OnInit, Input } from '@angular/core';
+import AppUtil from 'src/app/Helpers/Utils/AppUtil';
 
 
 @Component({
@@ -31,7 +33,7 @@ export class RecordDetailsComponent implements OnInit
 
    ehrConditions: string[] = [];
    ehrAllergies: string[] = [];
-   ehrHistory: {condition:string; occurrence:boolean;};
+   ehrHistory: any[] = [];
 
    toggleViewedDetails: boolean = true;
    isEditingEhr: boolean = false;
@@ -43,20 +45,19 @@ export class RecordDetailsComponent implements OnInit
 
 
    ngOnInit() {
-
       if (this.EHR) {
          this.recordData = this.EHR.recordData;
          this.blockInfo = this.EHR.blockInfo;
          this.initEhrDataArrays();
          this.calculateAge();
       }
-
    }
 
 
    private initEhrDataArrays() {
       let conditions: EhrCondition[] = this.recordData.conditions;
       let allergies: EhrAllergyAndReaction[] = this.recordData.allergies;
+      let history: EhrHistory[] = this.recordData.history;
 
       conditions.forEach((ehrCondition:EhrCondition) => {
          this.ehrConditions.push(ehrCondition.condition);
@@ -64,6 +65,10 @@ export class RecordDetailsComponent implements OnInit
 
       allergies.forEach((ehrAllergy:EhrAllergyAndReaction) => {
          this.ehrAllergies.push(ehrAllergy.allergy);
+      });
+
+      history.forEach((ehrHistory) => {
+         this.ehrHistory.push({condition: ehrHistory.condition, occurrence: ehrHistory.occurrence});
       });
    }
 
@@ -80,12 +85,12 @@ export class RecordDetailsComponent implements OnInit
    }
 
 
-   private addCondition(condition:string): void {
+   addCondition(condition:string): void {
       this.ehrConditions.push(condition);
    }
 
 
-   private deleteCondition(condition:string): void {
+   deleteCondition(condition:string): void {
 
       let conditionIndex = this.ehrConditions.indexOf(condition);
 
@@ -96,12 +101,12 @@ export class RecordDetailsComponent implements OnInit
    }
 
 
-   private addAllergy(allergy:string): void {
+   addAllergy(allergy:string): void {
       this.ehrAllergies.push(allergy);
    }
 
 
-   private deleteAllergy(allergy:string): void {
+   deleteAllergy(allergy:string): void {
 
       let allergyIndex = this.ehrAllergies.indexOf(allergy);
 
@@ -112,12 +117,12 @@ export class RecordDetailsComponent implements OnInit
    }
 
 
-   private toggleEhrEditing(): void {
+   toggleEhrEditing(): void {
       this.isEditingEhr = !this.isEditingEhr;
    }
 
 
-   private async requestEhrUpdateConsent() {
+   async requestEhrUpdateConsent() {
 
       let providerUserId = this.authService.getCurrentUser().id;
       let patientUserId = this.recordData.patientData.userID;
@@ -130,7 +135,7 @@ export class RecordDetailsComponent implements OnInit
       let recordUpdateData:RecordUpdateData = {
          conditions: this.ehrConditions,
          allergies: this.ehrAllergies,
-         history: {}
+         history: this.ehrHistory
       }
 
       // Construct an UpdatedBlockAdditionRequest
@@ -140,7 +145,7 @@ export class RecordDetailsComponent implements OnInit
       }
 
       this.transactionService.sendEhrUpdateConsentRequest(updatedBlockRequest).subscribe(
-         response => { console.log(response) },
+         response => { AppUtil.createMessage("success", "EHR Update Consent Was Sent") },
          error => { console.log(error) }
       );
 

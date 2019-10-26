@@ -144,6 +144,29 @@
    </div>
 
 
+   <div class="patient-history">
+
+      <p class="info-category info-category-basic">Medical History</p>
+      <hr>
+
+      <div class="ehr-prompt">
+         <span *ngIf="ehrHistory.length == 0">
+            Patient has no medical history.
+         </span>
+      </div>
+      
+      <div class="ehr-list">
+         <ul class="list-group">
+            <li *ngFor="let history of ehrHistory" class="list-group-item d-flex justify-content-between align-items-center">
+               <b>Condition:</b> {{history.condition}} <br>
+               <b>Persistence State:</b> {{history.occurrence}}
+            </li>
+         </ul>
+      </div>
+
+   </div>
+
+
    <div style="margin-top:3vh;">
       <button *ngIf="!isEditingEhr" (click)="toggleEhrEditing()" style="margin-right:5px;" nzType="default" nz-button>Edit EHR</button>
       <button *ngIf="isEditingEhr" (click)="requestEhrUpdateConsent()" style="margin-right:5px;" nzType="primary" nz-button>Request Edit consent</button>

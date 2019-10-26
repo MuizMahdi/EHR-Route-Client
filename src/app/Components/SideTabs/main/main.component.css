@@ -1,0 +1,32 @@
+.main-wrapper {
+   padding: 0;
+   margin-top: -4px;
+}
+
+.logo {
+   margin-bottom: 1em;
+   text-align: center;
+}
+
+.logo img {
+   height: 470px;
+   width: 100%;
+}
+
+.text {
+   padding: 2em 2em;
+   color: rgb(73, 73, 73);
+}
+
+.floating {
+   animation-name: floating;
+   animation-duration: 4s;
+   animation-iteration-count: infinite;
+   animation-timing-function: ease-in-out;
+}
+
+@keyframes floating {
+   from { transform: translate(0,  0px); }
+   65%  { transform: translate(0, 30px); }
+   to   { transform: translate(0, 0px); }    
+}

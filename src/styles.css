@@ -88,3 +88,7 @@ body
    font-family: "QanelasSoft-UltraLight";
    src: url("assets/css/fonts/QanelasSoft-UltraLight.otf") format("opentype");
 }
+
+body, html {
+   overflow-x: hidden;
+}

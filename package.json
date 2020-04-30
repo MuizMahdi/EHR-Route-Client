@@ -44,7 +44,7 @@
       "electron-dl": "^1.13.0",
       "electron-reload": "^1.4.0",
       "hammerjs": "^2.0.8",
-      "jquery": "^3.4.1",
+      "jquery": "^3.5.0",
       "linvodb3": "^3.26.0",
       "merkletreejs": "0.0.22",
       "ng-click-outside": "^4.0.0",

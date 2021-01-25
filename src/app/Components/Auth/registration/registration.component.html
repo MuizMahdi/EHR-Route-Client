@@ -1,0 +1,41 @@
+<div class="registration-container">
+   <form nz-form [formGroup]="registrationFormGroup" class="registration-form" (ngSubmit)="onRegistration()" novalidate>
+
+      <h1>Sign Up</h1>
+
+      <nz-form-item>
+         <nz-form-control nzErrorTip="Please input your name!">
+            <nz-input-group nzPrefixIcon="user">
+               <input formControlName="name" nz-input type="text" class="form-control" placeholder="Name" required>
+            </nz-input-group>
+         </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+         <nz-form-control nzErrorTip="Please input your username!">
+            <nz-input-group nzPrefixIcon="user">
+               <input formControlName="username" nz-input type="text" class="form-control" placeholder="Username" required>
+            </nz-input-group>
+         </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+         <nz-form-control nzErrorTip="Please input your email!">
+            <nz-input-group nzPrefixIcon="user">
+               <input formControlName="email" nz-input type="text" class="form-control" placeholder="Email" required>
+            </nz-input-group>
+         </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+         <nz-form-control nzErrorTip="Please input your Password!">
+            <nz-input-group nzPrefixIcon="lock">
+               <input formControlName="password" nz-input type="password" class="form-control" placeholder="Password" required>
+            </nz-input-group>
+         </nz-form-control>
+      </nz-form-item>
+
+      <button nz-button [nzType]="'primary'" type="submit">Log in</button>
+
+   </form>
+</div>

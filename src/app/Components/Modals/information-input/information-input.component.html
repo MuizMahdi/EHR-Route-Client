@@ -1,0 +1,134 @@
+<div>
+   <p>
+      This information will be used on your health records.
+      It will be saved on your device and will <b>not</b> be 
+      shared among healthcare institutions without your consent.
+   </p>
+</div>
+
+<div style="margin-top:6vh;">
+   <form nz-form [formGroup]="userInfoForm" (ngSubmit)="onUserInfoSubmit()">
+
+      <nz-form-item>
+         <nz-form-label [nzSpan]="2" for="name" class="form-layout">Full name</nz-form-label>
+         <nz-form-control [nzSpan]="17" [nzValidateStatus]="userInfoForm.controls['nameCtrl']">
+            <input formControlName="nameCtrl" id="name" nz-input placeholder="Full Name">
+         </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+         <nz-form-label [nzSpan]="2" for="birth-date" class="form-layout">Birthdate</nz-form-label>
+         <nz-form-control [nzSpan]="17">
+            <nz-date-picker formControlName="birthCtrl" [nzFormat]="dateFormat" id="birth-date"></nz-date-picker>
+         </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+         <nz-form-label [nzSpan]="2" class="form-layout">Gender</nz-form-label>
+         <nz-form-control [nzSpan]="17">
+            <nz-radio-group formControlName="genderSelectCtrl">
+               <label nz-radio-button nzValue="male">Male</label>
+               <label nz-radio-button nzValue="female">Female</label>
+            </nz-radio-group>
+         </nz-form-control>
+      </nz-form-item>
+            
+      <nz-form-item style="margin-top:4vh;">
+         <nz-form-label [nzSpan]="2" for="phone" class="form-layout">Phone</nz-form-label>
+         <nz-form-control [nzSpan]="17" [nzValidateStatus]="userInfoForm.controls['phoneCtrl']">
+            <input formControlName="phoneCtrl" id="phone" placeholder="Phone Number" nz-input>
+         </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+         <nz-form-label [nzSpan]="2" for="country" class="form-layout">Country</nz-form-label>
+         <nz-form-control [nzSpan]="17">
+            <nz-select formControlName="countryCtrl" (ngModelChange)="onCountrySelect($event)" nzAllowClear nzShowSearch nzPlaceHolder="Country" id="country">
+               <nz-option *ngFor="let c of countries" [nzValue]="c" [nzLabel]="c.name"></nz-option>
+            </nz-select>
+         </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item style="margin-top:4vh;">
+         <nz-form-label [nzSpan]="2" for="city" class="form-layout">City</nz-form-label>
+         <nz-form-control [nzSpan]="17">
+            <nz-select formControlName="cityCtrl" nzAllowClear nzShowSearch nzPlaceHolder="City" id="city">
+               <nz-option *ngFor="let c of countryCities" [nzValue]="c" [nzLabel]="c.matching_full_name"></nz-option>
+            </nz-select>
+         </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item style="margin-top:4vh;">
+         <nz-form-label [nzSpan]="2" for="name" class="form-layout">Address</nz-form-label>
+         <nz-form-control [nzSpan]="17">
+            <input nz-input formControlName="addressCtrl" id="address" placeholder="Address">
+         </nz-form-control>
+      </nz-form-item>
+
+
+      <!------ Medical Data Entry Froms ------>
+
+      <!-- Allergies and reactions -->
+      <nz-form-item class="ehr-input">
+
+         <nz-form-label [nzSpan]="2" for="allergies">Allergies</nz-form-label>
+
+         <nz-form-control [nzSpan]="17">
+            <nz-input-group nzSearch [nzSuffix]="allergyAdditionButton">
+               <input #allergy type="text" placeholder="Add an allergy..." nz-input>
+            </nz-input-group>
+   
+            <ng-template #allergyAdditionButton>
+               <button (click)="addAllergy(allergy.value)" type="button" nzType="default" nz-button nzSearch>
+                  <i class="far fa-plus-square fa-lg"></i>
+               </button>
+            </ng-template>
+         </nz-form-control>
+
+      </nz-form-item>
+
+      <div *ngIf="allergies.length > 0" class="ehr-list">
+         <ul class="list-group">
+            <li *ngFor="let allergy of allergies" class="list-group-item d-flex justify-content-between align-items-center">
+               {{allergy}}
+               <a (click)="deleteAllergy(allergy)" href="javascript:void(0)" class="badge"><i class="far fa-minus-square fa-lg" style="float:right;"></i></a>
+            </li>
+         </ul>
+      </div>
+
+      <!-- Medical history -->
+      <nz-form-item class="ehr-input">
+
+         <nz-form-label [nzSpan]="2" for="medHistory">Medical History</nz-form-label>
+
+         <nz-form-control [nzSpan]="17">
+            <nz-input-group nzSearch [nzSuffix]="historyAdditionButton">
+               <input #history type="text" placeholder="Add a medical condition..." nz-input>
+            </nz-input-group>
+   
+            <ng-template #historyAdditionButton>
+               <button (click)="addMedicalHistory(history.value)" type="button" nzType="default" nz-button nzSearch>
+                  <i class="far fa-plus-square fa-lg"></i>
+               </button>
+            </ng-template>
+         </nz-form-control>
+
+      </nz-form-item>
+
+      <div *ngIf="medicalHistory.length > 0" class="ehr-list">
+         <ul class="list-group">
+            <li *ngFor="let history of medicalHistory" class="list-group-item d-flex justify-content-between align-items-center">
+               {{history.condition}}
+               <a (click)="deleteMedicalHistory(history.condition)" href="javascript:void(0)" class="badge"><i class="far fa-minus-square fa-lg" style="float:right;"></i></a>
+            </li>
+         </ul>
+      </div>
+
+      <nz-form-item nz-row style="margin-bottom:8px;">
+         <nz-form-control>
+            <button nz-button [nzLoading]="isUserInfoModalLoading" type="submit" nzType="primary">Submit</button>
+         </nz-form-control>
+      </nz-form-item>
+
+   </form>
+</div>

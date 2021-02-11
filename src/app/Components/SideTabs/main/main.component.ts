@@ -92,10 +92,11 @@ export class MainComponent implements OnInit
 
 
    private checkUserRole(): void {
+
       // Get user info once received from server
       this.authService.currentUser.subscribe((userInfo:UserInfo) => {
 
-         let isProvider:boolean = false;
+         let isProvider: boolean = false;
 
          // If user is logged in and user info received
          if (userInfo) {
@@ -120,6 +121,7 @@ export class MainComponent implements OnInit
          }
 
       });
+
    }
 
 
@@ -132,6 +134,9 @@ export class MainComponent implements OnInit
 
 
    private showUserInfoModal(): void {
+
+      console.info('[MainComponent] Displaying info addition modal...');
+
       // Create modal
       const userInfoModal = this.modalService.create({
          nzTitle: "Add your personal information",
@@ -147,6 +152,7 @@ export class MainComponent implements OnInit
       window.setTimeout(() => {
          const instance = userInfoModal.getContentComponent();
       }, 2000);
+      
    }
 
 }

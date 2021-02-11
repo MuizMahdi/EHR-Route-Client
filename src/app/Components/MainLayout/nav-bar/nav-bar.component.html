@@ -1,47 +1,25 @@
-<!--
-<nav class="navbar">
+<div class="navbar flex-container">
 
-   <ul>
+   <!-- Brand/Logo -->
+   <div *ngIf="innerWidth>600" class="nav-logo flex-container">
+      <img src="https://i.imgur.com/1CHjYsG.png" alt="EHRoute" class="flex-centered">
+   </div>
 
-      <li *ngIf="innerWidth>600" class="nav-logo">
-         <a href="javascript:void(0)">
-            <img src="https://i.imgur.com/DaYJqrs.png" alt="BrandLogo">
-         </a>
-      </li>
+   <!-- Navbar Items -->
+   <div class="nav-items flex-container">
 
-      <li>
+      <div class="flex-centered">
          <app-nav-search></app-nav-search>
-      </li>
+      </div>
 
-      <li id="user-menu">
+      <div class="flex-centered">
+         <app-nav-user-notifications></app-nav-user-notifications>
+      </div>
+
+      <div class="flex-centered">
          <app-nav-user-menu></app-nav-user-menu>
-      </li>
+      </div>
 
-   </ul>
-
-</nav>
--->
-
-<div class="navbar">
-   <div *ngIf="innerWidth>600" class="nav-logo">
-      <a id="emblem" href="javascript:void(0)">
-         <img src="https://i.imgur.com/5aj9avq.png" alt="BrandLogo">
-      </a>
-      <a href="javascript:void(0)">
-         <img src="https://i.imgur.com/1CHjYsG.png" alt="BrandLogo">
-      </a>
-   </div>
-
-   <div>
-      <app-nav-search></app-nav-search>
-   </div>
-   
-   <div>
-      <app-nav-user-notifications></app-nav-user-notifications> 
-   </div>
-
-   <div>
-      <app-nav-user-menu></app-nav-user-menu> 
    </div>
 
 </div>

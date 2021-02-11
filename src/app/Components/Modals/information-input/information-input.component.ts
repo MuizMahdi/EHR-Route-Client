@@ -116,13 +116,13 @@ export class InformationInputComponent implements OnInit
 
    async onUserInfoSubmit() {
 
-      // Start the loading animation on the modal's submit button
+      // Display loader
       this.isUserInfoModalLoading = true;
 
-      // Recalculate the values and validations of form controls
+      // Validate form
       for (const i in this.userInfoForm.controls) {
-        this.userInfoForm.controls[ i ].markAsDirty();
-        this.userInfoForm.controls[ i ].updateValueAndValidity();
+        this.userInfoForm.controls[i].markAsDirty();
+        this.userInfoForm.controls[i].updateValueAndValidity();
       }
 
       // Construct EhrPatientInfo object from form data
@@ -172,9 +172,9 @@ export class InformationInputComponent implements OnInit
    }
 
 
-   private async savePatientInfo(patientInfo:PatientInfo): Promise<boolean> {
+   private async savePatientInfo(patientInfo: PatientInfo): Promise<boolean> {
 
-      let success:boolean;
+      let success: boolean;
 
       // Get current user ID
       let userID = this.authSerice.getCurrentUser().id;
@@ -200,16 +200,12 @@ export class InformationInputComponent implements OnInit
 
       // Save the record on local DB
       await this.databaseService.getDbConnection(userID, DbConnectionType.RECORD).manager.save(userRecord).then(
-         response => {
-            success = true;
-         },
-
-         error => {
-            success = false;
-         }
+         response => success = true,
+         error => success = false
       );
 
       return success;
+
    }
 
 

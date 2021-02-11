@@ -23,9 +23,10 @@ import { ElectronService } from '../core/services';
 
 
 export class DatabaseService 
-{ 
-   constructor(private electron: ElectronService) { 
-      electron.initDb();
+{
+
+   constructor(private electron: ElectronService) {
+      electron.initPaths();
    }
 
 
@@ -33,10 +34,12 @@ export class DatabaseService
    // Creates a connection to the network db with networkUUID
    public async createNetworkDbConnection(networkUUID:string)
    {
-      let dbOptions:ConnectionOptions = {
+
+      let dbOptions: ConnectionOptions = {
          name: this.getConnectionName(networkUUID, DbConnectionType.NETWORK),
          type: "sqlite",
          database: this.electron.getDbPath(networkUUID, DbConnectionType.NETWORK),
+         key: 'secret',
          entities: [
             Block,
             MedicalRecord,
@@ -49,14 +52,8 @@ export class DatabaseService
          logging: false
       }
 
-      await createConnection(dbOptions);
-   }
+      await this.electron.db.createConnection(dbOptions);
 
-
-   // Returns a connection for the network with networkUUID
-   public getNetworkDbConnection(networkUUID:string): Connection
-   {
-      return getConnectionManager().get(this.getConnectionName(networkUUID, DbConnectionType.NETWORK));
    }
 
 
@@ -64,12 +61,12 @@ export class DatabaseService
    // Creates a connection to the address db with user ID
    public async createAddressDbConnection(userID:number)
    {
-      console.log('Creating address DB...');
       
-      let dbOptions:ConnectionOptions = {
+      let dbOptions: ConnectionOptions = {
          name: this.getConnectionName(userID, DbConnectionType.ADDRESS),
          type: "sqlite",
          database: this.electron.getDbPath(userID, DbConnectionType.ADDRESS),
+         key: 'secret',
          entities: [
             Address,
          ],
@@ -77,14 +74,8 @@ export class DatabaseService
          logging: false
       }
 
-      await createConnection(dbOptions);
-   }
+      await this.electron.db.createConnection(dbOptions);
 
-
-   // Returns a connection for address DB of user with an ID
-   public getAddressDbConnection(userID:number): Connection
-   {
-      return getConnectionManager().get(this.getConnectionName(userID, DbConnectionType.ADDRESS));
    }
 
 
@@ -92,10 +83,12 @@ export class DatabaseService
    // Creates a connection to the pateint info db with user ID
    public async createPatientInfoDbConnection(userID:number)
    {
-      let dbOptions:ConnectionOptions = {
+
+      let dbOptions: ConnectionOptions = {
          name: this.getConnectionName(userID, DbConnectionType.PATIENT_INFO),
          type: "sqlite",
          database: this.electron.getDbPath(userID, DbConnectionType.PATIENT_INFO),
+         key: 'secret',
          entities: [
             EhrPatientInfo,
          ],
@@ -103,14 +96,8 @@ export class DatabaseService
          logging: false
       }
 
-      await createConnection(dbOptions);
-   }
+      await this.electron.db.createConnection(dbOptions);
 
-
-   // Returns a connection for patient info DB of user with an ID
-   public getPatientInfoDbConnection(userID:number): Connection
-   {
-      return getConnectionManager().get(this.getConnectionName(userID, DbConnectionType.PATIENT_INFO));
    }
 
 
@@ -118,10 +105,11 @@ export class DatabaseService
    // Creates a connection to the user's record db with the user's ID
    public async createUserRecordDbConnection(userID:number) {
 
-      let dbOptions:ConnectionOptions = {
+      let dbOptions: ConnectionOptions = {
          name: this.getConnectionName(userID, DbConnectionType.RECORD),
          type: "sqlite",
          database: this.electron.getDbPath(userID, DbConnectionType.RECORD),
+         key: 'secret',
          entities: [
             MedicalRecord,
             EhrHistory,
@@ -133,13 +121,31 @@ export class DatabaseService
          logging: false
       }
 
-      await createConnection(dbOptions);
+      await this.electron.db.createConnection(dbOptions);
 
    }
 
 
+   // Returns a connection for patient info DB of user with an ID
+   public getPatientInfoDbConnection(userID:number): Connection {
+      return this.electron.db.getConnectionManager().get(this.getConnectionName(userID, DbConnectionType.PATIENT_INFO));
+   }
+
+
    public getDbConnection(identifier: string|number, connectionType:DbConnectionType): Connection {
-      return getConnectionManager().get(this.getConnectionName(identifier, connectionType));
+      return this.electron.db.getConnectionManager().get(this.getConnectionName(identifier, connectionType));
+   }
+
+
+   // Returns a connection for address DB of user with an ID
+   public getAddressDbConnection(userID:number): Connection {
+      return this.electron.db.getConnectionManager().get(this.getConnectionName(userID, DbConnectionType.ADDRESS));
+   }
+
+
+   // Returns a connection for the network with networkUUID
+   public getNetworkDbConnection(networkUUID:string): Connection {
+      return this.electron.db.getConnectionManager().get(this.getConnectionName(networkUUID, DbConnectionType.NETWORK));
    }
 
 

@@ -5,6 +5,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { DbConnectionType } from '../../../Models/DbConnectionType';
 import { AppConfig } from '../../../../environments/environment';
+import { Connection, ConnectionOptions, createConnection, getConnectionManager } from 'typeorm';
+import { SqliteConnectionOptions } from 'typeorm/driver/sqlite/SqliteConnectionOptions';
+import { MedicalRecord } from '../../../DataAccess/entities/EHR/MedicalRecord';
+import { EhrHistory } from '../../../DataAccess/entities/EHR/EhrHistory';
+import { EhrCondition } from '../../../DataAccess/entities/EHR/EhrCondition';
+import { EhrAllergyAndReaction } from '../../../DataAccess/entities/EHR/EhrAllergyAndReaction';
+import { EhrPatientInfo } from '../../../DataAccess/entities/EHR/EhrPatientInfo';
 
 
 @Injectable({
@@ -18,12 +25,18 @@ export class ElectronService {
    public applicationPath: string;
    private dataFolderPath: string;
 
-   ipcRenderer: typeof ipcRenderer;
-   webFrame: typeof webFrame;
-   remote: typeof remote;
-   childProcess: typeof childProcess;
-   fs: typeof fs;
-   path: typeof path;
+   public ipcRenderer: typeof ipcRenderer;
+   public webFrame: typeof webFrame;
+   public remote: typeof remote;
+   public childProcess: typeof childProcess;
+   public fs: typeof fs;
+   public path: typeof path;
+
+
+   public db = {
+      createConnection: typeof createConnection as any,
+      getConnectionManager: typeof getConnectionManager as any
+   };
 
 
    get isElectron(): boolean {
@@ -39,17 +52,19 @@ export class ElectronService {
          this.childProcess = window.require('child_process');
          this.fs = window.require('fs');
          this.path = window.require('path');
+         this.initDb();
+         
       }
    }
 
 
-
    public initDb(): void {
-      this.initPaths();
+      this.db.createConnection = window.require('typeorm').createConnection;
+      this.db.getConnectionManager = window.require('typeorm').getConnectionManager;
    }
 
 
-   private initPaths() {
+   public initPaths() {
 
       // Use 'userData' electron path to store db files on production
       if(AppConfig.production) {
@@ -58,18 +73,17 @@ export class ElectronService {
       } 
       else {
          // Use dist/assets/data to store database files for development
-         this.dataFolderPath = 'dist/assets/data';
+         this.dataFolderPath = 'data';
          this.applicationPath = this.remote.app.getAppPath();
       }
  
-      this.databaseFolderPath = this.path.join(this.applicationPath, this.dataFolderPath); 
+      this.databaseFolderPath = this.path.join(this.applicationPath, this.dataFolderPath);
 
    }
 
 
    // // returns a DB path for a given DB type and identifier
    public getDbPath(identifier: string|number, connectionType: DbConnectionType): string {
-      
 
       switch(connectionType) {
 

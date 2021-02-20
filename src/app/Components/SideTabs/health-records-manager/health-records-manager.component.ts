@@ -18,6 +18,8 @@ import { MainLayoutService } from '../../../Services/main-layout.service';
 
 export class HealthRecordsManagerComponent implements OnInit 
 {
+   //#region States
+
    pageSize: number = 8;
    pageNumber: number = 1;
    totalPagesNumber: number;
@@ -25,18 +27,32 @@ export class HealthRecordsManagerComponent implements OnInit
    userNetworksUUIDs: string[] = [];
    userHasNetworks: boolean = true;
 
+   state = {};
+
+   uiState = {
+      isLoading: false,
+   };
+
+   //#endregion
+
 
    constructor (
-      public mainLayout:MainLayoutService, private ehrService:EhrService,
-      private networkService:NodeNetworkService, private chainService:ChainService,
-      private modalService:NzModalService
-   ) { 
-      mainLayout.show();
-   }
+      public mainLayout: MainLayoutService, 
+      private ehrService: EhrService,
+      private networkService: NodeNetworkService, 
+      private chainService: ChainService,
+      private modalService: NzModalService
+   ) { }
 
+
+   /* -------------------------------------------------------------------------- */
+   /*                               Initialization                               */
+   /* -------------------------------------------------------------------------- */
+   //#region 
 
    async ngOnInit() {
 
+      // Display main layout
       this.mainLayout.show();
 
       // Get user networks UUIDs
@@ -48,9 +64,11 @@ export class HealthRecordsManagerComponent implements OnInit
    }
 
 
-   private async getUserNetworksUUIDs()
-   {
-      // TODO: Show a spining bar while getting user networks and records
+   private async getUserNetworksUUIDs() {
+
+      // Display loader
+      this.uiState.isLoading = true;
+      
       await this.networkService.getUserNetworksUUIDs().then(async networksUUIDs => {
 
          this.userNetworksUUIDs = networksUUIDs;
@@ -60,43 +78,48 @@ export class HealthRecordsManagerComponent implements OnInit
             this.totalPagesNumber = Math.ceil(count / this.pageSize) * 10;
          });
 
+         // Conceal loader
+         this.uiState.isLoading = false;
+
+
       }).catch(error => {
          this.userHasNetworks = false;
+         this.uiState.isLoading = false;
       });
+
    }
 
 
-   private getRecords(): void
-   {
+   private getRecords(): void {
       if (this.userHasNetworks) {
-
-         // Get the medical records
-         this.ehrService.getNetworksRecords(
-            this.userNetworksUUIDs,
-            this.pageNumber,
-            this.pageSize
-         ).then(records => {
-            this.records = records;
-         });
-
+         // Get EHRs
+         this.ehrService.getNetworksRecords(this.userNetworksUUIDs, this.pageNumber, this.pageSize)
+         .then(records => this.records = records);
       }
    }
 
+   //#endregion
 
-   private changePageNumber(pageNumber:number): void {
+
+   /* -------------------------------------------------------------------------- */
+   /*                               User Interface                               */
+   /* -------------------------------------------------------------------------- */
+   //#region 
+
+   changePageNumber(pageNumber:number): void {
       this.pageNumber = pageNumber;
       this.getRecords();
    }
 
 
-   private changePageSize(pageSize:number): void {
+   changePageSize(pageSize:number): void {
       this.pageSize = pageSize;
       this.getRecords();
    }
 
 
-   private viewRecordDetails(record:ElectronicHealthRecord): void
-   {
+   viewRecordDetails(record:ElectronicHealthRecord): void {
+
       let patientName:string = record.recordData.patientData.name;
 
       const recordDetailsModal = this.modalService.create({
@@ -119,6 +142,12 @@ export class HealthRecordsManagerComponent implements OnInit
       // delay until modal instance created
       window.setTimeout(() => {
         const instance = recordDetailsModal.getContentComponent();
-      }, 2000);
+      }, 1000);
+
    }
+
+   //#endregion
+
+
+   
 }

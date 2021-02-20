@@ -1,8 +1,20 @@
+<!-- ----------------------------------------------------------------------- -->
+<!--                           No Network Message                            -->
+<!-- ----------------------------------------------------------------------- -->
+<!-- #region -->
 
-<div *ngIf="!userHasNetworks">
+<div *ngIf="!userHasNetworks" class="boxed-content">
    <h2>You have no network</h2>
+   <p>You can only display EHRs if you're a member of a network</p>
 </div>
 
+<!-- #endregion -->
+
+
+<!-- ----------------------------------------------------------------------- -->
+<!--                                EHRs List                                -->
+<!-- ----------------------------------------------------------------------- -->
+<!-- #region -->
 
 <div *ngIf="userHasNetworks" class="records">
    <ul *ngIf="records.length > 0" class="records-list">
@@ -24,6 +36,13 @@
    </ul>
 </div>
 
+<!-- #endregion -->
+
+
+<!-- ----------------------------------------------------------------------- -->
+<!--                               Pagination                                -->
+<!-- ----------------------------------------------------------------------- -->
+<!-- #region -->
 
 <nz-pagination
    *ngIf="totalPagesNumber"
@@ -35,3 +54,17 @@
    nzShowSizeChanger
    class="records-pagination">
 </nz-pagination>
+
+<!-- #endregion -->
+
+
+<!-- ----------------------------------------------------------------------- -->
+<!--                                 Loader                                  -->
+<!-- ----------------------------------------------------------------------- -->
+<!-- #region -->
+
+<div *ngIf="uiState.isLoading" class="loader flex-container" style="height: 100vh; z-index: 1000;">
+   <nz-spin nzTip="Loading Health Records..." [nzSize]="'large'" class="flex-centered" style="width: 100%;"></nz-spin>
+</div>
+
+<!-- #endregion -->

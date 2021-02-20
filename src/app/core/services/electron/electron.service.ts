@@ -5,13 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { DbConnectionType } from '../../../Models/DbConnectionType';
 import { AppConfig } from '../../../../environments/environment';
-import { Connection, ConnectionOptions, createConnection, getConnectionManager } from 'typeorm';
-import { SqliteConnectionOptions } from 'typeorm/driver/sqlite/SqliteConnectionOptions';
-import { MedicalRecord } from '../../../DataAccess/entities/EHR/MedicalRecord';
-import { EhrHistory } from '../../../DataAccess/entities/EHR/EhrHistory';
-import { EhrCondition } from '../../../DataAccess/entities/EHR/EhrCondition';
-import { EhrAllergyAndReaction } from '../../../DataAccess/entities/EHR/EhrAllergyAndReaction';
-import { EhrPatientInfo } from '../../../DataAccess/entities/EHR/EhrPatientInfo';
+import { createConnection, getConnectionManager } from 'typeorm';
 
 
 @Injectable({

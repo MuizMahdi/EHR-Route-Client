@@ -38,7 +38,7 @@
             <ul class="list-group">
                <li *ngFor="let condition of ehrConditions" class="list-group-item d-flex justify-content-between align-items-center">
                   {{condition}}
-                  <a *ngIf="isEditingEhr" (click)="deleteCondition(condition)" href="javascript:void(0)" class="badge"><i class="far fa-minus-square fa-lg" style="float:right;"></i></a>
+                  <!-- <a *ngIf="isEditingEhr" (click)="deleteCondition(condition)" href="javascript:void(0)" class="badge"><i class="far fa-minus-square fa-lg" style="float:right;"></i></a> -->
                </li>
             </ul>
          </div>
@@ -50,7 +50,7 @@
             <ul class="list-group">
                <li *ngFor="let allergy of ehrAllergies" class="list-group-item d-flex justify-content-between align-items-center">
                   {{allergy}}
-                  <a *ngIf="isEditingEhr" (click)="deleteAllergy(allergy)" href="javascript:void(0)" class="badge"><i class="far fa-minus-square fa-lg" style="float:right;"></i></a>
+                  <!-- <a *ngIf="isEditingEhr" (click)="deleteAllergy(allergy)" href="javascript:void(0)" class="badge"><i class="far fa-minus-square fa-lg" style="float:right;"></i></a> -->
                </li>
             </ul>
          </div>

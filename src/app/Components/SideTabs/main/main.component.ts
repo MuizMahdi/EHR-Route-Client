@@ -74,20 +74,24 @@ export class MainComponent implements OnInit
 
 
    private initializeProviderLocalDbs(userID:number): void {
+
       // Establish connection to user's address DB
       this.addressService.ensureAddressDbConnection(userID);
 
       // Establish connections to all of user's networks DBs if they exist
       this.networkService.checkUserNetworks();
+
    }
 
 
    private initializeUserLocalDbs(userID:number): void {
+
       // Establish connection to user's address DB
       this.addressService.ensureAddressDbConnection(userID);
 
       // Establish connection to user's medical record DB
       this.userRecordService.ensureUserRecordDbConnection(userID);
+
    }
 
 
@@ -101,18 +105,11 @@ export class MainComponent implements OnInit
          // If user is logged in and user info received
          if (userInfo) {
 
-            // Go through the user roles
-            userInfo.roles.forEach(role => {
-               // If user has a 'Provider' (or admin) role
-               if (role === RoleName.PROVIDER || role === RoleName.ADMIN) {
-                  isProvider = true;
-               }
-            });
+            // Check if user is provider
+            userInfo.roles.forEach(role => { if (role === RoleName.PROVIDER || role === RoleName.ADMIN) isProvider = true; });
 
-            if (isProvider) {
-               this.initializeProviderLocalDbs(userInfo.id);
-            }
-            else { // If user is not a provider
+            if (isProvider) this.initializeProviderLocalDbs(userInfo.id); 
+            else {
                // Check if they have added and saved their info
                this.checkIfHasAddedInfo(userInfo);
                this.initializeUserLocalDbs(userInfo.id);
@@ -126,10 +123,7 @@ export class MainComponent implements OnInit
 
 
    private checkIfHasAddedInfo(userInfo:UserInfo): void {
-      // If user hasven't submitted their info
-      if (userInfo && !(userInfo.hasAddedInfo)) {
-         this.showUserInfoModal();
-      }
+      if (userInfo && !(userInfo.hasAddedInfo)) this.showUserInfoModal();
    }
 
 
@@ -137,9 +131,8 @@ export class MainComponent implements OnInit
 
       console.info('[MainComponent] Displaying info addition modal...');
 
-      // Create modal
-      const userInfoModal = this.modalService.create({
-         nzTitle: "Add your personal information",
+      this.modalService.create({
+         nzTitle: "Medical Record Information",
          nzContent: InformationInputComponent,
          nzWidth: "70%",
          nzFooter: null,
@@ -147,11 +140,6 @@ export class MainComponent implements OnInit
          nzMaskClosable: false,
          nzKeyboard: false
       });
-
-      // delay until modal instance created
-      window.setTimeout(() => {
-         const instance = userInfoModal.getContentComponent();
-      }, 2000);
       
    }
 

@@ -1,14 +1,15 @@
 import { RoleName } from './../Models/RoleName';
-import { ErrorResponse } from '../Models/Payload/Responses/ErrorResponse';
 import { UserInfo } from '../Models/Payload/Responses/UserInfo';
 import { AppConfig } from './../../environments/environment';
 import { UserLoginRequest } from '../Models/Payload/Requests/UserLoginRequest';
 import { UserRegistrationRequest } from '../Models/Payload/Requests/UserRegistrationRequest';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { tap, shareReplay, catchError, first } from 'rxjs/operators';
-import { throwError, Subject, Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { NodeClustersService } from './node-clusters.service';
+import { JwtHelperService } from '@auth0/angular-jwt';
+import { AccessToken } from '../Models/App/AccessToken';
 
 
 @Injectable({
@@ -19,19 +20,23 @@ import { NodeClustersService } from './node-clusters.service';
 export class AuthService
 {
    
-   registrationUrl:string = AppConfig.apiUrl + '/auth/signup';
-   loginUrl:string = AppConfig.apiUrl + '/auth/signin';
-   getCurrentUserUrl:string = AppConfig.apiUrl + '/users/current';
-   userRolesUrl: string = AppConfig.apiUrl + '/users/current/roles';
+   registrationUrl: string = AppConfig.apiUrl + '/auth/signup';
+   loginUrl: string = AppConfig.apiUrl + '/auth/signin';
    currentUser: Subject<UserInfo> = new Subject<UserInfo>();
-   isLoggedIn:boolean = false;
+   isLoggedIn = new BehaviorSubject<boolean>(this.isTokenAvailable());
+   jwtHelper = new JwtHelperService();
 
 
    constructor(
-      private http:HttpClient, 
-      private clustersService:NodeClustersService
+      private http: HttpClient, 
+      private clustersService: NodeClustersService
    ) { }
 
+
+   /* -------------------------------------------------------------------------- */
+   /*                               Authentication                               */
+   /* ---------------------------------e----------------------------------------- */
+   //#region 
 
    public register(userRegistrationInfo: UserRegistrationRequest): Observable<any> {
       return this.http.post(this.registrationUrl, userRegistrationInfo);
@@ -41,35 +46,27 @@ export class AuthService
    public login(userLoginInfo: UserLoginRequest): Observable<any> {
       return this.http.post(this.loginUrl, userLoginInfo).pipe(
          tap(tokenResponse => {
-            this.saveSession(tokenResponse);
-            this.isLoggedIn = true;
+
+            if (tokenResponse.accessToken) {
+
+               // Store access token
+               localStorage.setItem('accessToken', tokenResponse.accessToken);
+
+               // Store user info
+               let userInfo: UserInfo = this.mapTokenToUserInfo(this.getDecodedToken());
+               localStorage.setItem('currentUser', JSON.stringify(userInfo));
+               this.currentUser.next(userInfo);
+
+               // Set user as logged in
+               this.setIsLoggedIn(true);
+
+               // Check user role and Initialize clusters
+               this.initClusterSubscriptions();
+
+            }
+
          })
       );
-   }
-
-
-   public getCurrentUser(): UserInfo {
-      // Get user info from local storage
-      return JSON.parse(localStorage.getItem('currentUser')) as UserInfo;
-   }
-
-
-   public getAccessToken():any {
-      return localStorage.getItem('accessToken');
-   }
-
-
-   public getCurrentUserRoles(): Observable<any> {
-      return this.http.get(this.userRolesUrl).pipe(first(),
-         catchError(error => {
-            return throwError(error);
-         })
-      );
-   }
-
-
-   public getCurrentUserInfo(): Observable<any> {
-      return this.http.get(this.getCurrentUserUrl).pipe(first());
    }
 
 
@@ -87,6 +84,9 @@ export class AuthService
             // Remove user info
             localStorage.removeItem('currentUser');
 
+            // Set user as unauthenticated
+            this.setIsLoggedIn(false);
+
             // Reset currentUser subject
             this.currentUser.next(null);
             this.currentUser = new Subject<any>();
@@ -97,63 +97,94 @@ export class AuthService
 
    }
 
+   //#endregion
 
-   private saveSession(jwtToken): void {
-      if (jwtToken && jwtToken.accessToken) {
-         // Save jwt to local storage
-         localStorage.setItem('accessToken', jwtToken.accessToken);
-      }
 
-      this.saveCurrentUserInfo();
+   /* -------------------------------------------------------------------------- */
+   /*                                Miscellaneous                               */
+   /* -------------------------------------------------------------------------- */
+   //#region 
+
+   private mapTokenToUserInfo(accessToken: AccessToken): UserInfo {
+      return {
+         id: accessToken.sub,
+         username: accessToken.email,
+         name: '',
+         email: accessToken.email,
+         roles: accessToken.roles,
+         firstLogin: accessToken.firstLogin,
+         hasAddedInfo: accessToken.hasAddedInfo
+      };
    }
 
 
-   private saveCurrentUserInfo(): void {
+   private initClusterSubscriptions(): void {
 
-      this.getCurrentUserInfo().subscribe(
+      let userRoles = this.getUserRoles();
 
-         (userInfo:UserInfo) => {
-            // Save the user info in local storage
-            localStorage.setItem('currentUser', JSON.stringify(userInfo));
-
-            // Check if user has a provider role
-            userInfo.roles.forEach(role => {
-               if (role == RoleName.PROVIDER) {
-                  // Subscribe user node to providers and consumers cluster
-                  this.clustersService.subscribeProvider();
-                  this.clustersService.subscribeConsumer();
-               }
-            });
-
-            // Set the user in the user subject, so subscribers will know when user info is received
-            this.currentUser.next(userInfo);
-         },
-
-         (error:ErrorResponse) => {
-            console.log(error);
+      // Check if user has a provider role
+      userRoles.forEach(role => {
+         if (role == RoleName.PROVIDER) {
+            // Subscribe user node to providers and consumers cluster
+            this.clustersService.subscribeProvider();
+            this.clustersService.subscribeConsumer();
          }
-
-      );
+      });
 
    }
 
 
    public isUserProvider(): Boolean {
 
-      let userInfo = this.getCurrentUser();
-      let isProvider:boolean = false;
+      let userRoles = this.getUserRoles();
+      let isProvider = false;
 
-      if (userInfo) {
-         // Go through user roles
-         userInfo.roles.forEach(role => {
-            // If user has a ROLE_PROVIDER role
-            if (role === RoleName.PROVIDER) {
-               isProvider = true;
-            }
-         });
-      }
+      userRoles.forEach(role => {
+         if (role === RoleName.PROVIDER) isProvider = true;
+      });
 
       return isProvider;
 
    }
+
+   //#endregion
+
+
+   /* -------------------------------------------------------------------------- */
+   /*                              Setters & Getters                             */
+   /* -------------------------------------------------------------------------- */
+   //#region 
+
+   public getCurrentUser(): UserInfo {
+      // Get user info from local storage
+      return JSON.parse(localStorage.getItem('currentUser')) as UserInfo;
+   }
+
+
+   private isTokenAvailable(): boolean {
+      return !!localStorage.getItem('accessToken');
+   }
+
+
+   setIsLoggedIn(isLoggedIn: boolean): void {
+      this.isLoggedIn.next(isLoggedIn);
+   }
+
+
+   getIsLoggedIn(): BehaviorSubject<boolean> {
+      return this.isLoggedIn;
+   }
+
+
+   public getDecodedToken(): AccessToken {
+      return this.jwtHelper.decodeToken(localStorage.getItem('accessToken'));
+   }
+
+
+   public getUserRoles(): string[] {
+      return this.getDecodedToken()['roles'] as string[];
+   }
+
+   //#endregion
+
 }

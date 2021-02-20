@@ -9,7 +9,7 @@ import { AuthMainComponent } from './Components/Auth/auth-main/auth-main.compone
 import { AdminPanelComponent } from './Components/SideTabs/admin-panel/admin-panel.component';
 import { NetworkManagerComponent } from './Components/SideTabs/network-manager/network-manager.component';
 import { HealthRecordsManagerComponent } from './Components/SideTabs/health-records-manager/health-records-manager.component';
-
+import { AboutUsComponent } from './Components/SideTabs/about-us/about-us.component';
 
 
 const routes: Routes = [
@@ -19,6 +19,7 @@ const routes: Routes = [
    { path:'network', component: NetworkManagerComponent, canActivate: [AuthGuard] },
    { path:'panel', component: AdminPanelComponent, canActivate: [AuthGuard] },
    { path:'ehrs', component: HealthRecordsManagerComponent, canActivate: [AuthGuard] },
+   { path:'about-us', component: AboutUsComponent, canActivate: [AuthGuard] },
    { path: '**', component: PageNotFoundComponent }
 ];
 

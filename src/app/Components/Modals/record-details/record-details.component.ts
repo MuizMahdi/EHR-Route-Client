@@ -80,12 +80,12 @@ export class RecordDetailsComponent implements OnInit
    }
 
 
-   private addCondition(condition:string): void {
+   addCondition(condition:string): void {
       this.ehrConditions.push(condition);
    }
 
 
-   private deleteCondition(condition:string): void {
+   deleteCondition(condition:string): void {
 
       let conditionIndex = this.ehrConditions.indexOf(condition);
 
@@ -96,12 +96,12 @@ export class RecordDetailsComponent implements OnInit
    }
 
 
-   private addAllergy(allergy:string): void {
+   addAllergy(allergy:string): void {
       this.ehrAllergies.push(allergy);
    }
 
 
-   private deleteAllergy(allergy:string): void {
+   deleteAllergy(allergy:string): void {
 
       let allergyIndex = this.ehrAllergies.indexOf(allergy);
 
@@ -112,12 +112,12 @@ export class RecordDetailsComponent implements OnInit
    }
 
 
-   private toggleEhrEditing(): void {
+   toggleEhrEditing(): void {
       this.isEditingEhr = !this.isEditingEhr;
    }
 
 
-   private async requestEhrUpdateConsent() {
+   async requestEhrUpdateConsent() {
 
       let providerUserId = this.authService.getCurrentUser().id;
       let patientUserId = this.recordData.patientData.userID;

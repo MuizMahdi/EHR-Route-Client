@@ -15,6 +15,10 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HomeModule } from './home/home.module';
 import { DetailModule } from './detail/detail.module';
 import { ClickOutsideModule } from 'ng-click-outside';
+import { JwtInterceptor } from './Helpers/Interceptors/JwtInterceptor';
+import { ErrorInterceptor } from './Helpers/Interceptors/ErrorInterceptor';
+
+// Ng-Zorro Modules
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -23,9 +27,11 @@ import { NzAutocompleteModule } from 'ng-zorro-antd/auto-complete';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
-import { JwtInterceptor } from './Helpers/Interceptors/JwtInterceptor';
-import { ErrorInterceptor } from './Helpers/Interceptors/ErrorInterceptor';
-
+import { NzAlertModule } from 'ng-zorro-antd/alert';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { NzMenuModule } from 'ng-zorro-antd/menu';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 
 // Components
 import { AppComponent } from './app.component';
@@ -48,6 +54,7 @@ import { InformationInputComponent } from './Components/Modals/information-input
 import { RecordDetailsComponent } from './Components/Modals/record-details/record-details.component';
 import { UpdateConsentRequestComponent } from './Components/Notifications/update-consent-request/update-consent-request.component';
 import { en_US, NZ_I18N } from 'ng-zorro-antd/i18n';
+import { AboutUsComponent } from './Components/SideTabs/about-us/about-us.component';
 
 
 // AoT requires an exported function for factories
@@ -77,7 +84,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
       ConsentRequestComponent,
       InformationInputComponent,
       RecordDetailsComponent,
-      UpdateConsentRequestComponent
+      UpdateConsentRequestComponent,
+      AboutUsComponent
    ],
 
    imports: [
@@ -97,6 +105,11 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
       NzRadioModule,
       NzDatePickerModule,
       NzAutocompleteModule,
+      NzAlertModule,
+      NzSpinModule,
+      NzPaginationModule,
+      NzMenuModule,
+      NzDropDownModule,
       AppRoutingModule,
       AppRoutingModule,
       ReactiveFormsModule,

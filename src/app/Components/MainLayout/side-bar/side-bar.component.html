@@ -3,14 +3,14 @@
    <nav class="nav-menu">
       <ul style="padding-top: 2em;">
 
-         <li>
+         <!-- <li>
             <a href="javascript:void(0)" routerLink='/main' routerLinkActive='active'>
                <i class="fa fa-home fa-2x"></i>
                <span class="nav-text">
                   Dashboard
                </span>
             </a>
-         </li>
+         </li> -->
 
          <li *ngIf="isUserProviderOrAdmin">
             <a href="javascript:void(0)" routerLink='/ehrs' routerLinkActive='active'>
@@ -40,10 +40,10 @@
          </li>
 
          <li>
-            <a href="#">
+            <a href="javascript:void(0)" routerLink='/about-us' routerLinkActive='active'>
                <i class="fa fa-info fa-2x"></i>
                <span class="nav-text">
-                  Info
+                  About EHRoute
                </span>
             </a>
          </li>

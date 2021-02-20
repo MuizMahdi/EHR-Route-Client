@@ -185,7 +185,7 @@ export class UserProfileComponent implements OnInit
    }
 
 
-   private createNetworkSelectionModal(templateContent: TemplateRef<{}>): void 
+   createNetworkSelectionModal(templateContent: TemplateRef<{}>): void 
    {
       this.networkSelectionModal = this.modalService.create({
          nzTitle: "Network Selection",

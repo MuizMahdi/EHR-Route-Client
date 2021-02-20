@@ -28,6 +28,7 @@
       "lint": "ng lint"
    },
    "dependencies": {
+      "@auth0/angular-jwt": "5.0.2",
       "@journeyapps/sqlcipher": "5.0.0",
       "merkletreejs": "0.2.12",
       "ng-click-outside": "7.0.1",

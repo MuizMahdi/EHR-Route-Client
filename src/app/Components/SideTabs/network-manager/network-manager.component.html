@@ -1,53 +1,70 @@
-<div *ngIf="!userHasNetwork" class="boxed-content">
+<!-- ----------------------------------------------------------------------- -->
+<!--                           No Network Message                            -->
+<!-- ----------------------------------------------------------------------- -->
+<!-- #region -->
+
+<div *ngIf="!uiState.isLoading && !userHasNetwork" class="boxed-content">
    <h1> You have no network </h1>
    <h4> Ask for a network invitation or create a new network </h4>
 </div>
 
+<!-- #endregion -->
 
-<div *ngIf="userHasNetwork" class="network-header">
 
-   <div class="boxed-content" id="network-name">
-      <h1 class="box-title">{{selectedNetwork.name}}</h1>
+<!-- ----------------------------------------------------------------------- -->
+<!--                             Network Content                             -->
+<!-- ----------------------------------------------------------------------- -->
+<!-- #region -->
+
+<!-- Network Info -->
+<div *ngIf="!uiState.isLoading && userHasNetwork" class="network-manager-container">
+   
+   <div class="network-header">
+   
+      <div class="boxed-content" id="network-name">
+         <h1 class="box-title">{{selectedNetwork.name}}</h1>
+      </div>
+   
+      <nz-select nzShowSearch nzPlaceHolder="Select a network" [(ngModel)]="selectedNetwork" class="boxed-content" id="network-selector">
+         <nz-option *ngFor="let n of userNetworks" [nzValue]="n" [nzLabel]="n.name"></nz-option>
+      </nz-select>
+   
+   </div>
+   
+   
+   <div class="boxed-content" id="network-content">
+   
+      <h2 class="box-title">Network Status</h2>
+      <hr class="box-title-bottom-line"><br>
+   
+      <h3>Name: {{selectedNetwork.name}}</h3>
+      <h3>UUID: {{selectedNetwork.networkUUID}}</h3>
+   
+   </div>
+   
+   
+   <div class="boxed-content" id="network-invite">
+   
+      <h2 class="box-title">Invite a user to the network</h2>
+      <hr class="box-title-bottom-line"><br>
+   
+      <label>Username: </label>
+      <nz-input-group [nzSuffix]="suffixTemplate" [nzPrefix]="prefixTemplate">
+         <input type="text" nz-input placeholder="User's username" [(ngModel)]="invitedUserUsername">
+      </nz-input-group>
+      
+      <ng-template #prefixTemplate><i nz-icon type="user"></i></ng-template>
+      <ng-template #suffixTemplate><i nz-icon type="close-circle" (click)="invitedUserUsername=null" *ngIf="invitedUserUsername"></i></ng-template>      
+   
+      <button (click)="inviteUser(invitedUserUsername)" nz-button nzType="primary" id="network-invite-button">Send Invitation</button>
+   
    </div>
 
-   <nz-select nzShowSearch nzPlaceHolder="Select a network" [(ngModel)]="selectedNetwork" (ngModelChange)="log($event)" class="boxed-content" id="network-selector">
-      <nz-option *ngFor="let n of userNetworks" [nzValue]="n" [nzLabel]="n.name"></nz-option>
-   </nz-select>
-
 </div>
 
-
-<div *ngIf="userHasNetwork" class="boxed-content" id="network-content">
-
-   <h2 class="box-title">Network Status</h2>
-   <hr class="box-title-bottom-line"><br>
-
-   <h3>Name: {{selectedNetwork.name}}</h3>
-   <h3>UUID: {{selectedNetwork.networkUUID}}</h3>
-
-</div>
-
-
-<div *ngIf="userHasNetwork" class="boxed-content" id="network-invite">
-
-   <h2 class="box-title">Invite a user to the network</h2>
-   <hr class="box-title-bottom-line"><br>
-
-   <label>Username: </label>
-   <nz-input-group [nzSuffix]="suffixTemplate" [nzPrefix]="prefixTemplate">
-      <input type="text" nz-input placeholder="User's username" [(ngModel)]="invitedUserUsername">
-   </nz-input-group>
+<!-- Network Creation Modal -->
+<div *ngIf="!uiState.isLoading" id="network-creation" style="margin-top: 15px;">
    
-   <ng-template #prefixTemplate><i nz-icon type="user"></i></ng-template>
-   <ng-template #suffixTemplate><i nz-icon type="close-circle" (click)="invitedUserUsername=null" *ngIf="invitedUserUsername"></i></ng-template>      
-
-   <button (click)="inviteUser(invitedUserUsername)" nz-button nzType="primary" id="network-invite-button">Send Invitation</button>
-
-</div>
-
-
-<div class="boxed-content" id="network-creation">
-
    <button nz-button [nzType]="'primary'" (click)="showNetworkCreationModal()">
       <span>Create A New Network</span>
    </button>
@@ -64,3 +81,17 @@
    </nz-modal>
    
 </div>
+
+<!-- #endregion -->
+
+
+<!-- ----------------------------------------------------------------------- -->
+<!--                                 Loader                                  -->
+<!-- ----------------------------------------------------------------------- -->
+<!-- #region -->
+
+<div *ngIf="uiState.isLoading" class="loader flex-container" style="height: 100vh; z-index: 1000;">
+   <nz-spin nzTip="Loading Networks..." [nzSize]="'large'" class="flex-centered" style="width: 100%;"></nz-spin>
+</div>
+
+<!-- #endregion -->

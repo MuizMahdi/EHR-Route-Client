@@ -1,8 +1,9 @@
 <div class="navbar flex-container">
 
    <!-- Brand/Logo -->
-   <div *ngIf="innerWidth>600" class="nav-logo flex-container">
+   <div *ngIf="uiState.innerWidth>600" class="nav-logo flex-container">
       <img src="https://i.imgur.com/1CHjYsG.png" alt="EHRoute" class="flex-centered">
+      <p style="line-height: 65px; margin-left: 0.9em;">Welcome, <b>{{ uiState.username }}</b></p>
    </div>
 
    <!-- Navbar Items -->

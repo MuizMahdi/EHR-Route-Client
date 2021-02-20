@@ -4,7 +4,6 @@ import { ErrorResponse } from './../../../Models/Payload/Responses/ErrorResponse
 import { BlockResponse } from '../../../Models/Payload/Responses/BlockResponse';
 import { UserNetworks } from '../../../Models/Payload/Responses/UserNetworks';
 import { NodeNetworkService } from './../../../Services/node-network.service';
-import { UserRole } from '../../../Models/Payload/Responses/UserRole';
 import { MainLayoutService } from './../../../Services/main-layout.service';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../Services/auth.service';
@@ -17,152 +16,112 @@ import ModelMapper from '../../../Helpers/Utils/ModelMapper';
 
 
 @Component({
-  selector: 'app-network-manager',
-  templateUrl: './network-manager.component.html',
-  styleUrls: ['./network-manager.component.css']
+   selector: 'app-network-manager',
+   templateUrl: './network-manager.component.html',
+   styleUrls: ['./network-manager.component.css']
 })
 
 
-export class NetworkManagerComponent implements OnInit 
-{
-   isAdmin:boolean = false;
-   isProvider:boolean = false;
+export class NetworkManagerComponent implements OnInit {
 
-   selectedNetwork:any = {};
-   userNetworks:NetworkInfo[];
-   userHasNetwork:boolean = true;
+   //#region States
 
-   newNetworkName:string;
-   isNetworkCreationModalVisible:boolean = false;
+   isAdmin: boolean = false;
+   isProvider: boolean = false;
+   selectedNetwork: any = {};
+   userNetworks: NetworkInfo[];
+   userHasNetwork: boolean = true;
+   newNetworkName: string;
+   isNetworkCreationModalVisible: boolean = false;
+   invitedUserUsername: string;
 
-   invitedUserUsername:string;
+   state = {};
 
+   uiState = {
+      isLoading: false,
+   };
+
+   //#endregion
+   
 
    constructor(
-      private networkService:NodeNetworkService, private authService:AuthService, 
-      public mainLayout:MainLayoutService, private modalService:NzModalService,
-      private clustersService:NodeClustersService, private databaseService:DatabaseService
+      private networkService: NodeNetworkService, 
+      private authService: AuthService,
+      public mainLayout: MainLayoutService, 
+      private modalService: NzModalService,
+      private clustersService: NodeClustersService, 
+      private databaseService: DatabaseService
    ) { }
 
 
-   async ngOnInit() 
-   {
+   /* -------------------------------------------------------------------------- */
+   /*                               Initialization                               */
+   /* -------------------------------------------------------------------------- */
+   //#region
+   
+   ngOnInit(): void {
       this.mainLayout.show();
-      this.updateNetworks();
-      this.initUserRole();
+      this.getUserNetworks();
+      this.getUserRoles();
    }
 
 
-   initUserRole():void 
-   {
-      // Get user roles
-      this.authService.getCurrentUserRoles().subscribe(
-
-         (roles:UserRole[]) => {
-
-            // Iterate through the roles array and set role flags
-            roles.forEach(role => {
-               if (role.roleName.trim() === 'ROLE_ADMIN') this.isAdmin = true; 
-               if (role.roleName.trim() === 'ROLE_PROVIDER') this.isProvider = true;
-            });
-
-            console.log('ADMIN: ' + this.isAdmin);
-
-         },
-
-         errorResponse => {
-            console.log(errorResponse);
-         }
-
-      );
+   private getUserRoles(): void {
+      this.authService.getUserRoles().forEach(role => {
+         if (role.trim() === 'ROLE_ADMIN') this.isAdmin = true;
+         if (role.trim() === 'ROLE_PROVIDER') this.isProvider = true;
+      });
    }
 
 
-   generateNetwork(networkName:string):void
-   {
+   private getUserNetworks(): void {
 
-      this.networkService.generateNetwork(networkName).subscribe(
+      // Display loader
+      this.uiState.isLoading = true;
 
-         (response:BlockResponse) => {
-            // Save the received genesis block
-            this.saveNetworkGenesisBlock(networkName, response);
-            this.clustersService.resetClustersSubscription();
-         },
-
-         (error:ErrorResponse) => {
-            console.log(error);
-         }
-
-      );
-
-   }
-
-
-   private saveNetworkGenesisBlock(networkName:string, genesisBlock:BlockResponse): void
-   {
-      // Get network UUID of network with network name of the recently created network
-      this.networkService.getNetworkUuidByName(networkName).subscribe(
-
-         async (response:SimpleStringPayload) => {
-            // UUID response
-            let networkUUID = response.payload;
-
-            // Create a DB connection for the recently added network
-            await this.databaseService.createNetworkDbConnection(networkUUID);
-
-            // Get a Block from the response genesis block
-            let block:Block = ModelMapper.mapBlockResponseToBlock(genesisBlock);
-
-            // Get DB connection for the network, then save the block
-            await this.databaseService.getNetworkDbConnection(networkUUID).getRepository(Block).save(block);
-
-            // Update networks with the newly added network
-            this.updateNetworks();
-         },
-
-         (error:ErrorResponse) => {
-            console.log(error);
-         }
-
-      );
-
-   }
-
-
-   private updateNetworks(): void
-   {
       this.networkService.getUserNetworks().subscribe(
 
-         (response:UserNetworks) => {
+         (response: UserNetworks) => {
             this.userHasNetwork = true;
             this.userNetworks = response.userNetworks;
             this.selectedNetwork = this.userNetworks[0];
+            this.uiState.isLoading = false;
          },
 
-         (error:ErrorResponse) => {
-            if (error.httpStatus === 404) {
-               this.userHasNetwork = false;
-            }
+         (error: ErrorResponse) => {
+            if (error.httpStatus === 404 || error.httpStatus === 403) this.userHasNetwork = false;
+            this.uiState.isLoading = false;
          }
 
       );
    }
 
-
-   log(value:any): void 
-   {
-      console.log(value);
-   }
+   //#endregion
 
 
-   showNetworkCreationModal(): void 
-   {
+   /* -------------------------------------------------------------------------- */
+   /*                               User Interface                               */
+   /* -------------------------------------------------------------------------- */
+   //#region 
+
+   showNetworkCreationModal(): void {
       this.isNetworkCreationModalVisible = true;
    }
 
 
-   onNetworkCreationSubmit(): void 
-   {
+   onNetworkCreationCancel(): void {
+      this.isNetworkCreationModalVisible = false;
+   }
+
+   //#endregion
+
+
+   /* -------------------------------------------------------------------------- */
+   /*                                API / Submit                                */
+   /* -------------------------------------------------------------------------- */
+   //#region
+
+   onNetworkCreationSubmit(): void {
       // Generate network using the network name input value
       this.generateNetwork(this.newNetworkName);
 
@@ -170,18 +129,61 @@ export class NetworkManagerComponent implements OnInit
       this.isNetworkCreationModalVisible = false;
    }
 
-  
-   onNetworkCreationCancel(): void 
-   {
-      this.isNetworkCreationModalVisible = false;
+
+   generateNetwork(networkName: string): void {
+
+      this.networkService.generateNetwork(networkName).subscribe(
+
+         (response: BlockResponse) => {
+            // Save the received genesis block
+            this.saveNetworkGenesisBlock(networkName, response);
+            this.clustersService.resetClustersSubscription();
+         },
+
+         (error: ErrorResponse) => {
+            console.log(error);
+         }
+
+      );
+
    }
 
 
-   inviteUser(username:string): void 
-   {
+   private saveNetworkGenesisBlock(networkName: string, genesisBlock: BlockResponse): void {
+      // Get network UUID of network with network name of the recently created network
+      this.networkService.getNetworkUuidByName(networkName).subscribe(
+
+         async (response: SimpleStringPayload) => {
+            // UUID response
+            let networkUUID = response.payload;
+
+            // Create a DB connection for the recently added network
+            await this.databaseService.createNetworkDbConnection(networkUUID);
+
+            // Get a Block from the response genesis block
+            let block: Block = ModelMapper.mapBlockResponseToBlock(genesisBlock);
+
+            // Get DB connection for the network, then save the block
+            await this.databaseService.getNetworkDbConnection(networkUUID).getRepository(Block).save(block);
+
+            // Update networks with the newly added network
+            this.getUserNetworks();
+         },
+
+         (error: ErrorResponse) => {
+            console.log(error);
+         }
+
+      );
+
+   }
+
+
+   inviteUser(username: string): void {
+
       let currentUserUsername = this.authService.getCurrentUser().username;
 
-      let invitationRequest:NetworkInvitationRequest = {
+      let invitationRequest: NetworkInvitationRequest = {
          recipientUsername: username,
          senderUsername: currentUserUsername,
          networkName: this.selectedNetwork.name,
@@ -202,4 +204,7 @@ export class NetworkManagerComponent implements OnInit
       );
 
    }
+
+   //#endregion
+
 }

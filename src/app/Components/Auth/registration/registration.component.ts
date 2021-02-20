@@ -17,6 +17,14 @@ export class RegistrationComponent implements OnInit
    @Output() hasRegistered: EventEmitter<boolean> = new EventEmitter<boolean>(false);
    registrationFormGroup:FormGroup;
 
+   uiState = {
+     isLoading: false,
+     error: {
+       isVisible: false,
+       message: undefined,
+     },
+   };
+
 
    constructor(
       private authService:AuthService
@@ -40,11 +48,20 @@ export class RegistrationComponent implements OnInit
 
    onRegistration() {
 
+     // Display loader
+     this.uiState.isLoading = true;
+
       let userRegistrationRequest:UserRegistrationRequest = this.registrationFormGroup.value;
 
       this.authService.register(userRegistrationRequest).subscribe(
-         res => this.hasRegistered.emit(true),
-         err => console.log(err)
+         res => {
+           this.uiState.isLoading = false;
+           this.hasRegistered.emit(true);
+         },
+         err => {
+           console.log(err);
+           this.uiState.isLoading = false;
+         }
       );
 
    }

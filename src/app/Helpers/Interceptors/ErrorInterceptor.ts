@@ -23,7 +23,6 @@ export class ErrorInterceptor implements HttpInterceptor
             // Logout if http status code 401 response is returned
             if(error.status === 401) {
                this.authService.logout();
-               location.reload(true);
             }
 
             const errorResponse:ErrorResponse = {
@@ -38,13 +37,12 @@ export class ErrorInterceptor implements HttpInterceptor
       )
    }
 
-
    // For Development, logs error info.
-   private handleError(error:HttpErrorResponse)
-   {
+   private handleError(error:HttpErrorResponse) {
       console.log("ApiResponse MESSAGE: " + error.error.message); // ApiResponse Message
       console.log("ApiResponse SUCCESS: " + error.error.success); // ApiResponse Success
       console.log("error STATUS: " + error.status); // 404 (NOT_FOUND)
       console.log("error OK: " + error.ok); // False (not OK)
    }
+
 }

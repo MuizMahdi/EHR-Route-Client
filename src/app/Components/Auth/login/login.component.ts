@@ -23,6 +23,14 @@ export class LoginComponent implements OnInit
 
    loginFormGroup: FormGroup;
 
+   uiState = {
+      isLoading: false,
+      error: {
+         isVisible: false,
+         message: undefined,
+      },
+   };
+
 
    constructor(
       private router:Router, 
@@ -48,84 +56,81 @@ export class LoginComponent implements OnInit
 
    onLogin(): void {
 
+      // Display loader
+      this.uiState.isLoading = true;
+
+      // Get credentials
       const userInfo: UserLoginRequest = this.loginFormGroup.value;
 
       this.authService.login(userInfo).subscribe(
          (res) => {
-            this.router.navigate(['main']);
-            this.checkIfFirstLogin();
+
+            // Conceal loader
+            this.uiState.isLoading = false;
+
+            // Navigate to dashboard
+            this.router.navigate(['about-us']);
+
+            // Generate user's address if its their first login
+            this.generateUserAddress();
+
+            
             this.checkIfIsProvider();
+
          },
          (err: ErrorResponse) => {
-            // TODO: Handle error by showing a flash message to user
-            console.log(err);
+
+            // Display error alert
+            this.uiState.error.isVisible = true;
+            this.uiState.error.message = err.message;
+
+            // Conceal loader
+            this.uiState.isLoading = false;
+
          }
       );
 
    }
 
 
-   private checkIfFirstLogin(): void {
+   private generateUserAddress(): void {
 
-      // When user info is received from server
-      this.authService.currentUser.subscribe((userInfo:UserInfo) => {
+      let isUserFirstLogin = this.authService.getDecodedToken().firstLogin;
+      let userRoles = this.authService.getUserRoles();
 
-         console.log('Checking user first login. UserInfo: ', userInfo);
-         
-         // If user is logged in
-         if (userInfo) {
-            // check if its the user's first time login
-            if (userInfo.firstLogin) {
+      if (isUserFirstLogin) {
 
-               console.log('It is the user`s first login!');
+         // Generate an address for the user to be saved on local DB
+         this.addressService.generateUserAddress().subscribe(
 
-               // Generate an address for the user
-               this.generateUserAddress(userInfo);
-            } 
-         }
+            async (addressResponse: AddressResponse) => {
 
-      });
+               console.log('New Address Fetched!');
 
-   }
+               // Get current user id
+               let userID: number = this.authService.getCurrentUser().id;
 
+               // Persist address locally
+               await this.addressService.saveUserAddress(addressResponse, userID);
 
-   private generateUserAddress(userInfo:UserInfo): void {
+               // If user is a provider, then add the generated address to their provider details
+               userRoles.forEach(role => {
+                  if (role === RoleName.PROVIDER) {
+                     // Add the generated address to the provider's details
+                     this.saveProviderAddress();
+                  }
+               });
 
-      console.log('Fetching new address...');
-
-      // Generate an address for the user to be saved on local DB
-      this.addressService.generateUserAddress().subscribe(
-
-         async (addressResponse:AddressResponse) => {
-
-            console.log('New Address Fetched!');
-
-            // Get current user id
-            let userID: number = this.authService.getCurrentUser().id;
-
-            // Persist address locally
-            await this.addressService.saveUserAddress(addressResponse, userID);
-
-            // If user is a provider, then add the generated address to their provider details
-            userInfo.roles.forEach(role => {
-               if (role === RoleName.PROVIDER) {
-                  // Add the generated address to the provider's details
-                  this.saveProviderAddress();
-               }
-            });
-         },
-
-         (error:ErrorResponse) => {
-            // If user already has an address (HTTP 409 Conflict)
-            if (error.httpStatus == 409) {
-               // Do nothing
+            },
+            (error:ErrorResponse) => {
+               // If user already has an address (HTTP 409 Conflict)
+               if (error.httpStatus == 409) { /* Do nothing */ }
+               else console.log(error);
             }
-            else {
-               console.log(error);
-            }
-         }
 
-      );
+         );
+
+      }
 
    }
 
@@ -150,17 +155,8 @@ export class LoginComponent implements OnInit
    private checkProviderAddress(): void {
 
       this.providerService.checkProviderAddressExistence().subscribe(
-
-         (exists:boolean) => {
-            if (!exists) {
-               this.saveProviderAddress();
-            }
-         },
-
-         (error:ErrorResponse) => {
-            console.log(error);
-         }
-
+         (exists: boolean) => { if (!exists) this.saveProviderAddress(); },
+         (error: ErrorResponse) => console.log(error)
       );
 
    }
@@ -173,24 +169,13 @@ export class LoginComponent implements OnInit
 
       // Get user address
       this.addressService.getUserAddress(userID).then(address => {
-
-         // If found
-         if (address) 
-         {
+         if (address) {
             // Save/set the address to provider details
             this.providerService.saveProviderAddress(address.address).subscribe(
-
-               response => {
-                  console.log(response);
-               },
-
-               (error:ErrorResponse) => {
-                  console.log(error);
-               }
-
+               response => console.log(response),
+               (error: ErrorResponse) => console.log(error)
             );
          }
-
       });
 
    }

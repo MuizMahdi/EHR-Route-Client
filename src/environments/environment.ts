@@ -1,5 +1,6 @@
 export const AppConfig = {
   production: false,
   environment: 'LOCAL',
-  apiUrl: 'http://localhost:8080'
+  apiUrl: 'https://ehroute-mono.herokuapp.com'
+  // apiUrl: 'http://localhost:8080'
 };

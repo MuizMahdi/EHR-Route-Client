@@ -1,5 +1,5 @@
 export const AppConfig = {
   production: true,
   environment: 'PROD',
-  apiUrl: ''
+  apiUrl: 'https://ehroute-mono.herokuapp.com'
 };

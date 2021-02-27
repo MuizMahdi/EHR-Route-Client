@@ -30,6 +30,8 @@ export class NavSearchComponent
 
 
    onSearchBarInput(value:string): void {
+
+      console.log('[NavSearch Component] Selected Search', this.selectedSearchOption);
       
       // Search for the selected search bar option with the input value
       switch(this.selectedSearchOption)
@@ -79,6 +81,7 @@ export class NavSearchComponent
 
          error => {
             console.log(error);
+            this.isSearchOptionsEmpty = true;
          }
 
       );

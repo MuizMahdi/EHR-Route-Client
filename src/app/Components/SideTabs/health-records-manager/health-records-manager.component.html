@@ -3,9 +3,14 @@
 <!-- ----------------------------------------------------------------------- -->
 <!-- #region -->
 
-<div *ngIf="!userHasNetworks" class="boxed-content">
+<div *ngIf="!userHasNetworks && !uiState.isLoading" class="boxed-content">
    <h2>You have no network</h2>
    <p>You can only display EHRs if you're a member of a network</p>
+</div>
+
+<div *ngIf="userHasNetworks && records.length == 0 && !uiState.isLoading" class="boxed-content">
+   <h2>No EHRs Available</h2>
+   <p>Ask patients for their EHRs consent</p>
 </div>
 
 <!-- #endregion -->
@@ -16,7 +21,7 @@
 <!-- ----------------------------------------------------------------------- -->
 <!-- #region -->
 
-<div *ngIf="userHasNetworks" class="records">
+<div *ngIf="userHasNetworks && !uiState.isLoading" class="records">
    <ul *ngIf="records.length > 0" class="records-list">
       <li *ngFor="let record of records" class="record-item">
          

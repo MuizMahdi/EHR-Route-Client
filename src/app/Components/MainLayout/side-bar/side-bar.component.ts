@@ -1,6 +1,6 @@
 import { RoleName } from './../../../Models/RoleName';
 import { AuthService } from './../../../Services/auth.service';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 
 
 @Component({
@@ -10,10 +10,11 @@ import { Component, OnInit } from '@angular/core';
 })
 
 
-export class SideBarComponent implements OnInit 
+export class SideBarComponent implements OnInit, AfterViewInit
 {
 
-   isUserProviderOrAdmin: boolean = false;
+   isProvider = false;
+   isAdmin = false;
 
 
    constructor(
@@ -22,6 +23,10 @@ export class SideBarComponent implements OnInit
 
 
    ngOnInit() {
+   }
+
+
+   ngAfterViewInit(): void {
       this.checkUserRoles();
    }
 
@@ -29,7 +34,8 @@ export class SideBarComponent implements OnInit
    private checkUserRoles(): void {
 
       this.authService.getUserRoles().forEach(role => {
-         if (role === RoleName.PROVIDER || role === RoleName.ADMIN) this.isUserProviderOrAdmin = true;
+         if (role === RoleName.PROVIDER) this.isProvider = true;
+         if (role === RoleName.ADMIN) this.isAdmin = true;
       });
 
    }

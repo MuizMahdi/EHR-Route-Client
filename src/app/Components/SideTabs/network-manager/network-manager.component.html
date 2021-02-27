@@ -19,22 +19,24 @@
 <!-- Network Info -->
 <div *ngIf="!uiState.isLoading && userHasNetwork" class="network-manager-container">
    
-   <div class="network-header">
+   <div class="network-header" style="display: grid; grid-template-columns: 80% 20%; column-gap: 10px;">
    
       <div class="boxed-content" id="network-name">
          <h1 class="box-title">{{selectedNetwork.name}}</h1>
       </div>
    
-      <nz-select nzShowSearch nzPlaceHolder="Select a network" [(ngModel)]="selectedNetwork" class="boxed-content" id="network-selector">
-         <nz-option *ngFor="let n of userNetworks" [nzValue]="n" [nzLabel]="n.name"></nz-option>
-      </nz-select>
+      <div class="boxed-content flex-container">
+         <nz-select nzShowSearch nzPlaceHolder="Select a network" [(ngModel)]="selectedNetwork" id="network-selector" style="margin: auto; width: 90%;">
+            <nz-option *ngFor="let n of userNetworks" [nzValue]="n" [nzLabel]="n.name"></nz-option>
+         </nz-select>
+      </div>
    
    </div>
    
    
    <div class="boxed-content" id="network-content">
    
-      <h2 class="box-title">Network Status</h2>
+      <h2 class="box-title">Network Info</h2>
       <hr class="box-title-bottom-line"><br>
    
       <h3>Name: {{selectedNetwork.name}}</h3>

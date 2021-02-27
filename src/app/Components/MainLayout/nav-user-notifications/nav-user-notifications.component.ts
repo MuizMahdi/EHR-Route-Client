@@ -129,7 +129,7 @@ export class NavUserNotificationsComponent implements OnInit
             let invitationRequest:NetworkInvitationRequest = notification.reference;
 
             let message:string =
-            invitationRequest.senderUsername + " has invited you to join their network, " +
+            /* invitationRequest.senderUsername + */ "A provider has invited you to join their network, " +
             invitationRequest.networkName;
    
             return message;
@@ -139,8 +139,8 @@ export class NavUserNotificationsComponent implements OnInit
             let ehrExchangeConsentRequest: ConsentRequest = notification.reference;
          
             let message:string =
-            notification.senderName + 
-            " is asking for consent to use and share your medical record";
+            /* notification.senderName + */ 
+            "A provider is asking for consent to use and share your medical record";
    
             return message;
          }
@@ -149,8 +149,8 @@ export class NavUserNotificationsComponent implements OnInit
             let ehrExchangeConsentRequest: UpdateConsentRequest = notification.reference;
          
             let message:string =
-            notification.senderName + 
-            " is asking for consent to update your medical record";
+            /* notification.senderName +  */
+            "A provider is asking for consent to update your medical record";
 
             return message;
          }

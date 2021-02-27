@@ -3,11 +3,11 @@
       <h4 class="info-header">Consent Request</h4>
 
       <p>
-         <a href="javascript:void(0)">
+         <!-- <a href="javascript:void(0)">
             {{notification.senderName}}
-         </a> 
+         </a> --> 
 
-         is asking for permission to use, and share your medical record.
+         A provider is asking for permission to use, and share your medical record.
       </p>
    </div>
   
@@ -44,6 +44,7 @@
       </ul>
       <br>
 
+      <!-- Members -->
       <p>Network members: </p>
       <ul>
          <li *ngFor="let provider of requesterNetworkDetails?.networkMembers">
@@ -56,7 +57,7 @@
 
 
    <div style="margin-top:6vh;">
-      <button (click)="onConsentRequestAccept()" nz-button nzType="primary" style="display:flex; margin-left:auto; margin-bottom:-32px; margin-right:70px;">
+      <button (click)="onConsentRequestAccept()" [nzLoading]="isLoading" nz-button nzType="primary" style="display:flex; margin-left:auto; margin-bottom:-32px; margin-right:70px;">
          Accept
       </button>
 

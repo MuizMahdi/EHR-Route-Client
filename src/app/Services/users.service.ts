@@ -15,8 +15,8 @@ export class UsersService
 {
    
    private userRoleChangeUrl:string = AppConfig.apiUrl + '/auth/user-role-change';
-   private userSearchUrl:string = AppConfig.apiUrl + '/users/search-by-username';
-   private getUserInfoUrl:string = AppConfig.apiUrl + '/users/get-by-username/';
+   private userSearchUrl:string = AppConfig.apiUrl + '/users/search-by-address';
+   private getUserInfoUrl:string = AppConfig.apiUrl + '/users/find-by-email/';
    private userFirstLoginStatusUrl:string = AppConfig.apiUrl + '/users/current/first-login-status';
    private userInfoAdditionStatusUrl:string = AppConfig.apiUrl + '/users/current/info-addition-status';
 

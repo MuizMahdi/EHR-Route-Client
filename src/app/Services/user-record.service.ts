@@ -60,6 +60,8 @@ export class UserRecordService
       // Find user's personal info
       let patientInfo:EhrPatientInfo = await dbConnection.manager.findOne(EhrPatientInfo, 1);
 
+      console.log('Patient Info', patientInfo);
+
       // Find allergies of the latest record
       let allergies = await dbConnection.getRepository(EhrAllergyAndReaction).find({
          select: ["allergy"],

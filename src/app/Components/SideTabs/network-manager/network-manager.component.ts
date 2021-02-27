@@ -13,6 +13,7 @@ import { NodeClustersService } from '../../../Services/node-clusters.service';
 import { NetworkInvitationRequest } from '../../../Models/Payload/Requests/NetworkInvitationRequest';
 import { DatabaseService } from '../../../DataAccess/database.service';
 import ModelMapper from '../../../Helpers/Utils/ModelMapper';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 
 @Component({
@@ -49,6 +50,7 @@ export class NetworkManagerComponent implements OnInit {
       private authService: AuthService,
       public mainLayout: MainLayoutService, 
       private modalService: NzModalService,
+      private messageService: NzMessageService,
       private clustersService: NodeClustersService, 
       private databaseService: DatabaseService
    ) { }
@@ -122,6 +124,7 @@ export class NetworkManagerComponent implements OnInit {
    //#region
 
    onNetworkCreationSubmit(): void {
+
       // Generate network using the network name input value
       this.generateNetwork(this.newNetworkName);
 
@@ -132,16 +135,22 @@ export class NetworkManagerComponent implements OnInit {
 
    generateNetwork(networkName: string): void {
 
+      this.uiState.isLoading = true;
+
       this.networkService.generateNetwork(networkName).subscribe(
 
          (response: BlockResponse) => {
             // Save the received genesis block
             this.saveNetworkGenesisBlock(networkName, response);
             this.clustersService.resetClustersSubscription();
+            this.messageService.success('Network Created Succssfully');
+            this.getUserNetworks();
          },
 
          (error: ErrorResponse) => {
             console.log(error);
+            this.messageService.error('Error Creating Network');
+            this.uiState.isLoading = false;
          }
 
       );
@@ -150,6 +159,9 @@ export class NetworkManagerComponent implements OnInit {
 
 
    private saveNetworkGenesisBlock(networkName: string, genesisBlock: BlockResponse): void {
+
+      console.log('[NetworkManager Component] Generating Genesis Block');
+
       // Get network UUID of network with network name of the recently created network
       this.networkService.getNetworkUuidByName(networkName).subscribe(
 
@@ -162,6 +174,9 @@ export class NetworkManagerComponent implements OnInit {
 
             // Get a Block from the response genesis block
             let block: Block = ModelMapper.mapBlockResponseToBlock(genesisBlock);
+            block.senderPubKey = "";
+
+            console.log('[NetworkManager Component] Genesis Block', block);
 
             // Get DB connection for the network, then save the block
             await this.databaseService.getNetworkDbConnection(networkUUID).getRepository(Block).save(block);

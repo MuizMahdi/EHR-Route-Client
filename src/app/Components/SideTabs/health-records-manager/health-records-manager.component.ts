@@ -7,6 +7,7 @@ import { NodeNetworkService } from '../../../Services/node-network.service';
 import { EhrService } from './../../../Services/ehr.service';
 import { Component, OnInit } from '@angular/core';
 import { MainLayoutService } from '../../../Services/main-layout.service';
+import { UserNetworks } from '../../../Models/Payload/Responses/UserNetworks';
 
 
 @Component({
@@ -25,7 +26,7 @@ export class HealthRecordsManagerComponent implements OnInit
    totalPagesNumber: number;
    records: ElectronicHealthRecord[] = [];
    userNetworksUUIDs: string[] = [];
-   userHasNetworks: boolean = true;
+   userHasNetworks: boolean = false;
 
    state = {};
 
@@ -58,18 +59,51 @@ export class HealthRecordsManagerComponent implements OnInit
       // Get user networks UUIDs
       await this.getUserNetworksUUIDs();
 
-      // Then get the medical records
-      this.getRecords();
-
    }
 
 
    private async getUserNetworksUUIDs() {
 
+      console.log('[HealthRecordsManager Component] Getting user networks...');
+
       // Display loader
       this.uiState.isLoading = true;
+
+      this.networkService.getUserNetworks().subscribe(
+         
+         async (res: UserNetworks) => {
+         
+            // Set user networks UUIDs list
+            this.userNetworksUUIDs = res.userNetworks.map(n => n.networkUUID);
+
+            if (this.userNetworksUUIDs.length > 0) {
+
+               this.userHasNetworks = true;
+
+               console.log('User has networks!');
+
+               // Get the count of all the available records to setup the number of pages
+               await this.chainService.countAllNetworksBlocks(this.userNetworksUUIDs).then(count => {
+                  this.totalPagesNumber = Math.ceil(count / this.pageSize) * 10;
+               });
+
+               // Then get the medical records
+               this.getRecords();
+
+            }
+
+         },
+         (err) => {
+            console.log('Error', err);
+            this.userHasNetworks = false;
+            this.uiState.isLoading = false;
+         }
       
-      await this.networkService.getUserNetworksUUIDs().then(async networksUUIDs => {
+      );
+      
+      /* await this.networkService.getUserNetworksUUIDs().then(async networksUUIDs => {
+
+         if (networksUUIDs.length > 0) this.userHasNetworks = true;
 
          this.userNetworksUUIDs = networksUUIDs;
 
@@ -83,18 +117,24 @@ export class HealthRecordsManagerComponent implements OnInit
 
 
       }).catch(error => {
+         console.log('Error', error);
          this.userHasNetworks = false;
          this.uiState.isLoading = false;
-      });
+      }); */
 
    }
 
 
    private getRecords(): void {
       if (this.userHasNetworks) {
-         // Get EHRs
-         this.ehrService.getNetworksRecords(this.userNetworksUUIDs, this.pageNumber, this.pageSize)
-         .then(records => this.records = records);
+         this.ehrService.getNetworksRecords(this.userNetworksUUIDs, this.pageNumber, this.pageSize).then(records => {
+            
+            this.records = records;
+
+            // Conceal loader
+            this.uiState.isLoading = false;
+
+         });
       }
    }
 

@@ -5,6 +5,7 @@ import { UsersService } from './../../../Services/users.service';
 import { RoleChangeRequest } from './../../../Models/Payload/Requests/RoleChangeRequest';
 import { MainLayoutService } from './../../../Services/main-layout.service';
 import { Component } from '@angular/core';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 
 @Component({
@@ -22,16 +23,23 @@ export class AdminPanelComponent
    institutionProviderUsername:string;
    institutionName:string;
 
+   isRegisteringProvider = false;
+   isChangingRole = false;
+
 
    constructor(
-      private userService:UsersService, public mainLayout:MainLayoutService,
-      private providerService:ProviderService
+      private userService: UsersService, 
+      public mainLayout: MainLayoutService,
+      private providerService: ProviderService,
+      private messageService: NzMessageService
    ) { 
       this.mainLayout.show(); 
    }
 
 
    changeUserRole(username:string, role:string) {
+
+      this.isChangingRole = true;
 
       let roleChangeReq:RoleChangeRequest = {
          username,
@@ -42,10 +50,14 @@ export class AdminPanelComponent
 
          response => {
             console.log(response);
+            this.messageService.success("User Role Assigned Successfully");
+            this.isChangingRole = false;
          },
 
          error => {
             console.log(error);
+            this.messageService.error("Error Assigning Use Role");
+            this.isChangingRole = false;
          }
 
       );
@@ -55,8 +67,10 @@ export class AdminPanelComponent
 
    registerInstitutionProvider(providerUsername:string, institutionName:string) {
 
-      let request:ProviderAdditionRequest = {
-         username: providerUsername,
+      this.isRegisteringProvider = true;
+
+      let request: ProviderAdditionRequest = {
+         address: providerUsername,
          institutionName: institutionName
       }
 
@@ -64,10 +78,14 @@ export class AdminPanelComponent
 
          response => {
             console.log(response);
+            this.messageService.success('Institution Provider Registered Successfully');
+            this.isRegisteringProvider = false;
          },
 
          (error:ErrorResponse) => {
             console.log(error);
+            this.messageService.error('Institution Provider Registration Failed');
+            this.isRegisteringProvider = false;
          }
 
       );

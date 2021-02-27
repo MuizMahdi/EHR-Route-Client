@@ -32,7 +32,7 @@ export class NodeClustersService implements OnInit
 {
    providerSubscriptionUrl:string = AppConfig.apiUrl + "/cluster/chainprovider?nodeuuid=";
    tempProviderSubscriptionUrl:string = AppConfig.apiUrl + "/cluster/providers?nodeuuid=";
-   consumerSubscriptionUrl:string = AppConfig.apiUrl + "/cluster/chainconsumer?nodeuuid=";
+   consumerSubscriptionUrl:string = AppConfig.apiUrl + "/cluster/consumers?nodeuuid=";
    clustersUnsubscripeUrl:string = AppConfig.apiUrl + "/cluster/close?nodeuuid=";
 
    providersEventSource:EventSourcePolyfill;

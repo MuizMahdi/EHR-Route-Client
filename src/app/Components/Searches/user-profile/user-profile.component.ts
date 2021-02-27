@@ -1,3 +1,4 @@
+import { NzMessageService } from 'ng-zorro-antd/message';
 import { TransactionService } from './../../../Services/transaction.service';
 import { BlockAdditionRequest } from './../../../Models/Payload/Requests/BlockAdditionRequest';
 import { AuthService } from '../../../Services/auth.service';
@@ -33,12 +34,15 @@ export class UserProfileComponent implements OnInit
    userHasNetwork:boolean = false;
    networkSelectionModal: NzModalRef;
 
+   isLoading = false;
+
 
    constructor(
       private userService:UsersService, private modalService:NzModalService, 
       private networkService:NodeNetworkService, private providerService:ProviderService,
       private chainService:ChainService, private addressService:AddressService,
-      private authService:AuthService, private transactionService:TransactionService
+      private authService:AuthService, private transactionService:TransactionService,
+      private messageService: NzMessageService
    ) { }
 
 
@@ -49,19 +53,22 @@ export class UserProfileComponent implements OnInit
    }
 
 
-   private getSearchedUserProfile(): void
-   {
+   private getSearchedUserProfile(): void {
       if (this.searchParameter) {
+
+         this.isLoading = true;
 
          // Get user profile
          this.userService.getUserInfo(this.searchParameter).subscribe(
 
             (response:UserInfo) => {
                this.searchedUser = response;
+               this.isLoading = false;
             },
 
             (error:ErrorResponse) => {
                console.log(error);
+               this.isLoading = false;
             }
 
          );
@@ -101,15 +108,21 @@ export class UserProfileComponent implements OnInit
       let patientUserId = this.searchedUser.id;
       let providerNetworkUUID = this.selectedNetwork.networkUUID;
 
+      console.log('[UserProvider Component] Generating Block Addition Request');
+
       let blockAdditionRequest = await this.chainService.generateBlockAdditionRequest(providerUserId, patientUserId, providerNetworkUUID);
+
+      console.log(blockAdditionRequest);
    
       this.transactionService.sendUserEhrConsentRequest(blockAdditionRequest).subscribe(
 
          response => {
+            this.messageService.success("Consent Request Sent Succussfully");
             console.log(response);
          },
 
          (error:ErrorResponse) => {
+            this.messageService.error("Consent Request Failed");
             console.log(error);
          }
 

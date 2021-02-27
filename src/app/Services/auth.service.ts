@@ -182,6 +182,7 @@ export class AuthService
 
 
    public getUserRoles(): string[] {
+      console.log('[Auth Service] Getting user roles...');
       return this.getDecodedToken()['roles'] as string[];
    }
 

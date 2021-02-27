@@ -195,10 +195,14 @@ export default class ModelMapper
       let medicalHistory:any[] = [];
 
       ehrHistory.forEach(ehrHistoryEntry => {
+
          let historyEntry = {
-            [ehrHistoryEntry.condition]:ehrHistoryEntry.occurrence
+            condition: ehrHistoryEntry.condition,
+            occurrence: ehrHistoryEntry.occurrence
          }
+
          medicalHistory.push(historyEntry);
+         
       });
 
       return medicalHistory;

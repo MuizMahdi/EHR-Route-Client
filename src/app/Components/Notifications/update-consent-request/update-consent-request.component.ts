@@ -105,6 +105,7 @@ export class UpdateConsentRequestComponent implements OnInit
       // Construct a UserConsentResponse object
       let userConsentResponse: UserConsentResponse = {
          block: consentRequest.block,
+         medicalHistory: ModelMapper.mapEhrHistoryToHistoryList(userMedicalRecord.history),
          userPrivateKey: userAddress.privateKey,
          userAddress: userAddress.address,
          consentRequestUUID: consentRequest.consentRequestUUID,

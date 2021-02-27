@@ -1,9 +1,9 @@
-<div *ngIf="!searchedUser" class="user-info-text">
+<div *ngIf="!searchedUser && !isLoading" class="user-info-text">
    <h4>User not found</h4>
 </div>
 
 
-<div *ngIf="searchedUser">
+<div *ngIf="searchedUser && !isLoading">
 
    <div class="user-info-avatar">
       <img src="https://cdn1.iconfinder.com/data/icons/circle-outlines/512/User_Account_Avatar_Person_Profile_Login_Human-512.png" alt="User avatar icon">
@@ -26,6 +26,11 @@
 
    </div>
 
+</div>
+
+
+<div *ngIf="isLoading" class="loader flex-container" style="height: 400px; width: 100%;">
+   <nz-spin nzTip="Loading User..." [nzSize]="'large'" class="flex-centered" style="width: 100%;"></nz-spin>
 </div>
 
 

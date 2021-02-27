@@ -16,9 +16,9 @@ import { Injectable } from '@angular/core';
 
 export class TransactionService 
 {
-   private getUserEhrConsentUrl:string = AppConfig.apiUrl + '/transaction/getConsent';
+   private getUserEhrConsentUrl:string = AppConfig.apiUrl + '/transaction/record-consent-request';
    private getEhrUpdateConsentUrl:string = AppConfig.apiUrl + '/transaction/get-update-consent';
-   private giveUserEhrConsentUrl:string = AppConfig.apiUrl + '/transaction/give-consent';
+   private giveUserEhrConsentUrl:string = AppConfig.apiUrl + '/transaction/record-consent-response';
    private giveEhrUpdateConsentUrl:string = AppConfig.apiUrl + '/transaction/give-update-consent';
 
 

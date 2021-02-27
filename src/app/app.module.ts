@@ -32,6 +32,7 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
+import { NzMessageModule } from 'ng-zorro-antd/message';
 
 // Components
 import { AppComponent } from './app.component';
@@ -110,6 +111,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
       NzPaginationModule,
       NzMenuModule,
       NzDropDownModule,
+      NzMessageModule,
       AppRoutingModule,
       AppRoutingModule,
       ReactiveFormsModule,

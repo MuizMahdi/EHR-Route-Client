@@ -1,5 +1,4 @@
-export interface ProviderAdditionRequest 
-{
-   username:string;
-   institutionName:string;
+export interface ProviderAdditionRequest {
+   address: string;
+   institutionName: string;
 }

@@ -1,3 +1,4 @@
+import { NzMessageService } from 'ng-zorro-antd/message';
 import { MedicalRecord } from './../../../DataAccess/entities/EHR/MedicalRecord';
 import { UserRecordService } from './../../../Services/user-record.service';
 import { MedicalRecordResponse } from './../../../Models/Payload/Responses/MedicalRecordResponse';
@@ -33,6 +34,7 @@ export class ConsentRequestComponent implements OnInit
    @Input() notification: Notification;
    consentRequest: ConsentRequest;
    requesterNetworkDetails: NetworkDetails;
+   isLoading = false;
 
 
    constructor(
@@ -40,7 +42,7 @@ export class ConsentRequestComponent implements OnInit
       private networkService:NodeNetworkService, private addressService:AddressService,
       private patientInfoService:PatientInfoService, private authService:AuthService,
       private transactionService:TransactionService, private modalService: NzModalService,
-      private recordService:UserRecordService
+      private recordService:UserRecordService, private messageService: NzMessageService
    ) 
    { }
 
@@ -70,15 +72,23 @@ export class ConsentRequestComponent implements OnInit
 
 
    async onConsentRequestAccept() {
+      
+      this.isLoading = true;
 
       // Get current user ID
       let userID: number = this.authService.getCurrentUser().id
 
+      console.log(userID);
+
       // Get user's address (also private key) from DB
       let userAddress:Address = await this.addressService.getUserAddress(userID);
 
+      console.log(userAddress);
+
       // Get user's medical record from DB
       let userMedicalRecord:MedicalRecord = await this.recordService.getUserRecord(userID);
+
+      console.log(userMedicalRecord);
 
       // Add user's medical record into the Block in the ConsentRequest
       if (this.consentRequest) {
@@ -95,6 +105,7 @@ export class ConsentRequestComponent implements OnInit
       // Construct a UserConsentResponse object
       let userConsentResponse:UserConsentResponse = {
          block: this.consentRequest.block,
+         medicalHistory: ModelMapper.mapEhrHistoryToHistoryList(userMedicalRecord.history),
          userPrivateKey: userAddress.privateKey,
          userAddress: userAddress.address,
          consentRequestUUID: this.consentRequest.consentRequestUUID,
@@ -103,6 +114,8 @@ export class ConsentRequestComponent implements OnInit
          userID: userID
       }
 
+      console.log('ConsentResponse', userConsentResponse);
+
       // Send the consent response
       this.transactionService.sendUserEhrConsentResponse(userConsentResponse).subscribe(
 
@@ -110,10 +123,14 @@ export class ConsentRequestComponent implements OnInit
             console.log(response);
             // Delete notification
             this.deleteNotification();
+            this.isLoading = false;
+            this.messageService.success('Consent was given, medical record was sent');
          },
 
          error => {
             console.log(error);
+            this.isLoading = false;
+            this.messageService.error('Error sending medical record');
          }
 
       );
